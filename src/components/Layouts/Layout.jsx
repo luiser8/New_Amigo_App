@@ -16,18 +16,25 @@ const Layout = () => {
     const [menu] = useState([
         {
             id: 1,
-            name: 'Configuraciones',
-            description: 'Get a better understanding of where your traffic is coming from.',
-            href: '#',
-            icon: CogIcon,
+            name: 'Reportes',
+            description: '',
+            href: '/reporte',
+            icon: LogoutIcon,
         },
         {
             id: 2,
+            name: 'Configuraciones',
+            description: '',
+            href: '/config',
+            icon: CogIcon,
+        },
+        {
+            id: 3,
             name: 'Cerrar sesion',
-            description: 'Speak directly to your customers in a more meaningful way.',
+            description: '',
             href: '#',
             icon: LogoutIcon,
-        },
+        }
     ]);
 
     function classNames(...classes) {
@@ -60,8 +67,8 @@ const Layout = () => {
                                             </Popover.Button>
                                         </div>
                                         <Popover.Group as="nav" className="hidden md:flex space-x-10">
-                                            <Link to="/deudas" className="text-base font-medium text-gray-500 hover:text-gray-900">Deudas</Link>
-                                            <Link to="/reportes" className="text-base font-medium text-gray-500 hover:text-gray-900">Reportes</Link>
+                                            {/* <Link to="/deudas" className="text-base font-medium text-gray-500 hover:text-gray-900">Deudas</Link> */}
+                                            {/* <Link to="/reportes" className="text-base font-medium text-gray-500 hover:text-gray-900">Reportes</Link> */}
                                             <Popover className="relative">
                                                 {({ open }) => (
                                                     <>
@@ -98,21 +105,22 @@ const Layout = () => {
                                                                 <div className="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 overflow-hidden">
                                                                     <div className="relative grid gap-6 bg-white px-5 py-6 sm:gap-8 sm:p-8">
                                                                         {menu.map((item) => (
-                                                                            <a
+                                                                            <Link
                                                                                 key={item.name}
-                                                                                href={item.href}
+                                                                                to={item.href}
                                                                                 className="-m-3 p-3 flex items-start rounded-lg hover:bg-gray-50"
                                                                             >
                                                                                 <item.icon className="flex-shrink-0 h-6 w-6 text-indigo-600" aria-hidden="true" />
                                                                                 <div className="ml-4">
-                                                                                    <a
+                                                                                    <Link
                                                                                         className="text-base font-medium text-gray-900"
-                                                                                        onClick={async () => item.id === 2 ? logout(null) : ''}
+                                                                                        to={item.href}
+                                                                                        onClick={async () => item.id === 3 ? logout(null) : ''}
                                                                                     >
                                                                                         {item.name}
-                                                                                    </a>
+                                                                                    </Link>
                                                                                 </div>
-                                                                            </a>
+                                                                            </Link>
                                                                         ))}
                                                                     </div>
                                                                 </div>
@@ -171,6 +179,17 @@ const Layout = () => {
                 </Fragment>
                 :
                 <Fragment></Fragment>
+            }
+            {(checkUser().UsuarioId) !== null ?
+                <header className="bg-white shadow">
+                    <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                        <h1 className="text-3xl font-bold text-gray-900">
+                            Home
+                        </h1>
+                    </div>
+                </header>
+                :
+                <></>
             }
             <Routes />
         </Fragment>

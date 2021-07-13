@@ -1,7 +1,7 @@
 module.exports = global.config = {
     url: {
         production: false,
-        dev: 'https://localhost:44311/api/',
+        dev: 'http://psmbna.edu.ve/API/api/',
         prod: 'http://192.168.1.59/'
     },
     headers: {

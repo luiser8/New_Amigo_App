@@ -12,7 +12,7 @@ export const get = async (route) => {
             return response.json()
         }else {
             response.json().then((json) => { 
-                const { Message, StrackTraceString } = json; 
+                return json; 
             });
             return null
         }
@@ -25,7 +25,6 @@ export const get = async (route) => {
 }
 export const post = async (route, data) => {
     let url = global.config.url.production ? `${global.config.url.prod}${route}` : `${global.config.url.dev}${route}`;
-    console.log(url);
     let result = await fetch(`${url}`, {
         method: 'POST',
         mode: 'cors',
@@ -37,7 +36,7 @@ export const post = async (route, data) => {
             return response.json()
         }else {
             response.json().then((json) => { 
-                const { Message, StrackTraceString } = json; 
+                return json; 
             });
             return null
         }
@@ -61,7 +60,7 @@ export const put = async (route, data) => {
             return response.json()
         }else {
             response.json().then((json) => { 
-                const { Message, StrackTraceString } = json; 
+                return json; 
             });
             return null
         }
@@ -84,7 +83,7 @@ export const del = async (route, id) => {
             return response.json()
         }else {
             response.json().then((json) => { 
-                const { Message, StrackTraceString } = json; 
+                return json; 
             });
             return null
         }

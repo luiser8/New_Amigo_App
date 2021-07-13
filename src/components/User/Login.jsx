@@ -7,60 +7,58 @@ const Login = () => {
     const [usuario, setUsuario] = useState([]);
     const [contrasena, setContrasena] = useState([]);
     const [error, setError] = useState(false);
+    const [errorMsj, setErrorMsj] = useState('');
 
     const handleLogin = async (event) => {
-        //setOpenBackdrop(true);
         event.preventDefault();
         await post('users/login', { "Usuario": usuario, "Contrasena":contrasena }).then((items) => {
+            if(items !== undefined){
                 if (items.length !== 0) {
-                    login({
-                        'UsuarioId' : items[0].UsuarioId !== undefined ? items[0].UsuarioId : '',
-                        'Nombres' : items[0].Nombres !== undefined ? items[0].Nombres : '',
-                        'Apellidos' : items[0].Apellidos !== undefined ? items[0].Apellidos : ''
-                    });
+                        login({
+                            'UsuarioId' : items[0].UsuarioId !== undefined ? items[0].UsuarioId : '',
+                            'Nombres' : items[0].Nombres !== undefined ? items[0].Nombres : '',
+                            'Apellidos' : items[0].Apellidos !== undefined ? items[0].Apellidos : ''
+                        });
+                    }else{
+                        setError(true);
+                    }
                 }else{
-                    setError(true);
+                    setErrorMsj('Ocurrio un error en la comunicación');
                 }
         });
-        /*await fetch(`${global.config.url.dev}Users/login`, {
-            method: 'POST',
-            headers: global.config.headers.dev,
-            body: JSON.stringify({ 'Email': data.email, 'Password': data.password }),
-            json: true
-        }).then(response => {
-            if (response.status >= 200 && response.status <= 299) {
-                return setLogin(response.json())
-            }else{
-                response.json().then((json) => {
-                    const { Message } = json;
-                    console.log(Message); setAlerts(true); setSeverity('error'); setMessages(Message);
-                });
-                return null
-            }
-        }).catch((e) => {
-            console.log(e); setAlerts(true); setSeverity('error'); setMessages('Algo pasó');
-        })
-        setTimeout(() => {
-            setOpenBackdrop(false);
-        }, 1000); */
     }
 
     return (
         <Fragment>
+            <>
             {error ? 
             <div role="alert">
-                <div class="bg-red-500 text-white font-bold rounded-t px-4 py-2">
+                <div className="bg-red-500 text-white font-bold rounded-t px-4 py-2">
                     Error de sesión
                 </div>
-                <div class="border border-t-0 border-red-400 rounded-b bg-red-100 px-4 py-3 text-red-700">
+                <div className="border border-t-0 border-red-400 rounded-b bg-red-100 px-4 py-3 text-red-700">
                     <p>Ocurrio un problema intentando iniciar la sesión. Usuario / Contraseña erronea, intenta de nuevo</p>
                 </div>
             </div>
                 :
                 <></>
             }
-        
-        <div className={`${error !== true ? 'min-h-screen' : ''} flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8`}>
+            </>
+            <>
+            {errorMsj !== '' ? 
+            <div role="alert">
+                <div className="bg-red-500 text-white font-bold rounded-t px-4 py-2">
+                    Error de red
+                </div>
+                <div className="border border-t-0 border-red-400 rounded-b bg-red-100 px-4 py-3 text-red-700">
+                    <p>{errorMsj}</p>
+                </div>
+            </div>
+                :
+                <></>
+            }
+            </>
+        <div className={`${error !== true || errorMsj !== '' ? 'min-h-screen' : ''} flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8`}>
             <div className="max-w-md w-full space-y-8">
                 <div>
                     <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
