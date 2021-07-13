@@ -1,24 +1,15 @@
-import logo from './logo.svg';
-import './App.css';
+import './index.css';
+import { ContextProvider } from './utils/Context';
+import Layout from './components/Layouts/Layout';
 
 function App() {
+  // window.localStorage.setItem('UsuarioId', 1);
+  // window.localStorage.setItem('Nombres', 'Luis');
+  // window.localStorage.setItem('Apellidos', 'Rondon');
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ContextProvider>
+        <Layout />
+    </ContextProvider>
   );
 }
 
