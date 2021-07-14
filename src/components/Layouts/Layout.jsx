@@ -1,4 +1,4 @@
-import { Fragment, useState, useContext } from 'react';
+import { Fragment, useState, useEffect, useContext } from 'react';
 import { Popover, Transition } from '@headlessui/react';
 import {
     CogIcon,
@@ -7,7 +7,7 @@ import {
     XIcon,
 } from '@heroicons/react/outline';
 import { ChevronDownIcon } from '@heroicons/react/solid';
-import { Link } from "@reach/router"
+import { Link } from "@reach/router";
 import { Context } from '../../utils/Context';
 import Routes from '../../utils/Routes';
 
@@ -40,7 +40,6 @@ const Layout = () => {
     function classNames(...classes) {
         return classes.filter(Boolean).join(' ')
     }
-
     return (
         <Fragment>
             {(checkUser().UsuarioId) !== null ?
@@ -179,17 +178,6 @@ const Layout = () => {
                 </Fragment>
                 :
                 <Fragment></Fragment>
-            }
-            {(checkUser().UsuarioId) !== null ?
-                <header className="bg-white shadow">
-                    <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                        <h1 className="text-3xl font-bold text-gray-900">
-                            Home
-                        </h1>
-                    </div>
-                </header>
-                :
-                <></>
             }
             <Routes />
         </Fragment>

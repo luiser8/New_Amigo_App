@@ -1,10 +1,10 @@
 import React, { useContext } from 'react';
 import { Router, Redirect } from '@reach/router';
 import { Context } from '../utils/Context';
-import Home from '../components/Home/Home';
 import Login from '../components/User/Login';
 import Error from './Error';
 import Deudas from '../components/Deudas/Deudas';
+import Config from '../components/Configuraciones/Config';
 
 const Routes = () => {
     const { checkUser } = useContext(Context);
@@ -12,9 +12,14 @@ const Routes = () => {
     return (
         <Router>
         {(checkUser().UsuarioId) !== null ? 
-            <Home path="/" user={checkUser().UsuarioId}>
+            <Deudas path="/" user={checkUser().UsuarioId}>
                 {/* <Redirect from="/" to="/login"/> */}
-            </Home>
+            </Deudas>
+            :
+            <Login path="/" />
+        }
+        {(checkUser().UsuarioId) !== null ? 
+            <Config path="/config" user={checkUser().UsuarioId}></Config>
             :
             <Login path="/" />
         }
