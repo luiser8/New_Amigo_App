@@ -3,11 +3,13 @@ const colors = require('tailwindcss/colors')
 module.exports = {
   purge: [],
   presets: [],
+  modules:[
+    'tailwind-toast',
+  ],
   plugins: [
     require("@tailwindcss/forms")({
       strategy: 'class',
     }),
-    require('@tailwindcss/forms'),
   ],
   darkMode: false, // or 'media' or 'class'
   theme: {

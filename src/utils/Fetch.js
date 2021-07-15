@@ -5,7 +5,7 @@ export const get = async (route) => {
     let result = await fetch(`${url}`, {
         method: 'GET',
         mode: 'cors',
-        headers: global.onfig.headers.production ? global.config.headers.prod : global.config.headers.dev,
+        headers: global.config.headers.production ? global.config.headers.prod : global.config.headers.dev,
         json: true
     }).then(response => {
         if (response.status >= 200 && response.status <= 299) {
@@ -49,7 +49,7 @@ export const post = async (route, data) => {
 }
 export const put = async (route, data) => {
     let url = global.config.url.production ? `${global.config.url.prod}${route}` : `${global.config.url.dev}${route}`;
-    let result = await fetch(`${url}/${data.id}`, {
+    let result = await fetch(`${url}`, {
         method: 'PUT',
         mode: 'cors',
         headers: global.config.headers.production ? global.config.headers.prod : global.config.headers.dev,
@@ -71,9 +71,9 @@ export const put = async (route, data) => {
         return result
     }
 }
-export const del = async (route, id) => {
+export const del = async (route) => {
     let url = global.config.url.production ? `${global.config.url.prod}${route}` : `${global.config.url.dev}${route}`;
-    let result = await fetch(`${url}/${id}`, {
+    let result = await fetch(`${url}`, {
         method: 'DELETE',
         mode: 'cors',
         headers: global.config.headers.production ? global.config.headers.prod : global.config.headers.dev,
