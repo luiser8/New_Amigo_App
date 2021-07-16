@@ -3,30 +3,35 @@ import Storage from './Storage';
 
 export const Context = createContext();
 
-const userInitial = {
-    'UsuarioId' : null,
-    'Nombres' : null,
-    'Apellidos' : null
-  };
+const userInitial = {'UsuarioId' : null,'Nombres' : null,'Apellidos' : null};
+const configInitial = {'Lapso' : null,'Cuota' : null};
   
 export const ContextProvider = ({ children }) => {
     const { getLocalStorage, setLocalStorage } = Storage();
     const [dataUser, setDataUser] = useState(userInitial);
+    const [dataConfig, setDataConfig] = useState(configInitial);
 
     const checkUser = () => {
-        return getLocalStorage();
+        return getLocalStorage('user');
     }
-
-    const login = (user) => {
-        setLocalStorage(user); setDataUser(user); 
+    const checkConfig = () => {
+        return getLocalStorage('config');
     }
-    const logout = () => {
-        setLocalStorage(null); setDataUser(null); 
+    const login = (set, user) => {
+        setLocalStorage(set, 'user', user); setDataUser(user); 
+    }
+    const logout = (set) => {
+        setLocalStorage(set, 'user', null); setDataUser(null); 
+    }
+    const setConfig = (set, config) => {
+        setLocalStorage(set, 'config', config); setDataConfig(config); 
     }
 
     return (
         <Context.Provider value={{
-            dataUser, setDataUser, checkUser, login, logout
+            dataUser, setDataUser, 
+            dataConfig, setDataConfig, checkConfig, setConfig,
+            checkUser, login, logout
         }}>
             {children}
         </Context.Provider>

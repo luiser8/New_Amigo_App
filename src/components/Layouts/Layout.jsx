@@ -4,6 +4,9 @@ import {
     CogIcon,
     MenuIcon,
     LogoutIcon,
+    KeyIcon,
+    ChartPieIcon,
+    CurrencyDollarIcon,
     XIcon,
 } from '@heroicons/react/outline';
 import { ChevronDownIcon } from '@heroicons/react/solid';
@@ -12,24 +15,31 @@ import { Context } from '../../utils/Context';
 import Routes from '../../utils/Routes';
 
 const Layout = () => {
-    const { logout, checkUser } = useContext(Context);
+    const { logout, checkUser, checkConfig } = useContext(Context);
     const [menu] = useState([
         {
             id: 1,
             name: 'Reportes',
             description: '',
             href: '/reporte',
-            icon: LogoutIcon,
+            icon: ChartPieIcon,
         },
         {
             id: 2,
-            name: 'Configuraciones',
+            name: 'Cuota',
             description: '',
-            href: '/config',
-            icon: CogIcon,
+            href: '#',
+            icon: CurrencyDollarIcon,
         },
         {
             id: 3,
+            name: 'Cambiar contraseña',
+            description: '',
+            href: '#',
+            icon: KeyIcon,
+        },
+        {
+            id: 4,
             name: 'Cerrar sesion',
             description: '',
             href: '#',
@@ -105,7 +115,7 @@ const Layout = () => {
                                                                     <div className="relative grid gap-6 bg-white px-5 py-6 sm:gap-8 sm:p-8">
                                                                         {menu.map((item) => (
                                                                             <Link
-                                                                                key={item.name}
+                                                                                key={item.id}
                                                                                 to={item.href}
                                                                                 className="-m-3 p-3 flex items-start rounded-lg hover:bg-gray-50"
                                                                             >
@@ -114,9 +124,10 @@ const Layout = () => {
                                                                                     <Link
                                                                                         className="text-base font-medium text-gray-900"
                                                                                         to={item.href}
-                                                                                        onClick={async () => item.id === 3 ? logout(null) : ''}
+                                                                                        onClick={async () => item.id === 4 ? logout(0, null) : ''}
+                                                                                        // onClick={async () => item.id === 2 && checkConfig().Cuota !== null ? window.alert('Si') : window.alert('No')}
                                                                                     >
-                                                                                        {item.name}
+                                                                                        {item.id === 2 && checkConfig().Cuota !== null ? `${item.name} -> ${checkConfig().Cuota}` : item.name}
                                                                                     </Link>
                                                                                 </div>
                                                                             </Link>

@@ -18,7 +18,7 @@ const Login = () => {
         await post('users/login', { "Usuario": usuario, "Contrasena":contrasena }).then((items) => {
             if(items !== undefined){
                 if (items.length !== 0) {
-                        login({
+                        login(0,{
                             'UsuarioId' : items[0].UsuarioId !== undefined ? items[0].UsuarioId : '',
                             'Nombres' : items[0].Nombres !== undefined ? items[0].Nombres : '',
                             'Apellidos' : items[0].Apellidos !== undefined ? items[0].Apellidos : ''

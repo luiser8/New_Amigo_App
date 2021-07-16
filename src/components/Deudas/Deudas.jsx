@@ -1,10 +1,11 @@
-import React, { Fragment, useState, useEffect } from 'react';
+import React, { Fragment, useState, useEffect, useContext } from 'react';
 import { PencilIcon, TrashIcon, PlusIcon, SearchIcon, UserIcon, AcademicCapIcon, CalculatorIcon } from '@heroicons/react/solid';
 import Moment from 'moment';
-import { toast } from 'tailwind-toast';
 import { get, post, put, del } from '../../utils/Fetch';
 import ConfirmDelete from './modals/ConfirmDelete';
 import ModificarMonto from './modals/ModificarMonto';
+import { Toast } from '../../utils/Toast';
+import { Context } from '../../utils/Context';
 
 const Deudas = () => {
     const [lapsos, setLapsos] = useState([]);
@@ -19,23 +20,10 @@ const Deudas = () => {
     const [openModificar, setOpenModificar] = useState(false);
     const [id_cuenta, setId_cuenta] = useState('');
     const [pagada, setPagada] = useState('');
+    const [cuota, setCuota] = useState('');
+    const { checkConfig, setConfig } = useContext(Context);
 
-    const showToast = async (...values) => {
-        if(values[0].show)
-            toast()
-                .warning(values[0].title, values[0].msj)
-                .with({
-                    shape: 'square',
-                    duration: 3000,
-                    speed: 1000,
-                    positionX: 'end',
-                    positionY: 'top',
-                    color: `bg-${values[0].color}-500`,
-                    fontColor: `${values[0].color}`,
-                    fontTone: 100
-                }).show();
-    }
-
+    /* Inicio Modales*/
     const activeConfirmacion = async (open, id, pagada) => {
         setOpenConfirm(open); 
         if(id !== '' && pagada !== ''){
@@ -68,34 +56,59 @@ const Deudas = () => {
     const changeMonto = async (value) => {
         setMonto(value); 
     }
-
+    /* Fin Modales*/
+    /* Inicio Peticiones*/
     const getLapsos = async () => {
-        await get('lapsos/all').then((items) => {
-            items !== undefined ? setLapsos(items) : setLapsos([]);
-        });
+        if(checkConfig().Lapso === null){
+            await get('lapsos/all').then((items) => {
+                items !== undefined ? setLapsos(items) : setLapsos([]);
+                if(items !== undefined)
+                    items.map((item) => {
+                        setLapso(item.Lapso); setConfig(1, {'Lapso': item.Lapso, 'Cuota': null});
+                    });
+            });
+        }else{
+            setLapso(checkConfig().Lapso);
+        }
+    }
+    const getCuota = async () => {
+        if(checkConfig().Cuota === null){
+            await get('cuotas/all').then((items) => {
+                if(items !== undefined)
+                    items.map((item) => {
+                        setCuota(item.Monto); setConfig(2, {'Lapso': null, 'Cuota': item.Monto});
+                    });
+            });
+        }else{
+            setCuota(checkConfig().Cuota);
+        }
     }
     const putDeuda = async (id, monto) => {
         await put(`deudas/update?id_cuenta=${id}`, { 'Monto': monto }).then((items) => {
             checkDeuda();
-            items !== undefined ? showToast({ show:true, title:'Información!', msj:'Monto nuevo ha sido aplicado.', color:'yellow'}) : showToast(null);
+            items !== undefined ? Toast({ show:true, title:'Información!', msj:'Monto nuevo ha sido aplicado.', color:'yellow'}) : Toast({show:false});
         });
     }
     const checkDeuda = async () => {
         await post('deudas/check', { "Lapso": lapso,"Identificador": identificador}).then((items) => {
             items !== undefined ? setDeudas(items) : setDeudas([]); setFullNombre(''); setCarrera('');
-            items.map((item) => {
-                setId_inscripcion(item.Id_Inscripcion); setFullNombre(item.Fullnombre); setCarrera(item.Descripcion);
-            })
+            items === undefined ? Toast({ show:true, title:'Error!', msj:'Ocurrio un problema con la comunicacion.', color:'red'}) : Toast({show:false});
+            items.length === 0 ? Toast({ show:true, title:'Advertencia!', msj:'No se consigueron registros.', color:'red'}) : Toast({show:false});
+            if(items !== undefined)
+                items.map((item) => {
+                    setId_inscripcion(item.Id_Inscripcion); setFullNombre(item.Fullnombre); setCarrera(item.Descripcion);
+                });
         });
     }
     const delDeuda = async (id, pagada) => {
         await del(`deudas/delete?id_cuenta=${id}&pagada=${pagada}`).then((items) => {
             items !== undefined ? setDeudas(deudas.filter(item => item.Id_Cuenta !== id)) : setDeudas([]);
-            items !== undefined ? showToast({ show:true, title:'Advertencia!', msj:'Cuota ha sido eliminada.', color:'red'}) : showToast(null);
+            items !== undefined ? Toast({ show:true, title:'Advertencia!', msj:'Cuota ha sido eliminada.', color:'red'}) : Toast({show:false});
         });
     }
+    /* Fin Peticiones*/
     useEffect(() => {
-        getLapsos();
+        getLapsos(); getCuota();
     }, []);
 
     return (
@@ -156,9 +169,14 @@ const Deudas = () => {
                                         value={lapso}
                                         onChange={async (event) => setLapso(event.target.value)}
                                     >
-                                        {Object.keys(lapsos).map((key, item) => (
-                                            <option key={key}>{lapsos[item].Lapso}</option>
-                                        ))}
+                                        {checkConfig().Lapso !== null ? 
+                                                <option key={1} selected={true} >{checkConfig().Lapso}</option>
+                                            :
+                                                Object.keys(lapsos).map((key, item) => (
+                                                    <option key={key} selected={true} >{lapsos[item].Lapso}</option>
+                                                ))
+                                        }
+                                        
                                     </select>
                                 </div>
                             </div>
