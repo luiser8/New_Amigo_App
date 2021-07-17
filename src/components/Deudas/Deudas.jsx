@@ -93,7 +93,13 @@ const Deudas = () => {
         await post('deudas/check', { "Lapso": lapso,"Identificador": identificador}).then((items) => {
             items !== undefined ? setDeudas(items) : setDeudas([]); setFullNombre(''); setCarrera('');
             items === undefined ? Toast({ show:true, title:'Error!', msj:'Ocurrio un problema con la comunicacion.', color:'red'}) : Toast({show:false});
-            items.length === 0 ? Toast({ show:true, title:'Advertencia!', msj:'No se consigueron registros.', color:'red'}) : Toast({show:false});
+            if(items !== undefined){
+                if(items.length === 0){
+                    Toast({ show:true, title:'Advertencia!', msj:'No se consigueron registros.', color:'red'});
+                }else{
+                    Toast({show:false});
+                }
+            }
             if(items !== undefined)
                 items.map((item) => {
                     setId_inscripcion(item.Id_Inscripcion); setFullNombre(item.Fullnombre); setCarrera(item.Descripcion);

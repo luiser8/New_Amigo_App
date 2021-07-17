@@ -1,21 +1,25 @@
 import { Fragment, useState, useEffect, useContext } from 'react';
 import { Popover, Transition } from '@headlessui/react';
 import {
-    CogIcon,
+    PencilIcon,
     MenuIcon,
     LogoutIcon,
     KeyIcon,
     ChartPieIcon,
     CurrencyDollarIcon,
-    XIcon,
+    CheckCircleIcon,
 } from '@heroicons/react/outline';
 import { ChevronDownIcon } from '@heroicons/react/solid';
 import { Link } from "@reach/router";
 import { Context } from '../../utils/Context';
 import Routes from '../../utils/Routes';
+import { put } from '../../utils/Fetch';
+import { Toast } from '../../utils/Toast';
 
 const Layout = () => {
-    const { logout, checkUser, checkConfig } = useContext(Context);
+    const { logout, checkUser, checkConfig, setConfig } = useContext(Context);
+    const [editCuota, setEditCuota] = useState(false);
+    const [cuota, setCuota] = useState(checkConfig().Cuota);
     const [menu] = useState([
         {
             id: 1,
@@ -50,6 +54,24 @@ const Layout = () => {
     function classNames(...classes) {
         return classes.filter(Boolean).join(' ')
     }
+
+    const activarEditCuota = async (value) => {
+        value ? setEditCuota(true) : setEditCuota(false);
+    }
+
+    const establecerCuota = async (value) => {
+        value ? setEditCuota(true) : setEditCuota(false);
+        if(checkConfig.Cuota !== cuota)
+            await putCuota(1, cuota);
+    }
+
+    const putCuota = async (id, monto) => {
+        await put(`cuotas/update?cuotaId=${id}`, { 'Monto': monto, 'Estado': 1 }).then((items) => {
+            items !== undefined ? Toast({ show:true, title:'Información!', msj:'Cuota nueva ha sido aplicada.', color:'green'}) : Toast({show:false});
+            setConfig(2, {'Lapso': null, 'Cuota': monto});
+        });
+    }
+
     return (
         <Fragment>
             {(checkUser().UsuarioId) !== null ?
@@ -67,7 +89,6 @@ const Layout = () => {
                                                     alt="Logo PSM"
                                                 />
                                             </Link>
-
                                         </div>
                                         <div className="-mr-2 -my-2 md:hidden">
                                             <Popover.Button className="bg-white rounded-md p-2 inline-flex items-center justify-center text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500">
@@ -118,18 +139,36 @@ const Layout = () => {
                                                                                 key={item.id}
                                                                                 to={item.href}
                                                                                 className="-m-3 p-3 flex items-start rounded-lg hover:bg-gray-50"
+                                                                                // onClick={async () => item.id === 2 ? activarEditCuota(!editCuota) : activarEditCuota(null) }
                                                                             >
                                                                                 <item.icon className="flex-shrink-0 h-6 w-6" aria-hidden="true" />
-                                                                                <div className="ml-4">
-                                                                                    <Link
-                                                                                        className="text-base font-medium text-gray-900"
-                                                                                        to={item.href}
-                                                                                        onClick={async () => item.id === 4 ? logout(0, null) : ''}
-                                                                                        // onClick={async () => item.id === 2 && checkConfig().Cuota !== null ? window.alert('Si') : window.alert('No')}
-                                                                                    >
-                                                                                        {item.id === 2 && checkConfig().Cuota !== null ? `${item.name} -> ${checkConfig().Cuota}` : item.name}
-                                                                                    </Link>
+                                                                            
+                                                                                    <div className="ml-4"> 
+                                                                                        <Link
+                                                                                            className="text-base font-medium text-gray-900"
+                                                                                            to={item.href}
+                                                                                            onClick={async () => item.id === 4 ? logout(0, null) : ''}
+                                                                                        >
+                                                                                            {editCuota ?
+                                                                                                <>
+                                                                                                    {item.name} {item.id === 2 ? 
+                                                                                                    <div>
+                                                                                                        <input type="text" value={cuota} onChange={async (ev) => setCuota(ev.target.value)} />
+                                                                                                        <CheckCircleIcon className="-ml-1 mr-2 h-7 w-7 text-gray-500" style={{cursor:'pointer'}} onClick={async () => establecerCuota(false)} aria-hidden="true" />
+                                                                                                    </div> : '' }
+                                                                                                </> 
+                                                                                                :
+                                                                                                <>
+                                                                                                    {item.id === 2 && checkConfig().Cuota !== null ? 
+                                                                                                        <div>
+                                                                                                            {`${item.name} ${checkConfig().Cuota}`} 
+                                                                                                            <PencilIcon className="-ml-1 mr-2 h-6 w-6 text-gray-500" style={{cursor:'pointer'}} onClick={async () => activarEditCuota(true)} aria-hidden="true" />
+                                                                                                        </div> : item.name}
+                                                                                                </>
+                                                                                            }
+                                                                                        </Link>
                                                                                 </div>
+                                                                               
                                                                             </Link>
                                                                         ))}
                                                                     </div>
