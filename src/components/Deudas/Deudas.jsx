@@ -21,15 +21,16 @@ const Deudas = () => {
     const [id_cuenta, setId_cuenta] = useState('');
     const [pagada, setPagada] = useState('');
     const [cuota, setCuota] = useState('');
+    const [arancel, setArancel] = useState('');
     const { checkConfig, setConfig } = useContext(Context);
 
     /* Inicio Modales*/
-    const activeConfirmacion = async (open, id, pagada) => {
+    const activeConfirmacion = async (open, id, pagada, arancel) => {
         setOpenConfirm(open); 
         if(id !== '' && pagada !== ''){
-            setId_cuenta(id); setPagada(pagada);  
+            setId_cuenta(id); setPagada(pagada); setArancel(arancel);  
          }else{
-            setId_cuenta(''); setPagada('');
+            setId_cuenta(''); setPagada(''); setArancel('');
          }
     }
 
@@ -40,21 +41,27 @@ const Deudas = () => {
          setOpenConfirm(false); 
     }
 
-    const activeModificacion = async (open, id) => {
+    const activeModificacion = async (open, id, arancel) => {
         setOpenModificar(open); 
         if(id !== ''){
-            setId_cuenta(id);  
+            setId_cuenta(id); setArancel(arancel);
          }else{
-            setId_cuenta('');
+            setId_cuenta(''); setArancel('');
          }
     }
 
-    const okModificar = async () => {     
-         setOpenModificar(false); await putDeuda(id_cuenta, monto); 
+    const okModificar = async () => { 
+         setOpenModificar(false);
+         if(id_cuenta !== '' && monto !== '')
+            await putDeuda(id_cuenta, monto);
     }
 
     const changeMonto = async (value) => {
-        setMonto(value); 
+        if(value !== ''){
+            setMonto(value); 
+        }else{
+            setMonto('');
+        }
     }
     /* Fin Modales*/
     /* Inicio Peticiones*/
@@ -120,15 +127,16 @@ const Deudas = () => {
     return (
         <Fragment>
             {openConfirm ?
-                <ConfirmDelete openC={activeConfirmacion} confirm={okEliminar} />
+                <ConfirmDelete arancel={arancel} openC={activeConfirmacion} confirm={okEliminar} />
                 :
                 <></>
             }
             {openModificar ?
-                <ModificarMonto openC={activeModificacion} confirm={okModificar} montoNuevo={changeMonto} />
+                <ModificarMonto arancel={arancel} openC={activeModificacion} confirm={okModificar} montoNuevo={changeMonto} cuota={checkConfig().Cuota } />
                 :
                 <></>
             }
+
             <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
                 <div className="lg:flex lg:items-center lg:justify-between">
                     <div className="flex-1 min-w-0">
@@ -163,6 +171,7 @@ const Deudas = () => {
                                     placeholder="Identificador"
                                     value={identificador}
                                     onChange={async (event) => setIdentificador(event.target.value)}
+                                    onKeyPress={async (ev) => ev.charCode === 13 ? checkDeuda() : null}
                                 />
                                 <div className="absolute inset-y-0 right-0 flex items-center">
                                     <label htmlFor="lapso" className="sr-only">
@@ -205,7 +214,9 @@ const Deudas = () => {
                         <span className="hidden sm:block">
                             <button
                                 type="button"
-                                className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                disabled={(Object.keys(deudas).length !== 0) ? false : true}
+                                className={`inline-flex items-center px-4 py-2 border ${(Object.keys(deudas).length !== 0) ? 'border-gray-300 text-gray-700 hover:bg-gray-50' : 'border-gray-200 text-gray-200 hover:bg-gray-20'} rounded-md shadow-sm text-sm font-medium  bg-white  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
+                                onClick={async () => window.alert('ok')}
                             >
                                 <PlusIcon className="-ml-1 mr-2 h-6 w-6 text-gray-500" aria-hidden="true" />
                                 Cargar Deuda
@@ -287,8 +298,8 @@ const Deudas = () => {
                                                         <div className="mt-2 flex items-center text-sm text-gray-500">
                                                             {deudas[item].Pagada === 0 ?
                                                                 <>
-                                                                    <TrashIcon className="-ml-1 mr-2 h-7 w-7 text-gray-500" style={{cursor:'pointer'}} onClick={async () => activeConfirmacion(true, deudas[item].Id_Cuenta, deudas[item].Pagada)} aria-hidden="true" />
-                                                                    <PencilIcon className="-ml-1 mr-2 h-7 w-7 text-gray-500" style={{cursor:'pointer'}} onClick={async () => activeModificacion(true, deudas[item].Id_Cuenta)} aria-hidden="true" />
+                                                                    <TrashIcon className="-ml-1 mr-2 h-7 w-7 text-gray-500" style={{cursor:'pointer'}} onClick={async () => activeConfirmacion(true, deudas[item].Id_Cuenta, deudas[item].Pagada, deudas[item].Cuota)} aria-hidden="true" />
+                                                                    <PencilIcon className="-ml-1 mr-2 h-7 w-7 text-gray-500" style={{cursor:'pointer'}} onClick={async () => activeModificacion(true, deudas[item].Id_Cuenta, deudas[item].Cuota)} aria-hidden="true" />
                                                                     {deudas[item].Total <= 0 ?
                                                                         <CalculatorIcon className="-ml-1 mr-2 h-7 w-7 text-gray-500" style={{cursor:'pointer'}} onClick={async () => window.alert(deudas[item].Id_Cuenta)} aria-hidden="true" />
                                                                         :
@@ -320,9 +331,29 @@ const Deudas = () => {
                         </div>
                     </div>
                 </div>
-                :
-                <></>
-            }
+                    :
+                    <div className="max-w-7xl mx-auto py-20">
+                        <div className="flex flex-col">
+                            <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                                <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+                                    <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+                                        <div className="border border-blue-300 shadow rounded-md p-8 w-full mx-auto">
+                                            <div className="animate-pulse flex space-x-4">
+                                                <div className="flex-1 space-y-4 py-1">
+                                                    <div className="h-4 bg-blue-400 rounded w-3/4"></div>
+                                                    <div className="space-y-2">
+                                                        <div className="h-4 bg-blue-400 rounded"></div>
+                                                        <div className="h-4 bg-blue-400 rounded w-5/6"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
             </div>
 
         </Fragment>

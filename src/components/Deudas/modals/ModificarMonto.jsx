@@ -2,19 +2,28 @@ import { Fragment, useRef, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { ExclamationIcon } from '@heroicons/react/outline';
 
-const ModificarMonto = ({openC, confirm, montoNuevo}) => {
+const ModificarMonto = ({ openC, confirm, montoNuevo, cuota, arancel }) => {
     const [open, setOpen] = useState(true);
+    const [checkMonto, setCheckMonto] = useState(false);
+    const [montoTemp, setMontoTemp] = useState('');
     const cancelButtonRef = useRef(null);
 
     const activeModificacion = (open) => {
         openC(open); setOpen(open);
     }
 
-    const okModificar = async (value) => {
-        confirm(value); setOpen(open);
+    const okModificar = async () => { 
+        confirm(checkMonto ? cuota : montoTemp); 
+        if(checkMonto || montoTemp !== ''){
+            setOpen(open);
+        } 
     }
     const changeMonto = async (value) => {
-        montoNuevo(value);     
+        if(typeof(value) === 'boolean'){
+            setCheckMonto(value); montoNuevo(value ? cuota : ''); setMontoTemp(checkMonto ? cuota : '');
+        }else if(typeof(value) === 'string'){
+            montoNuevo(value !== '' ? value : cuota); setMontoTemp(value !== '' ? value : cuota);
+        }
     }
 
     return (
@@ -61,16 +70,44 @@ const ModificarMonto = ({openC, confirm, montoNuevo}) => {
                                     </div>
                                     <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                                         <Dialog.Title as="h3" className="text-lg leading-6 font-medium text-gray-900">
-                                            Modificar deuda
+                                            Modificar deuda <span style={{color:'red'}}>{arancel}</span>
                                         </Dialog.Title>
                                         <div className="mt-2">
                                             <form className="mt-8 space-y-6">
-                                            <div className="rounded-md shadow-sm -space-y-px">
-                                                <div>
-                                                    <label for="monto" className="sr-only">Monto nuevo</label>
-                                                    <input id="monto" name="monto" onChange={async (ev) => changeMonto(ev.target.value)} type="text" required className="appearance-none rounded-none relative block w-full px-6 py-4 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" placeholder="Monto nuevo" />
+
+                                                <fieldset>
+                                                    <legend className="text-base font-medium text-gray-900">Establecer monto configurado</legend>
+                                                    <div className="mt-4 space-y-4">
+                                                        <div className="flex items-start">
+                                                            <div className="flex items-center h-5">
+                                                                <input
+                                                                    id="comments"
+                                                                    name="comments"
+                                                                    type="checkbox"
+                                                                    className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
+                                                                    value={checkMonto}
+                                                                    onChange={async (ev) => changeMonto(ev.target.checked)}
+                                                                />
+                                                            </div>
+                                                            <div className="ml-3 text-sm">
+                                                                <label htmlFor="comments" className="font-medium text-gray-700">
+                                                                    {cuota}
+                                                                </label>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                </fieldset>
+
+                                                <div className="rounded-md shadow-sm -space-y-px">
+                                                    <fieldset>
+                                                        <legend className="text-base font-medium text-gray-900">Establecer monto manual</legend>
+                                                        <label for="monto" className="sr-only">Monto nuevo</label>
+                                                        <input id="monto" disabled={checkMonto} defaultValue={checkMonto ? cuota : montoTemp} name="monto" onChange={async (ev) => changeMonto(ev.target.value)} type="text" required className="appearance-none rounded-none relative block w-full px-6 py-4 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" placeholder={`Monto nuevo ${checkMonto ? cuota : 'xxxxx.xx'}`} />
+                                                    </fieldset>
+
                                                 </div>
-                                            </div>
+
                                             </form>
                                         </div>
                                     </div>
@@ -79,7 +116,8 @@ const ModificarMonto = ({openC, confirm, montoNuevo}) => {
                             <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                                 <button
                                     type="button"
-                                    className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm"
+                                    disabled={false}
+                                    className={`w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 hover:bg-green-700 text-base font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm`}
                                     onClick={() => okModificar(true)}
                                 >
                                     Guardar
