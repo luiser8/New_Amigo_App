@@ -6,11 +6,13 @@ import ConfirmDelete from './modals/ConfirmDelete';
 import ModificarMonto from './modals/ModificarMonto';
 import { Toast } from '../../utils/Toast';
 import { Context } from '../../utils/Context';
+import InsertarCuota from './modals/InsertarCuota';
 
 const Deudas = () => {
     const [lapsos, setLapsos] = useState([]);
     const [deudas, setDeudas] = useState([]);
     const [identificador, setIdentificador] = useState('');
+    const [deudaNew, setDeudaNew] = useState({'Id_Inscripcion': '', 'Id_Arancel': '', 'Monto': '', 'FechaVencimiento': ''});
     const [id_inscripcion, setId_inscripcion] = useState('');
     const [lapso, setLapso] = useState('');
     const [monto, setMonto] = useState('');
@@ -18,6 +20,7 @@ const Deudas = () => {
     const [carrera, setCarrera] = useState('');
     const [openConfirm, setOpenConfirm] = useState(false);
     const [openModificar, setOpenModificar] = useState(false);
+    const [openInsertar, setOpenInsertar] = useState(false);
     const [id_cuenta, setId_cuenta] = useState('');
     const [pagada, setPagada] = useState('');
     const [cuota, setCuota] = useState('');
@@ -109,8 +112,8 @@ const Deudas = () => {
             }
             if(items !== undefined)
                 items.map((item) => {
-                    setId_inscripcion(item.Id_Inscripcion); setFullNombre(item.Fullnombre); setCarrera(item.Descripcion);
-                });
+                    setDeudaNew({'Id_Inscripcion': item.Id_Inscripcion}); setId_inscripcion(item.Id_Inscripcion); setFullNombre(item.Fullnombre); setCarrera(item.Descripcion);
+                }); 
         });
     }
     const delDeuda = async (id, pagada) => {
@@ -126,16 +129,9 @@ const Deudas = () => {
 
     return (
         <Fragment>
-            {openConfirm ?
-                <ConfirmDelete arancel={arancel} openC={activeConfirmacion} confirm={okEliminar} />
-                :
-                <></>
-            }
-            {openModificar ?
-                <ModificarMonto arancel={arancel} openC={activeModificacion} confirm={okModificar} montoNuevo={changeMonto} cuota={checkConfig().Cuota } />
-                :
-                <></>
-            }
+            {openConfirm ? <ConfirmDelete arancel={arancel} openC={activeConfirmacion} confirm={okEliminar} /> : <></>}
+            {openModificar ? <ModificarMonto arancel={arancel} openC={activeModificacion} confirm={okModificar} montoNuevo={changeMonto} cuota={checkConfig().Cuota } /> : <></>}
+            {openInsertar ? <InsertarCuota aranceles_list={deudas} objDeudaForm={deudaNew} /> : <></>}
 
             <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
                 <div className="lg:flex lg:items-center lg:justify-between">
@@ -216,7 +212,7 @@ const Deudas = () => {
                                 type="button"
                                 disabled={(Object.keys(deudas).length !== 0) ? false : true}
                                 className={`inline-flex items-center px-4 py-2 border ${(Object.keys(deudas).length !== 0) ? 'border-gray-300 text-gray-700 hover:bg-gray-50' : 'border-gray-200 text-gray-200 hover:bg-gray-20'} rounded-md shadow-sm text-sm font-medium  bg-white  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
-                                onClick={async () => window.alert('ok')}
+                                onClick={async () => setOpenInsertar(true)}
                             >
                                 <PlusIcon className="-ml-1 mr-2 h-6 w-6 text-gray-500" aria-hidden="true" />
                                 Cargar Deuda
