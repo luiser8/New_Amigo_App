@@ -23,6 +23,8 @@ const ModificarMonto = ({ openC, confirm, montoNuevo, cuota, arancel }) => {
             setCheckMonto(value); montoNuevo(value ? cuota : ''); setMontoTemp(checkMonto ? cuota : '');
         }else if(typeof(value) === 'string'){
             montoNuevo(value !== '' ? value : cuota); setMontoTemp(value !== '' ? value : cuota);
+        }else{
+            setMontoTemp(''); montoNuevo('');
         }
     }
 
@@ -72,52 +74,46 @@ const ModificarMonto = ({ openC, confirm, montoNuevo, cuota, arancel }) => {
                                         <Dialog.Title as="h3" className="text-lg leading-6 font-medium text-gray-900">
                                             Modificar deuda <span style={{color:'red'}}>{arancel}</span>
                                         </Dialog.Title>
-                                        <div className="mt-2">
-                                            <form className="mt-8 space-y-6">
-
-                                                <fieldset>
-                                                    <legend className="text-base font-medium text-gray-900">Establecer monto configurado</legend>
-                                                    <div className="mt-4 space-y-4">
-                                                        <div className="flex items-start">
-                                                            <div className="flex items-center h-5">
-                                                                <input
-                                                                    id="comments"
-                                                                    name="comments"
-                                                                    type="checkbox"
-                                                                    className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
-                                                                    value={checkMonto}
-                                                                    onChange={async (ev) => changeMonto(ev.target.checked)}
-                                                                />
+                                        <form className="mt-8 space-y-6">
+                                            <div className="shadow overflow-hidden sm:rounded-md">
+                                                <div className="px-4 py-5 bg-white sm:p-6">
+                                                    <div className="grid grid-cols-6 gap-6">
+                                                        <div className="col-span-6 sm:col-span-12">
+                                                            <label htmlFor="country" className="block text-sm font-medium text-gray-800">Establecer monto configurado</label>
+                                                                <div className="flex items-start">
+                                                                    <div className="flex items-center h-5">
+                                                                        <input
+                                                                                id="checkMonto"
+                                                                                name="checkMonto"
+                                                                                type="checkbox"
+                                                                                className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
+                                                                                value={checkMonto}
+                                                                                onChange={async (ev) => changeMonto(ev.target.checked)}
+                                                                            />
+                                                                    </div>
+                                                                     <div className="ml-3 text-sm">
+                                                                
+                                                                <label htmlFor="checkMonto" className="font-medium text-gray-700">{cuota}</label>
                                                             </div>
-                                                            <div className="ml-3 text-sm">
-                                                                <label htmlFor="comments" className="font-medium text-gray-700">
-                                                                    {cuota}
-                                                                </label>
-                                                            </div>
+                                                                </div>                                                         
                                                         </div>
-
+                                                        <div className="col-span-6 sm:col-span-12">
+                                                            <label htmlFor="first-name" className="block text-sm font-medium text-gray-800">Establecer monto manual</label>
+                                                            <input id="monto" disabled={checkMonto} defaultValue={checkMonto ? cuota : montoTemp} name="monto" onChange={async (ev) => changeMonto(ev.target.value)} type="text" required className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder={`Monto nuevo ${checkMonto ? cuota : 'xxxxx.xx'}`} />
+                                                        </div>
                                                     </div>
-                                                </fieldset>
-
-                                                <div className="rounded-md shadow-sm -space-y-px">
-                                                    <fieldset>
-                                                        <legend className="text-base font-medium text-gray-900">Establecer monto manual</legend>
-                                                        <label for="monto" className="sr-only">Monto nuevo</label>
-                                                        <input id="monto" disabled={checkMonto} defaultValue={checkMonto ? cuota : montoTemp} name="monto" onChange={async (ev) => changeMonto(ev.target.value)} type="text" required className="appearance-none rounded-none relative block w-full px-6 py-4 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" placeholder={`Monto nuevo ${checkMonto ? cuota : 'xxxxx.xx'}`} />
-                                                    </fieldset>
-
-                                                </div>
-
-                                            </form>
-                                        </div>
+                                                </div>   
+                                            </div>
+                                        </form>
+                                            
                                     </div>
                                 </div>
                             </div>
                             <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                                 <button
                                     type="button"
-                                    disabled={false}
-                                    className={`w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 hover:bg-green-700 text-base font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm`}
+                                    disabled={checkMonto || montoTemp !== '' ? false : true}
+                                    className={`w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 ${checkMonto || montoTemp !== '' ? 'bg-green-600 hover:bg-green-700' : 'bg-green-200 hover:bg-green-200'} text-base font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm`}
                                     onClick={() => okModificar(true)}
                                 >
                                     Guardar
@@ -125,7 +121,7 @@ const ModificarMonto = ({ openC, confirm, montoNuevo, cuota, arancel }) => {
                                 <button
                                     type="button"
                                     className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-                                    onClick={() => activeModificacion(false, false)}
+                                    onClick={() => activeModificacion(false)}
                                     ref={cancelButtonRef}
                                 >
                                     Cancelar
