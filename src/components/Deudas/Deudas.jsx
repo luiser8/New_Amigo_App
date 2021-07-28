@@ -12,7 +12,6 @@ const Deudas = () => {
     const [lapsos, setLapsos] = useState([]);
     const [deudas, setDeudas] = useState([]);
     const [identificador, setIdentificador] = useState('');
-    const [deudaNew, setDeudaNew] = useState({ 'Id_Inscripcion': '', 'Id_Arancel': '', 'Monto': '', 'FechaVencimiento': '' });
     const [lapso, setLapso] = useState('');
     const [monto, setMonto] = useState('');
     const [fullNombre, setFullNombre] = useState('');
@@ -78,29 +77,37 @@ const Deudas = () => {
     /* Fin Modales*/
     /* Inicio Peticiones*/
     const getLapsos = async () => {
-        if (checkConfig().Lapso === null) {
-            await get('lapsos/all').then((items) => {
-                items !== undefined ? setLapsos(items) : setLapsos([]);
-                if (items !== undefined)
-                    items.map((item) => {
+        await get('lapsos/all').then((items) => {
+            items !== undefined ? setLapsos(items) : setLapsos([]);
+            if (items !== undefined)
+                items.map((item) => {
+                    if(checkConfig().Lapso === null){
                         setLapso(item.Lapso); setConfig(1, { 'Lapso': item.Lapso, 'Cuota': null });
-                    });
-            });
-        } else {
-            setLapso(checkConfig().Lapso);
-        }
+                    }else{
+                        if(checkConfig().Lapso !== item.Lapso){
+                            setLapso(item.Lapso); setConfig(1, { 'Lapso': item.Lapso, 'Cuota': null });
+                        }else{
+                            setLapso(checkConfig().Lapso);
+                        }
+                    }
+                });
+        });
     }
     const getCuota = async () => {
-        if (checkConfig().Cuota === null) {
-            await get('cuotas/all').then((items) => {
-                if (items !== undefined)
-                    items.map((item) => {
+        await get('cuotas/all').then((items) => {
+            if (items !== undefined)
+                items.map((item) => {
+                    if(checkConfig().Cuota === null){
                         setCuota(item.Monto); setConfig(2, { 'Lapso': null, 'Cuota': item.Monto });
-                    });
-            });
-        } else {
-            setCuota(checkConfig().Cuota);
-        }
+                    }else{
+                        if(checkConfig().Cuota !== item.Monto){
+                            setCuota(item.Monto); setConfig(2, { 'Lapso': null, 'Cuota': item.Monto });
+                        }else{
+                            setCuota(checkConfig().Cuota);
+                        }
+                    }
+                });
+        });
     }
     const postDeuda = async (data) => {
         await post('deudas/insert', data).then((items) => {
@@ -117,7 +124,7 @@ const Deudas = () => {
         });
     }
     const checkDeuda = async () => {
-        await post('deudas/check', { "Lapso": lapso, "Identificador": identificador }).then((items) => {
+        await post('deudas/check', { "Lapso": lapso !== '' ? lapso : checkConfig().Lapso, "Identificador": identificador }).then((items) => {
             items !== undefined ? setDeudas(items) : setDeudas([]); setFullNombre(''); setCarrera('');
             items === undefined ? Toast({ show: true, title: 'Error!', msj: 'Ocurrio un problema con la comunicacion.', color: 'red' }) : Toast({ show: false });
             if (items !== undefined) {
@@ -138,7 +145,8 @@ const Deudas = () => {
     }
     /* Fin Peticiones*/
     useEffect(() => {
-        getLapsos(); getCuota();
+        getLapsos(); 
+        getCuota();
     }, []);
 
     return (
