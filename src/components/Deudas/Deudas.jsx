@@ -11,6 +11,7 @@ import InsertarCuota from './modals/InsertarCuota';
 const Deudas = () => {
     const [lapsos, setLapsos] = useState([]);
     const [deudas, setDeudas] = useState([]);
+    const [id_inscripcion, setId_inscripcion] = useState('');
     const [identificador, setIdentificador] = useState('');
     const [lapso, setLapso] = useState('');
     const [monto, setMonto] = useState('');
@@ -22,22 +23,23 @@ const Deudas = () => {
     const [id_cuenta, setId_cuenta] = useState('');
     const [pagada, setPagada] = useState('');
     const [cuota, setCuota] = useState('');
+    const [id_arancel, setId_arancel] = useState('');
     const [arancel, setArancel] = useState('');
     const { checkConfig, setConfig } = useContext(Context);
 
     /* Inicio Modales*/
-    const activeConfirmacion = async (open, id, pagada, arancel) => {
-        setOpenConfirm(open);
-        if (id !== '' && pagada !== '') {
-            setId_cuenta(id); setPagada(pagada); setArancel(arancel);
+    const activeConfirmacion = async (...params) => {
+        setOpenConfirm(params[0].open);
+        if (params[0].idCuenta !== '' && params[0].pagada !== '') {
+            setId_cuenta(params[0].idCuenta); setPagada(params[0].pagada); setId_arancel(params[0].idArancel); setArancel(params[0].arancel);
         } else {
-            setId_cuenta(''); setPagada(''); setArancel('');
+            setId_cuenta(''); setPagada(''); setId_arancel(''); setArancel('');
         }
     }
 
     const okEliminar = async () => {
         if (id_cuenta !== '' && pagada !== '') {
-            await delDeuda(id_cuenta, pagada);
+            await delDeuda({'id_cuenta': id_cuenta, 'pagada': pagada, 'id_inscripcion': id_inscripcion, 'id_arancel': id_arancel});
         }
         setOpenConfirm(false);
     }
@@ -128,6 +130,9 @@ const Deudas = () => {
             items !== undefined ? setDeudas(items) : setDeudas([]); setFullNombre(''); setCarrera('');
             items === undefined ? Toast({ show: true, title: 'Error!', msj: 'Ocurrio un problema con la comunicacion.', color: 'red' }) : Toast({ show: false });
             if (items !== undefined) {
+                items.map((item) => {
+                    setId_inscripcion(item.Id_Inscripcion); setFullNombre(item.Fullnombre); setCarrera(item.Descripcion);
+                });
                 if (items.length === 0) {
                     Toast({ show: true, title: 'Advertencia!', msj: 'No se consigueron registros.', color: 'red' });
                 } else {
@@ -136,10 +141,10 @@ const Deudas = () => {
             }
         });
     }
-    const delDeuda = async (id, pagada) => {
-        await del(`deudas/delete?id_cuenta=${id}&pagada=${pagada}`).then((items) => {
-            items !== undefined ? setDeudas(deudas.filter(item => item.Id_Cuenta !== id)) : setDeudas([]);
-            items !== undefined ? Toast({ show: true, title: 'Advertencia!', msj: 'Cuota ha sido eliminada.', color: 'red' }) : Toast({ show: false });
+    const delDeuda = async (...params) => {
+        await del(`deudas/delete?id_cuenta=${params[0].id_cuenta}&pagada=${params[0].pagada}&id_inscripcion=${id_inscripcion}&id_arancel=${id_arancel}`).then((items) => {
+            items !== undefined ? setDeudas(deudas.filter(item => item.Id_Cuenta !== params[0].id_cuenta)) : setDeudas([]);
+            items !== undefined ? Toast({ show: true, title: 'Advertencia!', msj: `Cuota ${params[0].pagada === 0 ? 'no pagada' : 'pagada'} ha sido eliminada.`, color: 'red' }) : Toast({ show: false });
         });
         Toast({ show: false });
     }
@@ -151,9 +156,9 @@ const Deudas = () => {
 
     return (
         <Fragment>
-            {openConfirm ? <ConfirmDelete arancel={arancel} openC={activeConfirmacion} confirm={okEliminar} /> : <></>}
+            {openConfirm ? <ConfirmDelete pagada={pagada} arancel={arancel} openC={activeConfirmacion} confirm={okEliminar} /> : <></>}
             {openModificar ? <ModificarMonto arancel={arancel} openC={activeModificacion} confirm={okModificar} montoNuevo={changeMonto} cuota={checkConfig().Cuota} /> : <></>}
-            {openInsertar ? <InsertarCuota openC={activeInsertar} aranceles_list={deudas.filter(item => item.Pagada === 0)} confirm={okInsertar} /> : <></>}
+            {openInsertar ? <InsertarCuota openC={activeInsertar} aranceles_list={deudas/*deudas.filter(item => item.Pagada === 0)*/} confirm={okInsertar} /> : <></>}
 
             <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
                 <div className="lg:flex lg:items-center lg:justify-between">
@@ -316,7 +321,7 @@ const Deudas = () => {
                                                             <div className="mt-2 flex items-center text-sm text-gray-500">
                                                                 {deudas[item].Pagada === 0 ?
                                                                     <>
-                                                                        <TrashIcon className="-ml-1 mr-2 h-7 w-7 text-gray-500" style={{ cursor: 'pointer' }} onClick={async () => activeConfirmacion(true, deudas[item].Id_Cuenta, deudas[item].Pagada, deudas[item].Cuota)} aria-hidden="true" />
+                                                                        <TrashIcon className="-ml-1 mr-2 h-7 w-7 text-gray-500" style={{ cursor: 'pointer' }} onClick={async () => activeConfirmacion({'open':true, 'idCuenta': deudas[item].Id_Cuenta, 'pagada': deudas[item].Pagada, 'idArancel': deudas[item].Id_Arancel,'arancel': deudas[item].Cuota})} aria-hidden="true" />
                                                                         <PencilIcon className="-ml-1 mr-2 h-7 w-7 text-gray-500" style={{ cursor: 'pointer' }} onClick={async () => activeModificacion(true, deudas[item].Id_Cuenta, deudas[item].Cuota)} aria-hidden="true" />
                                                                         {deudas[item].Total <= 0 ?
                                                                             <CalculatorIcon className="-ml-1 mr-2 h-7 w-7 text-gray-500" style={{ cursor: 'pointer' }} onClick={async () => window.alert(deudas[item].Id_Cuenta)} aria-hidden="true" />
@@ -330,11 +335,16 @@ const Deudas = () => {
                                                                 {deudas[item].Pagada === 1 ?
                                                                     <>
                                                                         {deudas[item].Monto === 0 && deudas[item].MontoFacturas === 0 && deudas[item].Total === 0 ?
-                                                                            <TrashIcon className="-ml-1 mr-2 h-7 w-7 text-gray-500" style={{ cursor: 'pointer' }} onClick={async () => activeConfirmacion(true, deudas[item].Id_Cuenta, deudas[item].Pagada)} aria-hidden="true" />
+                                                                            <TrashIcon className="-ml-1 mr-2 h-7 w-7 text-gray-500" style={{ cursor: 'pointer' }} onClick={async () => activeConfirmacion({'open':true, 'idCuenta': deudas[item].Id_Cuenta, 'pagada': deudas[item].Pagada, 'idArancel': deudas[item].Id_Arancel,'arancel': deudas[item].Cuota})} aria-hidden="true" />
                                                                             :
                                                                             <></>
                                                                         }
                                                                     </>
+                                                                    :
+                                                                    <></>
+                                                                }
+                                                                {deudas[item].Pagada === 1 ?
+                                                                    <TrashIcon className="-ml-1 mr-2 h-7 w-7 text-gray-500" style={{ cursor: 'pointer' }} onClick={async () => activeConfirmacion({'open':true, 'idCuenta': deudas[item].Id_Cuenta, 'pagada': deudas[item].Pagada, 'idArancel': deudas[item].Id_Arancel,'arancel': deudas[item].Cuota})} aria-hidden="true" />
                                                                     :
                                                                     <></>
                                                                 }

@@ -2,7 +2,7 @@ import { Fragment, useRef, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { ExclamationIcon } from '@heroicons/react/outline';
 
-const ConfirmDelete = ({openC, confirm, arancel}) => {
+const ConfirmDelete = ({openC, confirm, arancel, pagada}) => {
     const [open, setOpen] = useState(true);
     const cancelButtonRef = useRef(null);
 
@@ -58,11 +58,12 @@ const ConfirmDelete = ({openC, confirm, arancel}) => {
                                     </div>
                                     <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                                         <Dialog.Title as="h3" className="text-lg leading-6 font-medium text-gray-900">
-                                            Eliminar deuda <span style={{color:'red'}}>{arancel}</span>
+                                            Eliminar deuda <span style={{color: pagada === 0 ? '#DC143C' : '#32CD32'}}>{arancel}</span>
                                         </Dialog.Title>
                                         <div className="mt-2">
                                             <p className="text-sm text-gray-500">
                                                 ¿Estás seguro de que quieres eliminar la deuda? Esta acción no se puede deshacer.
+                                                {pagada === 1 ? <p style={{color:'#CD5C5C', fontWeight: 'bold'}}>Cuidado! estas intentando eliminar una deuda ya pagada desde el Sistema Amigo, Estas completamente seguro?</p> : ''}
                                             </p>
                                         </div>
                                     </div>
