@@ -1,4 +1,4 @@
-import { Fragment, useState, useEffect, useContext } from 'react';
+import { Fragment, useState, useContext } from 'react';
 import { Popover, Transition } from '@headlessui/react';
 import {
     PencilIcon,
@@ -37,13 +37,27 @@ const Layout = () => {
         },
         {
             id: 3,
+            name: 'Actualizar cuotas',
+            description: '',
+            href: '#',
+            icon: CurrencyDollarIcon,
+        },
+        {
+            id: 4,
+            name: 'Insertar cuotas',
+            description: '',
+            href: '#',
+            icon: CurrencyDollarIcon,
+        },
+        {
+            id: 5,
             name: 'Cambiar contraseña',
             description: '',
             href: '#',
             icon: KeyIcon,
         },
         {
-            id: 4,
+            id: 6,
             name: 'Cerrar sesion',
             description: '',
             href: '#',
@@ -143,16 +157,16 @@ const Layout = () => {
                                                                             >
                                                                                 <item.icon className="flex-shrink-0 h-6 w-6" aria-hidden="true" />
                                                                             
-                                                                                    <div className="ml-4"> 
+                                                                                    <div className="ml-2"> 
                                                                                         <Link
                                                                                             className="text-base font-medium text-gray-900"
                                                                                             to={item.href}
-                                                                                            onClick={async () => item.id === 4 ? logout(0, null) : ''}
+                                                                                            onClick={async () => item.id === 6 ? logout(0, null) : ''}
                                                                                         >
                                                                                             {editCuota ?
                                                                                                 <>
                                                                                                     {item.name} {item.id === 2 ? 
-                                                                                                    <div>
+                                                                                                    <div className="grid grid-cols-2 gap-2">
                                                                                                         <input type="text" value={cuota} onChange={async (ev) => setCuota(ev.target.value)} />
                                                                                                         <CheckCircleIcon className="-ml-1 mr-2 h-7 w-7 text-gray-500" style={{cursor:'pointer'}} onClick={async () => establecerCuota(false)} aria-hidden="true" />
                                                                                                     </div> : '' }
@@ -160,9 +174,11 @@ const Layout = () => {
                                                                                                 :
                                                                                                 <>
                                                                                                     {item.id === 2 && checkConfig().Cuota !== null ? 
-                                                                                                        <div>
-                                                                                                            {`${item.name} ${checkConfig().Cuota}`} 
-                                                                                                            <PencilIcon className="-ml-1 mr-2 h-6 w-6 text-gray-500" style={{cursor:'pointer'}} onClick={async () => activarEditCuota(true)} aria-hidden="true" />
+                                                                                                        <div className="grid grid-cols-2 gap-2">
+                                                                                                            <div className="-ml-1 mr-2 h-6 w-6">{`${item.name} ${checkConfig().Cuota}`}</div> 
+                                                                                                            <div className="ml-10">
+                                                                                                                <PencilIcon className="-ml-1 mr-2 h-6 w-6 text-gray-500" style={{cursor:'pointer'}} onClick={async () => activarEditCuota(true)} aria-hidden="true" />
+                                                                                                            </div> 
                                                                                                         </div> : item.name}
                                                                                                 </>
                                                                                             }

@@ -1,4 +1,5 @@
 import { Fragment, useRef, useState } from 'react';
+import PropTypes from 'prop-types';
 import { Dialog, Transition } from '@headlessui/react';
 import { ExclamationIcon } from '@heroicons/react/outline';
 
@@ -135,5 +136,12 @@ const ModificarMonto = ({ openC, confirm, montoNuevo, cuota, arancel }) => {
     )
 }
 
-export default ModificarMonto;
+ModificarMonto.propTypes = {
+    openC : PropTypes.func,
+    confirm : PropTypes.func,
+    montoNuevo : PropTypes.func,
+    cuota : PropTypes.string,
+    arancel : PropTypes.string,
+}
 
+export default ModificarMonto;

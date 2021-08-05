@@ -1,4 +1,5 @@
 import { Fragment, useRef, useState, useEffect, useContext } from 'react';
+import PropTypes from 'prop-types';
 import { Dialog, Transition } from '@headlessui/react';
 import { ExclamationIcon } from '@heroicons/react/outline';
 import Moment from 'moment';
@@ -140,6 +141,12 @@ const InsertarCuota = ({ openC, confirm, aranceles_list }) => {
             </Dialog>
         </Transition.Root>
     )
+}
+
+InsertarCuota.propTypes = {
+    openC : PropTypes.func,
+    confirm : PropTypes.func,
+    aranceles_list : PropTypes.object,
 }
 
 export default InsertarCuota;

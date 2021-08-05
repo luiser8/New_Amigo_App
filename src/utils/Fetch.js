@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import './Config';
 
 export const get = async (route) => {
@@ -93,4 +94,19 @@ export const del = async (route) => {
     } else {
         return result
     }
+}
+
+get.propTypes = {
+    route : PropTypes.string,
+}
+post.propTypes = {
+    route : PropTypes.string,
+    data : PropTypes.object,
+}
+put.propTypes = {
+    route : PropTypes.string,
+    data : PropTypes.object,
+}
+del.propTypes = {
+    route : PropTypes.string,
 }

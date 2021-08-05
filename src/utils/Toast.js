@@ -1,4 +1,5 @@
 import { toast } from 'tailwind-toast';
+import PropTypes from 'prop-types';
 
 export const Toast = async (...values) => {
     if (values[0].show)
@@ -14,4 +15,8 @@ export const Toast = async (...values) => {
                 fontColor: `${values[0].color}`,
                 fontTone: 100
         }).show();
+}
+
+Toast.propTypes = {
+    values : PropTypes.object,
 }

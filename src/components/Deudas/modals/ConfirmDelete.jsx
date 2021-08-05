@@ -1,4 +1,5 @@
 import { Fragment, useRef, useState } from 'react';
+import PropTypes from 'prop-types';
 import { Dialog, Transition } from '@headlessui/react';
 import { ExclamationIcon } from '@heroicons/react/outline';
 
@@ -92,6 +93,13 @@ const ConfirmDelete = ({openC, confirm, arancel, pagada}) => {
             </Dialog>
         </Transition.Root>
     )
+}
+
+ConfirmDelete.propTypes = {
+    openC : PropTypes.func,
+    confirm : PropTypes.func,
+    arancel : PropTypes.string,
+    pagada : PropTypes.number,
 }
 
 export default ConfirmDelete;
