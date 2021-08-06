@@ -23,7 +23,7 @@ const Layout = () => {
     const [menu] = useState([
         {
             id: 1,
-            name: 'Reportes',
+            name: 'Reporte',
             description: '',
             href: '/reporte',
             icon: ChartPieIcon,
@@ -32,35 +32,35 @@ const Layout = () => {
             id: 2,
             name: 'Cuota',
             description: '',
-            href: '#',
+            href: '',
             icon: CurrencyDollarIcon,
         },
         {
             id: 3,
             name: 'Actualizar cuotas',
             description: '',
-            href: '#',
+            href: '/actualizar',
             icon: CurrencyDollarIcon,
         },
         {
             id: 4,
             name: 'Insertar cuotas',
             description: '',
-            href: '#',
+            href: '/insertar',
             icon: CurrencyDollarIcon,
         },
         {
             id: 5,
             name: 'Cambiar contraseña',
             description: '',
-            href: '#',
+            href: '',
             icon: KeyIcon,
         },
         {
             id: 6,
             name: 'Cerrar sesion',
             description: '',
-            href: '#',
+            href: '',
             icon: LogoutIcon,
         }
     ]);

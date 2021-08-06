@@ -7,7 +7,7 @@ export const Toast = async (...values) => {
             .warning(values[0].title, values[0].msj)
             .with({
                 shape: 'square',
-                duration: 3000,
+                duration: 4000,
                 speed: 1000,
                 positionX: 'end',
                 positionY: 'top',

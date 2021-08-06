@@ -190,7 +190,7 @@ const Deudas = () => {
                                     type="text"
                                     name="indentificador"
                                     id="indentificador"
-                                    className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md"
+                                    className="mt-1 block w-full py-1 px-20 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                     placeholder="Identificador"
                                     value={identificador}
                                     onChange={async (event) => setIdentificador(event.target.value)}
@@ -203,7 +203,7 @@ const Deudas = () => {
                                     <select
                                         id="lapso"
                                         name="lapso"
-                                        className="focus:ring-indigo-500 focus:border-indigo-500 h-full py-0 pl-2 pr-7 border-transparent bg-transparent text-gray-500 sm:text-sm rounded-md"
+                                        className="mt-1 block w-full py-1 px-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                         value={lapso}
                                         onChange={async (event) => setLapso(event.target.value)}
                                     >
@@ -221,7 +221,7 @@ const Deudas = () => {
                         </div>
 
                     </div>
-                    <div className="mt-5 flex lg:mt-0 lg:ml-4">
+                    <div className="mt-5 flex">
                         <span className="hidden sm:block">
                             <button
                                 type="button"
@@ -233,12 +233,12 @@ const Deudas = () => {
                             </button>
                         </span>
                     </div>
-                    <div className="mt-5 flex lg:mt-0 lg:ml-4">
+                    <div className="mt-5 flex">
                         <span className="hidden sm:block">
                             <button
                                 type="button"
                                 disabled={(Object.keys(deudas).length !== 0) ? false : true}
-                                className={`inline-flex items-center px-4 py-2 border ${(Object.keys(deudas).length !== 0) ? 'border-gray-300 text-gray-700 hover:bg-gray-50' : 'border-gray-200 text-gray-200 hover:bg-gray-20'} rounded-md shadow-sm text-sm font-medium  bg-white  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
+                                className={`inline-flex items-center px-2 py-2 border ${(Object.keys(deudas).length !== 0) ? 'border-gray-300 text-gray-700 hover:bg-gray-50' : 'border-gray-200 text-gray-200 hover:bg-gray-20'} rounded-md shadow-sm text-sm font-medium  bg-white  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
                                 onClick={async () => activeInsertar(true)}
                             >
                                 <PlusIcon className="-ml-1 mr-2 h-6 w-6 text-gray-500" aria-hidden="true" />

@@ -4,7 +4,9 @@ import { Context } from '../utils/Context';
 import Login from '../components/User/Login';
 import Error from './Error';
 import Deudas from '../components/Deudas/Deudas';
-import Config from '../components/Configuraciones/Config';
+import Reporte from '../components/Deudas/Reporte';
+import Actualizar from '../components/Cuotas/Actualizar';
+import Insertar from '../components/Cuotas/Insertar';
 
 const Routes = () => {
     const { checkUser } = useContext(Context);
@@ -19,12 +21,17 @@ const Routes = () => {
             <Login path="/" />
         }
         {(checkUser().UsuarioId) !== null ? 
-            <Config path="/config" user={checkUser().UsuarioId}></Config>
+            <Actualizar path="/actualizar" user={checkUser().UsuarioId}></Actualizar>
             :
             <Login path="/" />
         }
         {(checkUser().UsuarioId) !== null ? 
-            <Deudas path="/deudas" user={checkUser().UsuarioId}></Deudas>
+            <Reporte path="/reporte" user={checkUser().UsuarioId}></Reporte>
+            :
+            <Login path="/" />
+        }
+        {(checkUser().UsuarioId) !== null ? 
+            <Insertar path="/insertar" user={checkUser().UsuarioId}></Insertar>
             :
             <Login path="/" />
         }
