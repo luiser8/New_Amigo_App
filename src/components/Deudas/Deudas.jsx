@@ -77,11 +77,22 @@ const Deudas = () => {
         }
     }
     /* Fin Modales*/
+    const establecerLapso = async (lapso) => {
+        if (lapso !== ''){
+            setLapso(lapso); setConfig(1, { 'Lapso': lapso, 'Cuota': null });
+        }else{
+            if(checkConfig().Lapso !== lapso){
+                setLapso(lapso); setConfig(1, { 'Lapso': lapso, 'Cuota': null });
+            }else{
+                setLapso(checkConfig().Lapso);
+            }
+        }
+    }
     /* Inicio Peticiones*/
     const getLapsos = async () => {
         await get('lapsos/all').then((items) => {
             items !== undefined ? setLapsos(items) : setLapsos([]);
-            if (items !== undefined)
+            /*if (items !== undefined)
                 items.map((item) => {
                     if(checkConfig().Lapso === null){
                         setLapso(item.Lapso); setConfig(1, { 'Lapso': item.Lapso, 'Cuota': null });
@@ -92,7 +103,7 @@ const Deudas = () => {
                             setLapso(checkConfig().Lapso);
                         }
                     }
-                });
+                });*/
         });
     }
     const getCuota = async () => {
@@ -131,7 +142,7 @@ const Deudas = () => {
             items === undefined ? Toast({ show: true, title: 'Error!', msj: 'Ocurrio un problema con la comunicacion.', color: 'red' }) : Toast({ show: false });
             if (items !== undefined) {
                 items.map((item) => {
-                    setId_inscripcion(item.Id_Inscripcion); setFullNombre(item.Fullnombre); setCarrera(item.Descripcion);
+                    setId_inscripcion(item.Id_Inscripcion); /*setFullNombre(item.Fullnombre);*/ setCarrera(item.Descripcion);
                 });
                 if (items.length === 0) {
                     Toast({ show: true, title: 'Advertencia!', msj: 'No se consigueron registros.', color: 'red' });
@@ -166,10 +177,10 @@ const Deudas = () => {
                         <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">Deudas</h2>
                         {fullNombre !== '' || carrera !== '' ?
                             <div className="mt-1 flex flex-col sm:flex-row sm:flex-wrap sm:mt-0 sm:space-x-6">
-                                <div className="mt-2 flex items-center text-sm text-gray-500">
+                                {/*<div className="mt-2 flex items-center text-sm text-gray-500">
                                     <UserIcon className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" aria-hidden="true" />
                                     {fullNombre}
-                                </div>
+                                </div>*/}
                                 <div className="mt-2 flex items-center text-sm text-gray-500">
                                     <AcademicCapIcon className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" aria-hidden="true" />
                                     {carrera}
@@ -205,16 +216,18 @@ const Deudas = () => {
                                         name="lapso"
                                         className="mt-1 block w-full py-1 px-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                         value={lapso}
-                                        onChange={async (event) => setLapso(event.target.value)}
+                                        onChange={async (event) => establecerLapso(event.target.value)}
                                     >
-                                        {checkConfig().Lapso !== null ?
+                                    {/*{checkConfig().Lapso !== null ?
                                             <option key={1} selected={true} >{checkConfig().Lapso}</option>
                                             :
                                             Object.keys(lapsos).map((key, item) => (
                                                 <option key={key} selected={true} >{lapsos[item].Lapso}</option>
                                             ))
-                                        }
-
+                                        }*/}
+                                        {Object.keys(lapsos).map((key, item) => (
+                                            <option key={key} selected={true} >{lapsos[item].Lapso}</option>
+                                        ))}
                                     </select>
                                 </div>
                             </div>
