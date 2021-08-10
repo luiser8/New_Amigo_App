@@ -1,7 +1,7 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 import { Toast } from '../../utils/Toast';
 import { Context } from '../../utils/Context';
-import { get, post, put, del } from '../../utils/Fetch';
+import { put } from '../../utils/Fetch';
 import Loading from '../Layouts/Loading';
 
 const Actualizar = () => {
@@ -22,7 +22,7 @@ const Actualizar = () => {
 
     return (
         <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-            {loading ? <Loading display={'block'} /> : '' }
+            {loading ? <Loading display={'block'} msj={'Aplicando cambios! espera un momento...'} /> : ''}
             <div className="lg:flex lg:items-center lg:justify-between">
                 <div className="flex-1 min-w-0">
                     <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">Actualizar cuotas</h2>
@@ -45,7 +45,7 @@ const Actualizar = () => {
                                             <form onSubmit={async (ev) => putCuota(ev)}>
                                                 <div className="shadow overflow-hidden sm:rounded-md">
                                                     <div className="px-4 py-5 bg-white sm:p-6">
-                                                        <div className="grid grid-cols-6 gap-6">
+                                                        <div className="grid grid-cols-8 gap-6">
                                                             <div className="col-span-6 sm:col-span-3">
                                                                 <label htmlFor="cuota" className="block text-sm font-medium text-gray-700">
                                                                     Cuota
@@ -62,36 +62,30 @@ const Actualizar = () => {
                                                                 />
                                                             </div>
 
-                                                            <div className="col-span-6 sm:col-span-3">
+                                                            <div className="col-span-8 sm:col-span-3">
                                                                 <label htmlFor="country" className="block text-sm font-medium text-gray-700">
                                                                     Lapso
                                                                 </label>
-                                                                <select
-                                                                    id="lapso"
+                                                                <input
+                                                                    type="text"
                                                                     name="lapso"
-                                                                    className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                                                    value={lapso}
+                                                                    id="lapso"
+                                                                    readOnly="true"
+                                                                    value={checkConfig().Lapso !== null ? checkConfig().Lapso : lapso}
                                                                     onChange={async (event) => setLapso(event.target.value)}
-                                                                >
-                                                                    {checkConfig().Lapso !== null ?
-                                                                        <option key={1} selected={true} >{checkConfig().Lapso}</option>
-                                                                        :
-                                                                        <option key={1} selected={true} >Establece lapso</option>
-                                                                    }
-
-                                                                </select>
+                                                                    className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-gray-100 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                                                />
                                                             </div>
-
+                                                            <div className="col-span-8 sm:col-span-3">
+                                                                <button
+                                                                    type="submit"
+                                                                    disabled={btnEstablecer}
+                                                                    className={`inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${btnEstablecer ? 'bg-indigo-200 hover:bg-indigo-200' : 'bg-indigo-600 hover:bg-indigo-700'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
+                                                                >
+                                                                    Establecer
+                                                                </button>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    <div className="px-4 py-3 text-right sm:px-6">
-                                                        <button
-                                                            type="submit"
-                                                            disabled={btnEstablecer}
-                                                            className={`inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${btnEstablecer ? 'bg-indigo-200 hover:bg-indigo-200' : 'bg-indigo-600 hover:bg-indigo-700'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
-                                                        >
-                                                            Establecer
-                                                        </button>
                                                     </div>
                                                 </div>
                                             </form>

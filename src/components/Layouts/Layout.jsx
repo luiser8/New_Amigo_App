@@ -42,7 +42,7 @@ const Layout = () => {
             href: '/actualizar',
             icon: CurrencyDollarIcon,
         },
-        {
+        /*{
             id: 4,
             name: 'Insertar cuotas',
             description: '',
@@ -55,7 +55,7 @@ const Layout = () => {
             description: '',
             href: '',
             icon: KeyIcon,
-        },
+        },*/
         {
             id: 6,
             name: 'Cerrar sesion',

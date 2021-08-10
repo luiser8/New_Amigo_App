@@ -96,6 +96,22 @@ export const del = async (route) => {
     }
 }
 
+export const blob = async (route) => {
+    let url = global.config.url.production ? `${global.config.url.prod}${route}` : `${global.config.url.dev}${route}`;
+    let result = await fetch(`${url}`, {
+        method: 'GET',
+        mode: 'cors',
+        headers: new Headers({ 'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'Authorization': 'Basic ' + btoa('P$m:Bn@')}),
+    }).then(response => {
+        return response;
+    }).catch(e => console.log(e))
+    if (result == null) {
+        return result;
+    } else {
+        return result
+    }
+}
+
 get.propTypes = {
     route : PropTypes.string,
 }
@@ -108,5 +124,8 @@ put.propTypes = {
     data : PropTypes.object,
 }
 del.propTypes = {
+    route : PropTypes.string,
+}
+blob.propTypes = {
     route : PropTypes.string,
 }
