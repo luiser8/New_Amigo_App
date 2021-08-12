@@ -96,7 +96,7 @@ const Layout = () => {
                                 <div className="max-w-7xl mx-auto px-4 sm:px-6">
                                     <div className="flex justify-between items-center border-b-2 border-gray-100 py-6 md:justify-start md:space-x-10">
                                         <div className="flex justify-start lg:w-0 lg:flex-1">
-                                            <Link to="/">
+                                            <Link to="/" className="flex title-font font-medium items-center text-gray-900 mb-4 md:mb-0">
                                                 <img
                                                     className="h-15 w-auto md:w-16 lg:w-22"
                                                     src={`${process.env.PUBLIC_URL}/logopsm.jpg`}

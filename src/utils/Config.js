@@ -1,6 +1,6 @@
 module.exports = global.config = {
     url: {
-        production: false,
+        production: true,
         dev: 'https://localhost:44311/api/', //http://192.168.1.59/ApiPSM/api/
         prod: 'http://10.0.0.2/API/api/'
     },

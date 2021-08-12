@@ -1,5 +1,5 @@
 import React, { Fragment, useState, useEffect, useContext } from 'react';
-import { PencilIcon, TrashIcon, PlusIcon, SearchIcon, UserIcon, AcademicCapIcon, CalculatorIcon } from '@heroicons/react/solid';
+import { PencilIcon, TrashIcon, PlusIcon, SearchIcon, UserIcon, AcademicCapIcon } from '@heroicons/react/solid';
 import Moment from 'moment';
 import { get, post, put, del } from '../../utils/Fetch';
 import ConfirmDelete from './modals/ConfirmDelete';
@@ -11,11 +11,17 @@ import InsertarCuota from './modals/InsertarCuota';
 const Deudas = () => {
     const [lapsos, setLapsos] = useState([]);
     const [deudas, setDeudas] = useState([]);
+    const [alumno, setAlumno] = useState([]);
+    const [aranceles, setAranceles] = useState([]);
     const [id_inscripcion, setId_inscripcion] = useState('');
     const [identificador, setIdentificador] = useState('');
     const [lapso, setLapso] = useState('');
     const [monto, setMonto] = useState('');
     const [fullNombre, setFullNombre] = useState('');
+    const [lapCur, setLapCur] = useState('');
+    const [sexo, setSexo] = useState('');
+    const [estAca, setEstAca] = useState('');
+    const [foto, setFoto] = useState('');
     const [carrera, setCarrera] = useState('');
     const [openConfirm, setOpenConfirm] = useState(false);
     const [openModificar, setOpenModificar] = useState(false);
@@ -79,31 +85,24 @@ const Deudas = () => {
     /* Fin Modales*/
     const establecerLapso = async (lapso) => {
         if (lapso !== ''){
-            setLapso(lapso); setConfig(1, { 'Lapso': lapso, 'Cuota': null });
+            getAranceles(lapso); setLapso(lapso); setConfig(1, { 'Lapso': lapso, 'Cuota': null });
         }else{
             if(checkConfig().Lapso !== lapso){
-                setLapso(lapso); setConfig(1, { 'Lapso': lapso, 'Cuota': null });
+                getAranceles(lapso); setLapso(lapso); setConfig(1, { 'Lapso': lapso, 'Cuota': null });
             }else{
-                setLapso(checkConfig().Lapso);
+                getAranceles(checkConfig().Lapso); setLapso(checkConfig().Lapso);
             }
         }
     }
     /* Inicio Peticiones*/
+    const getAranceles = async (lapso) => {
+        await get(`arancel/get?lapso=${lapso}`).then((items) => {
+            items !== undefined ? setAranceles(items) : setAranceles([]);
+        });
+    }
     const getLapsos = async () => {
         await get('lapsos/all').then((items) => {
             items !== undefined ? setLapsos(items) : setLapsos([]);
-            /*if (items !== undefined)
-                items.map((item) => {
-                    if(checkConfig().Lapso === null){
-                        setLapso(item.Lapso); setConfig(1, { 'Lapso': item.Lapso, 'Cuota': null });
-                    }else{
-                        if(checkConfig().Lapso !== item.Lapso){
-                            setLapso(item.Lapso); setConfig(1, { 'Lapso': item.Lapso, 'Cuota': null });
-                        }else{
-                            setLapso(checkConfig().Lapso);
-                        }
-                    }
-                });*/
         });
     }
     const getCuota = async () => {
@@ -136,13 +135,33 @@ const Deudas = () => {
             items !== undefined ? Toast({ show: true, title: 'Información!', msj: 'Monto nuevo ha sido aplicado.', color: 'yellow' }) : Toast({ show: false });
         });
     }
+    const check = async () => {
+        await checkDeuda();
+        await getAlumno();
+    }
+    const getAlumno = async () => {
+        await get(`alumno/get?cedula=${identificador}`).then((items) => {
+            items !== undefined ? setAlumno(items) : setAlumno([]); 
+            if (items !== undefined){
+                items.map((item) => {
+                    if(item !== []){
+                        setFullNombre(item.Fullnombre); setLapCur(item.LapCur); setSexo(item.Sexo); setEstAca(item.EstAca); setFoto(item.Foto); setCarrera(item.codcarrera);
+                    }else{
+                        setFullNombre(''); setLapCur(''); setSexo(''); setEstAca(''); setFoto(''); setCarrera('');
+                    }
+                });
+            }else{
+                setFullNombre(''); setLapCur(''); setSexo(''); setEstAca(''); setFoto(''); setCarrera('');
+            }
+        }); 
+    }
     const checkDeuda = async () => {
         await post('deudas/check', { "Lapso": lapso !== '' ? lapso : checkConfig().Lapso, "Identificador": identificador }).then((items) => {
-            items !== undefined ? setDeudas(items) : setDeudas([]); setFullNombre(''); setCarrera('');
+            items !== undefined ? setDeudas(items) : setDeudas([]); 
             items === undefined ? Toast({ show: true, title: 'Error!', msj: 'Ocurrio un problema con la comunicacion.', color: 'red' }) : Toast({ show: false });
             if (items !== undefined) {
                 items.map((item) => {
-                    setId_inscripcion(item.Id_Inscripcion); /*setFullNombre(item.Fullnombre);*/ setCarrera(item.Descripcion);
+                    setId_inscripcion(item.Id_Inscripcion);
                 });
                 if (items.length === 0) {
                     Toast({ show: true, title: 'Advertencia!', msj: 'No se consigueron registros.', color: 'red' });
@@ -169,25 +188,64 @@ const Deudas = () => {
         <Fragment>
             {openConfirm ? <ConfirmDelete pagada={pagada} arancel={arancel} openC={activeConfirmacion} confirm={okEliminar} /> : <></>}
             {openModificar ? <ModificarMonto arancel={arancel} openC={activeModificacion} confirm={okModificar} montoNuevo={changeMonto} cuota={checkConfig().Cuota} /> : <></>}
-            {openInsertar ? <InsertarCuota openC={activeInsertar} aranceles_list={deudas/*deudas.filter(item => item.Pagada === 0)*/} confirm={okInsertar} /> : <></>}
+            {openInsertar ? <InsertarCuota openC={activeInsertar} id_inscripcion={id_inscripcion} aranceles_list={aranceles} confirm={okInsertar} /> : <></>}
 
             <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
                 <div className="lg:flex lg:items-center lg:justify-between">
                     <div className="flex-1 min-w-0">
-                        <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">Deudas</h2>
-                        {fullNombre !== '' || carrera !== '' ?
+                        <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">Cuentas alumnos</h2>
+                        {(Object.keys(alumno).length !== 0) ?
                             <div className="mt-1 flex flex-col sm:flex-row sm:flex-wrap sm:mt-0 sm:space-x-6">
-                                {/*<div className="mt-2 flex items-center text-sm text-gray-500">
-                                    <UserIcon className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" aria-hidden="true" />
-                                    {fullNombre}
-                                </div>*/}
-                                <div className="mt-2 flex items-center text-sm text-gray-500">
-                                    <AcademicCapIcon className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" aria-hidden="true" />
-                                    {carrera}
+                                <div className="flex items-center text-gray-600 mb-2">
+                                    {foto !== 'AAAAAA==' ? 
+                                        <img className="w-20 h-20 mb-8 object-cover object-center rounded-full inline-block border-2 border-gray-200 bg-gray-100" src={`data:image/png;base64,${foto}`} alt="Foto" />
+                                        :
+                                        <img className="w-20 h-20 mb-8 object-cover object-center rounded-full inline-block border-2 border-gray-200 bg-gray-100" src={`${process.env.PUBLIC_URL}/${sexo === 0 ? `boy.png` : `girl.png` }`} alt="Foto" />
+                                    } 
                                 </div>
+                                <p class="flex items-center text-gray-600 mb-2">
+                                    <span class="w-4 h-4 mr-2 inline-flex items-center justify-center bg-gray-400 text-white rounded-full flex-shrink-0">
+                                    <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" class="w-3 h-3" viewBox="0 0 24 24">
+                                        <path d="M20 6L9 17l-5-5"></path>
+                                    </svg>
+                                    </span>{fullNombre}
+                                </p>
+                                <p class="flex items-center text-gray-600 mb-2">
+                                    <span class="w-4 h-4 mr-2 inline-flex items-center justify-center bg-gray-400 text-white rounded-full flex-shrink-0">
+                                    <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" class="w-3 h-3" viewBox="0 0 24 24">
+                                        <path d="M20 6L9 17l-5-5"></path>
+                                    </svg>
+                                    </span>{carrera}
+                                </p>
+                                <p class="flex items-center text-gray-600 mb-2">
+                                    <span class="w-4 h-4 mr-2 inline-flex items-center justify-center bg-gray-400 text-white rounded-full flex-shrink-0">
+                                    <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" class="w-3 h-3" viewBox="0 0 24 24">
+                                        <path d="M20 6L9 17l-5-5"></path>
+                                    </svg>
+                                    </span>{lapCur}
+                                </p>
+                                <p class="flex items-center text-gray-600 mb-2">
+                                    <span class="w-4 h-4 mr-2 inline-flex items-center justify-center bg-gray-400 text-white rounded-full flex-shrink-0">
+                                    <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" class="w-3 h-3" viewBox="0 0 24 24">
+                                        <path d="M20 6L9 17l-5-5"></path>
+                                    </svg>
+                                    </span>{estAca}
+                                </p>
                             </div>
                             :
-                            <></>
+                            <Fragment>
+                                {(Object.keys(deudas).length !== 0) ?
+                                <div className="max-w-7xl mx-auto py-4">
+                                    <div className="mt-1 flex flex-col sm:flex-row sm:flex-wrap sm:mt-0 sm:space-x-6">
+                                        <div className="mt-2 flex items-center text-sm text-gray-500">
+                                            <h2 className="text-md font-medium leading-6 text-gray-900">Parece que este alumno no esta inscrito Academicamente para mostrar sus datos.</h2>
+                                        </div>
+                                    </div>
+                                </div>
+                                :
+                                <></>
+                                }
+                            </Fragment>
                         }
 
                     </div>
@@ -201,11 +259,11 @@ const Deudas = () => {
                                     type="text"
                                     name="indentificador"
                                     id="indentificador"
-                                    className="mt-1 block w-full py-1 px-20 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                    className="mt-1 block w-full py-1 px-10 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                     placeholder="Identificador"
                                     value={identificador}
                                     onChange={async (event) => setIdentificador(event.target.value)}
-                                    onKeyPress={async (ev) => ev.charCode === 13 ? checkDeuda() : null}
+                                    onKeyPress={async (ev) => ev.charCode === 13 ? check() : null}
                                 />
                                 <div className="absolute inset-y-0 right-0 flex items-center">
                                     <label htmlFor="lapso" className="sr-only">
@@ -239,7 +297,7 @@ const Deudas = () => {
                             <button
                                 type="button"
                                 className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                onClick={async () => checkDeuda()}
+                                onClick={async () => check()}
                             >
                                 <SearchIcon className="-ml-1 mr-2 h-6 w-6 text-gray-500" aria-hidden="true" />
                                 Buscar
@@ -261,10 +319,10 @@ const Deudas = () => {
                     </div>
                 </div>
                 {(Object.keys(deudas).length !== 0) ?
-                    <div className="max-w-7xl mx-auto py-6">
+                    <div className="max-w-7xl mx-auto">
                         <div className="flex flex-col">
                             <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                                <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+                                <div className="align-middle inline-block min-w-full sm:px-6 lg:px-8">
                                     <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
                                         <table className="min-w-full divide-y divide-gray-200">
                                             <thead className="bg-gray-50">
@@ -336,11 +394,11 @@ const Deudas = () => {
                                                                     <>
                                                                         <TrashIcon className="-ml-1 mr-2 h-7 w-7 text-gray-500" style={{ cursor: 'pointer' }} onClick={async () => activeConfirmacion({'open':true, 'idCuenta': deudas[item].Id_Cuenta, 'pagada': deudas[item].Pagada, 'idArancel': deudas[item].Id_Arancel,'arancel': deudas[item].Cuota})} aria-hidden="true" />
                                                                         <PencilIcon className="-ml-1 mr-2 h-7 w-7 text-gray-500" style={{ cursor: 'pointer' }} onClick={async () => activeModificacion(true, deudas[item].Id_Cuenta, deudas[item].Cuota)} aria-hidden="true" />
-                                                                        {deudas[item].Total <= 0 ?
+                                                                        {/* {deudas[item].Total <= 0 ?
                                                                             <CalculatorIcon className="-ml-1 mr-2 h-7 w-7 text-gray-500" style={{ cursor: 'pointer' }} onClick={async () => window.alert(deudas[item].Id_Cuenta)} aria-hidden="true" />
                                                                             :
                                                                             <></>
-                                                                        }
+                                                                        } */}
                                                                     </>
                                                                     :
                                                                     <></>
@@ -373,7 +431,7 @@ const Deudas = () => {
                         </div>
                     </div>
                     :
-                    <div className="max-w-7xl mx-auto py-20">
+                    <div className="max-w-7xl mx-auto py-6">
                         <div className="flex flex-col">
                             <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                                 <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">

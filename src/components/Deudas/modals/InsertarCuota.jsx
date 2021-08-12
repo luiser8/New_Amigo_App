@@ -5,10 +5,9 @@ import { ExclamationIcon } from '@heroicons/react/outline';
 import Moment from 'moment';
 import { Context } from '../../../utils/Context';
 
-const InsertarCuota = ({ openC, confirm, aranceles_list }) => {
+const InsertarCuota = ({ openC, confirm, id_inscripcion, aranceles_list }) => {
     const { checkConfig } = useContext(Context);
     const [open, setOpen] = useState(true);
-    const [id_inscripcion, setId_inscripcion] = useState('');
     const [id_arancel, setId_arancel] = useState(0);
     const [monto, setMonto] = useState(checkConfig().Cuota);
     const [fechaVencimiento, setFechaVencimiento] = useState('');
@@ -29,13 +28,6 @@ const InsertarCuota = ({ openC, confirm, aranceles_list }) => {
         value.substring(0, 4) !== 0 ? setId_arancel(value.substring(0, 4)) : setId_arancel(0);
         value.slice(5, -1) !== '' ? setFechaVencimiento(value.slice(5, -1)) : setFechaVencimiento('');
     }
-
-
-    useEffect(() => {
-        aranceles_list.map((it) => {
-            setId_inscripcion(it.Id_Inscripcion);
-        });
-    }, []);
 
     return (
         <Transition.Root show={open} as={Fragment}>
@@ -81,7 +73,7 @@ const InsertarCuota = ({ openC, confirm, aranceles_list }) => {
                                     </div>
                                     <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                                         <Dialog.Title as="h3" className="text-lg leading-6 font-medium text-gray-900">
-                                            Insertar deuda <span style={{ color: 'red' }}></span>
+                                            Insertar deuda <span style={{ color: 'red' }}>Lapso {checkConfig().Lapso}</span>
                                         </Dialog.Title>
                                         <div className="mt-2">
                                             <p className="text-sm text-gray-500">
@@ -102,7 +94,7 @@ const InsertarCuota = ({ openC, confirm, aranceles_list }) => {
                                                             >
                                                                 <option value={0}>Seleciona Arancel</option>
                                                                 {Object.keys(aranceles_list).map((key, it) => (
-                                                                    <option key={key} value={`${aranceles_list[it].Id_Arancel}/${aranceles_list[it].FechaVencimiento}`} >{aranceles_list[it].Cuota}</option>
+                                                                    <option key={key} value={`${aranceles_list[it].Id_Arancel}/${aranceles_list[it].FechaVencimiento}`} >{aranceles_list[it].Descripcion} - {Moment(aranceles_list[it].FechaVencimiento,"YYYY-MM-DD").format("YYYY-MM-DD")}</option>
                                                                 ))}
                                                             </select>
                                                         </div>
