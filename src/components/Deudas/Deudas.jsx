@@ -1,5 +1,5 @@
 import React, { Fragment, useState, useEffect, useContext } from 'react';
-import { PencilIcon, TrashIcon, PlusIcon, SearchIcon, UserIcon, AcademicCapIcon } from '@heroicons/react/solid';
+import { PencilIcon, TrashIcon, PlusIcon, SearchIcon } from '@heroicons/react/solid';
 import Moment from 'moment';
 import { get, post, put, del } from '../../utils/Fetch';
 import ConfirmDelete from './modals/ConfirmDelete';
@@ -238,7 +238,7 @@ const Deudas = () => {
                                 <div className="max-w-7xl mx-auto py-4">
                                     <div className="mt-1 flex flex-col sm:flex-row sm:flex-wrap sm:mt-0 sm:space-x-6">
                                         <div className="mt-2 flex items-center text-sm text-gray-500">
-                                            <h2 className="text-md font-medium leading-6 text-gray-900">Parece que este alumno no esta inscrito Academicamente para mostrar sus datos.</h2>
+                                            <h2 className="text-md font-medium leading-6 text-gray-900">Parece que este alumno no esta inscrito Académicamente para mostrar sus datos.</h2>
                                         </div>
                                     </div>
                                 </div>

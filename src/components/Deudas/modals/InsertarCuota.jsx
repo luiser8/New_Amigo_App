@@ -1,4 +1,4 @@
-import { Fragment, useRef, useState, useEffect, useContext } from 'react';
+import { Fragment, useRef, useState, useContext } from 'react';
 import PropTypes from 'prop-types';
 import { Dialog, Transition } from '@headlessui/react';
 import { ExclamationIcon } from '@heroicons/react/outline';
@@ -25,8 +25,11 @@ const InsertarCuota = ({ openC, confirm, id_inscripcion, aranceles_list }) => {
     }
 
     const changeArancelFecha = async (value) => {
-        value.substring(0, 4) !== 0 ? setId_arancel(value.substring(0, 4)) : setId_arancel(0);
-        value.slice(5, -1) !== '' ? setFechaVencimiento(value.slice(5, -1)) : setFechaVencimiento('');
+        let fecha = aranceles_list.find(item => item.Id_Arancel == value);
+        value !== 0 ? setId_arancel(value) : setId_arancel(0);
+        fecha.FechaVencimiento !== '' ? setFechaVencimiento(fecha.FechaVencimiento) : setFechaVencimiento('');
+        /*value.substring(0, 4) !== 0 ? setId_arancel(value.substring(0, 4)) : setId_arancel(0);
+        value.slice(5, -1) !== '' ? setFechaVencimiento(value.slice(5, -1)) : setFechaVencimiento('');*/
     }
 
     return (
@@ -94,7 +97,7 @@ const InsertarCuota = ({ openC, confirm, id_inscripcion, aranceles_list }) => {
                                                             >
                                                                 <option value={0}>Seleciona Arancel</option>
                                                                 {Object.keys(aranceles_list).map((key, it) => (
-                                                                    <option key={key} value={`${aranceles_list[it].Id_Arancel}/${aranceles_list[it].FechaVencimiento}`} >{aranceles_list[it].Descripcion} - {Moment(aranceles_list[it].FechaVencimiento,"YYYY-MM-DD").format("YYYY-MM-DD")}</option>
+                                                                    <option key={key} value={`${aranceles_list[it].Id_Arancel}`} >{aranceles_list[it].Descripcion} - {Moment(aranceles_list[it].FechaVencimiento,"YYYY-MM-DD").format("YYYY-MM-DD")}</option>
                                                                 ))}
                                                             </select>
                                                         </div>
@@ -138,7 +141,8 @@ const InsertarCuota = ({ openC, confirm, id_inscripcion, aranceles_list }) => {
 InsertarCuota.propTypes = {
     openC : PropTypes.func,
     confirm : PropTypes.func,
-    aranceles_list : PropTypes.object,
+    id_inscripcion : PropTypes.number,
+    aranceles_list : PropTypes.array,
 }
 
 export default InsertarCuota;

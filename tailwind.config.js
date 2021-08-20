@@ -1,7 +1,10 @@
 const colors = require('tailwindcss/colors')
 
 module.exports = {
-  purge: [],
+  purge: [
+    './src/**/*.html',
+    './src/**/*.jsx',
+  ],
   presets: [],
   modules:[
     'tailwind-toast',
