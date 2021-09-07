@@ -4,7 +4,6 @@ import {
     PencilIcon,
     MenuIcon,
     LogoutIcon,
-    KeyIcon,
     ChartPieIcon,
     CurrencyDollarIcon,
     CheckCircleIcon,
@@ -42,14 +41,14 @@ const Layout = () => {
             href: '/actualizar',
             icon: CurrencyDollarIcon,
         },
-        /*{
+        {
             id: 4,
             name: 'Insertar cuotas',
             description: '',
             href: '/insertar',
             icon: CurrencyDollarIcon,
         },
-        {
+        /*{
             id: 5,
             name: 'Cambiar contraseña',
             description: '',
@@ -98,11 +97,13 @@ const Layout = () => {
                                         <div className="flex justify-start lg:w-0 lg:flex-1">
                                             <Link to="/" className="flex title-font font-medium items-center text-gray-900 mb-4 md:mb-0">
                                                 <img
-                                                    className="h-15 w-auto md:w-16 lg:w-22"
+                                                    className="h-10 w-8 md:w-14 lg:w-16"
                                                     src={`${process.env.PUBLIC_URL}/logopsm.jpg`}
                                                     alt="Logo PSM"
                                                 />
+                                                <span class="ml-3 text-xl">Instituto Universitario Politécnico "Santiago Mariño"</span>
                                             </Link>
+
                                         </div>
                                         <div className="-mr-2 -my-2 md:hidden">
                                             <Popover.Button className="bg-white rounded-md p-2 inline-flex items-center justify-center text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500">
@@ -113,6 +114,7 @@ const Layout = () => {
                                         <Popover.Group as="nav" className="hidden md:flex space-x-10">
                                             {/* <Link to="/deudas" className="text-base font-medium text-gray-500 hover:text-gray-900">Deudas</Link> */}
                                             {/* <Link to="/reportes" className="text-base font-medium text-gray-500 hover:text-gray-900">Reportes</Link> */}
+                                            <span className="font-semibold">Lapso: {checkConfig().Lapso ? checkConfig().Lapso : 'Lapso sin establecer'}</span>
                                             <Popover className="relative">
                                                 {({ open }) => (
                                                     <>

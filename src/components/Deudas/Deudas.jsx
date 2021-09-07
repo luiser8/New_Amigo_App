@@ -180,8 +180,11 @@ const Deudas = () => {
     }
     /* Fin Peticiones*/
     useEffect(() => {
+        let selectLapso = document.getElementById('lapso');
+        console.log(lapsos.filter(lapso => lapso.Lapso == checkConfig().Lapso));
         getLapsos(); 
         getCuota();
+
     }, []);
 
     return (
@@ -190,17 +193,17 @@ const Deudas = () => {
             {openModificar ? <ModificarMonto arancel={arancel} openC={activeModificacion} confirm={okModificar} montoNuevo={changeMonto} cuota={checkConfig().Cuota} /> : <></>}
             {openInsertar ? <InsertarCuota openC={activeInsertar} id_inscripcion={id_inscripcion} aranceles_list={aranceles} confirm={okInsertar} /> : <></>}
 
-            <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+            <div className="max-w-7xl mx-auto pt-2 pb-8 sm:px-6 lg:px-8">
                 <div className="lg:flex lg:items-center lg:justify-between">
                     <div className="flex-1 min-w-0">
                         <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">Cuentas alumnos</h2>
                         {(Object.keys(alumno).length !== 0) ?
-                            <div className="mt-1 flex flex-col sm:flex-row sm:flex-wrap sm:mt-0 sm:space-x-6">
+                            <div className="mt-1 flex flex-col sm:flex-row sm:flex-wrap sm:mt-0 sm:space-x-2">
                                 <div className="flex items-center text-gray-600 mb-2">
                                     {foto !== 'AAAAAA==' ? 
-                                        <img className="w-20 h-20 mb-8 object-cover object-center rounded-full inline-block border-2 border-gray-200 bg-gray-100" src={`data:image/png;base64,${foto}`} alt="Foto" />
+                                        <img className="w-20 h-20 mb-4 mt-1 object-cover object-center rounded-full inline-block border-2 border-gray-200 bg-gray-100" src={`data:image/png;base64,${foto}`} alt="Foto" />
                                         :
-                                        <img className="w-20 h-20 mb-8 object-cover object-center rounded-full inline-block border-2 border-gray-200 bg-gray-100" src={`${process.env.PUBLIC_URL}/${sexo === 0 ? `boy.png` : `girl.png` }`} alt="Foto" />
+                                        <img className="w-20 h-20 mb-4 mt-1 object-cover object-center rounded-full inline-block border-2 border-gray-200 bg-gray-100" src={`${process.env.PUBLIC_URL}/${sexo === 1 ? `boy.png` : `girl.png` }`} alt="Foto" />
                                     } 
                                 </div>
                                 <p class="flex items-center text-gray-600 mb-2">
@@ -235,7 +238,7 @@ const Deudas = () => {
                             :
                             <Fragment>
                                 {(Object.keys(deudas).length !== 0) ?
-                                <div className="max-w-7xl mx-auto py-4">
+                                <div className="max-w-7xl mx-auto py-2">
                                     <div className="mt-1 flex flex-col sm:flex-row sm:flex-wrap sm:mt-0 sm:space-x-6">
                                         <div className="mt-2 flex items-center text-sm text-gray-500">
                                             <h2 className="text-md font-medium leading-6 text-gray-900">Parece que este alumno no esta inscrito Académicamente para mostrar sus datos.</h2>
@@ -249,7 +252,7 @@ const Deudas = () => {
                         }
 
                     </div>
-                    <div className="mt-8 flex lg:mt-0 lg:ml-4">
+                    <div className="mt-8 flex lg:mt-0 lg:ml-0">
                         <div>
                             <label htmlFor="price" className="block text-sm font-medium text-gray-700">
                                 Datos del estudiante
@@ -259,7 +262,8 @@ const Deudas = () => {
                                     type="text"
                                     name="indentificador"
                                     id="indentificador"
-                                    className="mt-1 block w-full py-1 px-10 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                    autoFocus
+                                    className="mt-1 block w-full py-2 pl-2 pr-24 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base"
                                     placeholder="Identificador"
                                     value={identificador}
                                     onChange={async (event) => setIdentificador(event.target.value)}
@@ -272,7 +276,7 @@ const Deudas = () => {
                                     <select
                                         id="lapso"
                                         name="lapso"
-                                        className="mt-1 block w-full py-1 px-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                        className="mt-0 block w-full py-2 px-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base"
                                         value={lapso}
                                         onChange={async (event) => establecerLapso(event.target.value)}
                                     >
@@ -283,7 +287,8 @@ const Deudas = () => {
                                                 <option key={key} selected={true} >{lapsos[item].Lapso}</option>
                                             ))
                                         }*/}
-                                        {Object.keys(lapsos).map((key, item) => (
+                                        <option>Selecciona lapso</option>
+                                        {Object.keys(lapsos).map((key, item) => ( 
                                             <option key={key} selected={true} >{lapsos[item].Lapso}</option>
                                         ))}
                                     </select>
@@ -296,10 +301,10 @@ const Deudas = () => {
                         <span className="hidden sm:block">
                             <button
                                 type="button"
-                                className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                className="inline-flex items-center px-2 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                                 onClick={async () => check()}
                             >
-                                <SearchIcon className="-ml-1 mr-2 h-6 w-6 text-gray-500" aria-hidden="true" />
+                                <SearchIcon className="-ml-1 mr-0 h-6 w-6 text-gray-500" aria-hidden="true" />
                                 Buscar
                             </button>
                         </span>
@@ -312,8 +317,8 @@ const Deudas = () => {
                                 className={`inline-flex items-center px-2 py-2 border ${(Object.keys(deudas).length !== 0) ? 'border-gray-300 text-gray-700 hover:bg-gray-50' : 'border-gray-200 text-gray-200 hover:bg-gray-20'} rounded-md shadow-sm text-sm font-medium  bg-white  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
                                 onClick={async () => activeInsertar(true)}
                             >
-                                <PlusIcon className="-ml-1 mr-2 h-6 w-6 text-gray-500" aria-hidden="true" />
-                                Cargar Deuda
+                                <PlusIcon className="-ml-1 mr-0 h-6 w-6 text-gray-500" aria-hidden="true" />
+                                Cargar
                             </button>
                         </span>
                     </div>
@@ -404,17 +409,6 @@ const Deudas = () => {
                                                                     <></>
                                                                 }
                                                                 {deudas[item].Pagada === 1 ?
-                                                                    <>
-                                                                        {deudas[item].Monto === 0 && deudas[item].MontoFacturas === 0 && deudas[item].Total === 0 ?
-                                                                            <TrashIcon className="-ml-1 mr-2 h-7 w-7 text-gray-500" style={{ cursor: 'pointer' }} onClick={async () => activeConfirmacion({'open':true, 'idCuenta': deudas[item].Id_Cuenta, 'pagada': deudas[item].Pagada, 'idArancel': deudas[item].Id_Arancel,'arancel': deudas[item].Cuota})} aria-hidden="true" />
-                                                                            :
-                                                                            <></>
-                                                                        }
-                                                                    </>
-                                                                    :
-                                                                    <></>
-                                                                }
-                                                                {deudas[item].Pagada === 1 ?
                                                                     <TrashIcon className="-ml-1 mr-2 h-7 w-7 text-gray-500" style={{ cursor: 'pointer' }} onClick={async () => activeConfirmacion({'open':true, 'idCuenta': deudas[item].Id_Cuenta, 'pagada': deudas[item].Pagada, 'idArancel': deudas[item].Id_Arancel,'arancel': deudas[item].Cuota})} aria-hidden="true" />
                                                                     :
                                                                     <></>
@@ -431,7 +425,7 @@ const Deudas = () => {
                         </div>
                     </div>
                     :
-                    <div className="max-w-7xl mx-auto py-6">
+                    <div className="max-w-7xl mx-auto pt-4 pb-10">
                         <div className="flex flex-col">
                             <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                                 <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">

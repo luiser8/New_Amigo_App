@@ -8,7 +8,7 @@ import Loading from '../Layouts/Loading';
 const Reporte = () => {
     const { checkConfig } = useContext(Context);
     const [lapso, setLapso] = useState(checkConfig().Lapso);
-    const [btnEstablecer, setBtnEstablecer] = useState(false);
+    const [btnEstablecer, setBtnEstablecer] = useState(checkConfig().Lapso ? false : true);
     const [loading, setLoading] = useState(false);
 
     const getReporte = async (ev) => {
@@ -33,7 +33,7 @@ const Reporte = () => {
         window.URL.revokeObjectURL(url);
       }
     return (
-        <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto py-2 sm:px-6 lg:px-8">
         {loading ? <Loading display={'block'} msj={'Creando reporte! espera un momento...'} /> : ''}
         <div className="lg:flex lg:items-center lg:justify-between">
             <div className="flex-1 min-w-0">
