@@ -3,7 +3,7 @@ import Storage from './Storage';
 
 export const Context = createContext();
 
-const userInitial = {'UsuarioId' : null,'Nombres' : null,'Apellidos' : null};
+const userInitial = {'UsuarioId' : null,'Nombres' : null,'Apellidos' : null, 'Rol' : null};
 const configInitial = {'Lapso' : null,'Cuota' : null};
   
 export const ContextProvider = ({ children }) => {

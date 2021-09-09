@@ -21,7 +21,8 @@ const Login = () => {
                         login(0,{
                             'UsuarioId' : items[0].UsuarioId !== undefined ? items[0].UsuarioId : '',
                             'Nombres' : items[0].Nombres !== undefined ? items[0].Nombres : '',
-                            'Apellidos' : items[0].Apellidos !== undefined ? items[0].Apellidos : ''
+                            'Apellidos' : items[0].Apellidos !== undefined ? items[0].Apellidos : '',
+                            'Rol' : items[0].Rol !== undefined ? items[0].Rol : ''
                         });
                     }else{
                         setError(true); setErrorMsjTitle('Error de sesión'); setErrorMsj('Ocurrio un problema intentando iniciar la sesión. Usuario / Contraseña erronea, intenta de nuevo');

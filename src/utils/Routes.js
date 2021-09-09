@@ -7,6 +7,7 @@ import Deudas from '../components/Deudas/Deudas';
 import Reporte from '../components/Deudas/Reporte';
 import Actualizar from '../components/Cuotas/Actualizar';
 import Insertar from '../components/Cuotas/Insertar';
+import Config from '../components/Configuraciones/Config';
 
 const Routes = () => {
     const { checkUser } = useContext(Context);
@@ -14,34 +15,30 @@ const Routes = () => {
     return (
         <Router>
         {(checkUser().UsuarioId) !== null ? 
-            <Deudas path="/" user={checkUser().UsuarioId}>
-                {/* <Redirect from="/" to="/login"/> */}
-            </Deudas>
+            <Deudas path="/" user={checkUser().UsuarioId}></Deudas>
             :
             <Login path="/" />
         }
-        {(checkUser().UsuarioId) !== null ? 
+        {(checkUser().UsuarioId) !== null && (checkUser().Rol) === '1' || (checkUser().Rol) === '2' ? 
             <Actualizar path="/actualizar" user={checkUser().UsuarioId}></Actualizar>
             :
-            <Login path="/" />
+            <Redirect from="/actualizar" to="/"/>
         }
         {(checkUser().UsuarioId) !== null ? 
             <Reporte path="/reporte" user={checkUser().UsuarioId}></Reporte>
             :
-            <Login path="/" />
+            <Redirect from="/reporte" to="/"/>
         }
-        {(checkUser().UsuarioId) !== null ? 
+        {(checkUser().UsuarioId) !== null && (checkUser().Rol) === '1' || (checkUser().Rol) === '2' ? 
             <Insertar path="/insertar" user={checkUser().UsuarioId}></Insertar>
             :
-            <Login path="/" />
+            <Redirect from="/insertar" to="/"/>
         }
-            {/* <Signin path="/signin">
-                {(checkUser().IdUser) ? 
-                    <Redirect from="/signin" to="/" />
-                    :
-                    <Redirect from="/signin" to="/" />
-                } 
-            </Signin> */}
+        {(checkUser().UsuarioId) !== null && (checkUser().Rol) === '1' ? 
+            <Config path="/configuracion" user={checkUser().UsuarioId}></Config>
+            :
+            <Redirect from="/configuracion" to="/"/>
+        }
             <Error default/>
     </Router>
     );

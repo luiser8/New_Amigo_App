@@ -9,23 +9,29 @@ const Insertar = () => {
     const { checkConfig } = useContext(Context);
     const [planes, setPlanes] = useState([]);
     const [aranceles, setAranceles] = useState([]);
+    const [cuotasInsertadas, setCuotasInsertadas] = useState([]);
     const [planesCheck, setPlanesCheck] = useState([]);
     const [lapso, setLapso] = useState(checkConfig().Lapso);
     const [cuota, setCuota] = useState(checkConfig().Cuota);
     const [id_arancel, setId_arancel] = useState(0);
     const [fechaVencimiento, setFechaVencimiento] = useState('');
-    const [btnEstablecer, setBtnEstablecer] = useState(checkConfig().Lapso ? false : true);
+    const [btnEstablecer, setBtnEstablecer] = useState(true);
     const [loading, setLoading] = useState(false);
 
     /* Inicio Peticiones*/
     const getAranceles = async (lapso) => {
-        await get(`arancel/get?lapso=${lapso}`).then((items) => {
+        await get(`arancel/get?lapso=${lapso}&tipoArancel=${2}`).then((items) => {
             items !== undefined ? setAranceles(items) : setAranceles([]);
         });
     }
     const getPlanes = async (lapso) => {
         await get(`planes/get?lapso=${lapso}`).then((items) => {
             items !== undefined ? setPlanes(items) : setPlanes([]);
+        });
+    }
+    const getCuotasInsertadas = async (lapso) => {
+        await get(`cuotas/insertsAll?lapso=${lapso}`).then((items) => {
+            items !== undefined ? setCuotasInsertadas(items) : setCuotasInsertadas([]);
         });
     }
 
@@ -44,14 +50,19 @@ const Insertar = () => {
                     }
                 ).then((items) => {
                     items !== undefined ? Toast({ show: true, title: 'Información!', msj: `Cuota nueva ha sido aplicado en los ${items.length} estudiantes`, color: 'green' }) : Toast({ show: false });
+                    getCuotasInsertadas(checkConfig().Lapso); getAranceles(checkConfig().Lapso); getPlanes(checkConfig().Lapso);
                     Toast({ show: false });
             });
         setBtnEstablecer(false); setLoading(false);
     }
     const changeArancelFecha = async (value) => {
         let fecha = aranceles.find(item => item.Id_Arancel == value);
-        value !== 0 ? setId_arancel(value) : setId_arancel(0);
-        fecha.FechaVencimiento !== '' ? setFechaVencimiento(fecha.FechaVencimiento) : setFechaVencimiento('');
+        value !== 0 ? setId_arancel(Number.parseInt(value)) : setId_arancel(0);
+        if(value !== 0 && fecha !== undefined){
+            setFechaVencimiento(fecha.FechaVencimiento);
+        }else{
+            setFechaVencimiento('');
+        }
     }
     const changeMonto = async (value) => {
         let planesSelected = [];
@@ -60,12 +71,12 @@ const Insertar = () => {
             planesSelected.splice(find, 1);
           } else {
             planesSelected.push(value);
+            setPlanesCheck(planesCheck => [...planesCheck, planesSelected]);
           }
-          setPlanesCheck(planesCheck => [...planesCheck, planesSelected]);
-          console.log(planesSelected);
     }
     /* Fin Peticiones*/
     useEffect(() => {
+        getCuotasInsertadas(checkConfig().Lapso);
         getAranceles(checkConfig().Lapso);
         getPlanes(checkConfig().Lapso);
     }, []);
@@ -81,7 +92,7 @@ const Insertar = () => {
             <div className="max-w-7xl mx-auto py-6">
                 <div className="flex flex-col">
                     <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                        <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+                        <div className="py-0 align-middle inline-block min-w-full sm:px-6 lg:px-8">
                             <div className="overflow-hidden ">
                                 <div className="mt-10 sm:mt-0">
                                     <div className="md:grid md:grid-cols-3 md:gap-6">
@@ -96,8 +107,8 @@ const Insertar = () => {
                                                 <div className="shadow overflow-hidden sm:rounded-md">
                                                     <div className="px-4 py-5 bg-white sm:p-6">
                                                         <div className="grid grid-cols-10 gap-6">
-                                                            <div className="col-span-8 sm:col-span-4">
-                                                                <div className="px-4 py-2">
+                                                            <div className="col-span-10 sm:col-span-8">
+                                                                <div className="px-4 py-0">
                                                                     <h3 className="-mx-2 -my-3 flow-root">
                                                                         <span className="font-medium text-gray-900">
                                                                             Planes de pago
@@ -170,10 +181,10 @@ const Insertar = () => {
                                                             <div className="col-span-8 sm:col-span-3">
                                                                 <button
                                                                     type="submit"
-                                                                    disabled={btnEstablecer}
-                                                                    className={`inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${btnEstablecer ? 'bg-indigo-200 hover:bg-indigo-200' : 'bg-indigo-600 hover:bg-indigo-700'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
+                                                                    disabled={planesCheck.length !== 0 && id_arancel !== 0 ? false : true}
+                                                                    className={`inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${planesCheck.length !== 0 && id_arancel !== 0 ? 'bg-indigo-600 hover:bg-indigo-700' : 'bg-indigo-200 hover:bg-indigo-200'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
                                                                 >
-                                                                    Establecer
+                                                                    Insertar
                                                                 </button>
                                                             </div>
                                                         </div>
@@ -188,6 +199,83 @@ const Insertar = () => {
                     </div>
                 </div>
             </div>
+            {(Object.keys(cuotasInsertadas).length !== 0) ?
+                    <div className="max-w-7xl mx-auto">      
+                        <div className="flex flex-col">
+                            <div className="-my-2 mb-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                                <div className="align-middle inline-block min-w-full sm:px-6 lg:px-8">
+                                <h3 className="text-lg font-medium leading-6 text-gray-900">Cuotas asignadas</h3>
+                                    <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+                                        <table className="min-w-full divide-y divide-gray-200">
+                                            <thead className="bg-gray-50">
+                                                <tr>
+                                                    <th
+                                                        scope="col"
+                                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                                    >
+                                                        Id_Arancel
+                                                    </th>
+                                                    <th
+                                                        scope="col"
+                                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                                    >
+                                                        Descripción
+                                                    </th>
+                                                    <th
+                                                        scope="col"
+                                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                                    >
+                                                        Monto
+                                                    </th>
+                                                    <th
+                                                        scope="col"
+                                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                                    >
+                                                        Fecha Vencimiento
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="bg-white divide-y divide-gray-200">
+                                                {Object.keys(cuotasInsertadas).map((key, item) => (
+                                                    <tr key={key} className="hover:bg-green-100 bg-green-50">
+                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{cuotasInsertadas[item].Id_Arancel}</td>
+                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{cuotasInsertadas[item].Descripcion}</td>
+                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Bsf. {cuotasInsertadas[item].Monto}</td>
+                                                        <td className="px-6 py-4 whitespace-nowrap">
+                                                            <div className="text-sm text-gray-900">{Moment(cuotasInsertadas[item].FechaVencimiento).format('DD-MM-YYYY')}</div>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    :
+                    <div className="max-w-7xl mx-auto pt-4 pb-10">
+                        <div className="flex flex-col">
+                            <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                                <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+                                    <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+                                        <div className="border border-blue-300 shadow rounded-md p-8 w-full mx-auto">
+                                            <div className="animate-pulse flex space-x-4">
+                                                <div className="flex-1 space-y-4 py-1">
+                                                    <div className="h-4 bg-blue-400 rounded w-3/4"></div>
+                                                    <div className="space-y-2">
+                                                        <div className="h-4 bg-blue-400 rounded"></div>
+                                                        <div className="h-4 bg-blue-400 rounded w-5/6"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
         </div>
     )
 }

@@ -26,6 +26,7 @@ const Deudas = () => {
     const [openConfirm, setOpenConfirm] = useState(false);
     const [openModificar, setOpenModificar] = useState(false);
     const [openInsertar, setOpenInsertar] = useState(false);
+    const [cuotaVencida, setCuotaVencida] = useState(false);
     const [id_cuenta, setId_cuenta] = useState('');
     const [pagada, setPagada] = useState('');
     const [cuota, setCuota] = useState('');
@@ -96,7 +97,7 @@ const Deudas = () => {
     }
     /* Inicio Peticiones*/
     const getAranceles = async (lapso) => {
-        await get(`arancel/get?lapso=${lapso}`).then((items) => {
+        await get(`arancel/get?lapso=${lapso}&tipoArancel=${1}`).then((items) => {
             items !== undefined ? setAranceles(items) : setAranceles([]);
         });
     }
@@ -162,6 +163,10 @@ const Deudas = () => {
             if (items !== undefined) {
                 items.map((item) => {
                     setId_inscripcion(item.Id_Inscripcion);
+                    if(item.Pagada === 0){
+                        console.log(Moment(item.FechaVencimiento).isBefore(Date.now()));
+                        setCuotaVencida(Moment(item.FechaVencimiento).isBefore(Date.now()));
+                    }
                 });
                 if (items.length === 0) {
                     Toast({ show: true, title: 'Advertencia!', msj: 'No se consigueron registros.', color: 'red' });
@@ -180,11 +185,8 @@ const Deudas = () => {
     }
     /* Fin Peticiones*/
     useEffect(() => {
-        let selectLapso = document.getElementById('lapso');
-        console.log(lapsos.filter(lapso => lapso.Lapso == checkConfig().Lapso));
         getLapsos(); 
         getCuota();
-
     }, []);
 
     return (
@@ -193,7 +195,7 @@ const Deudas = () => {
             {openModificar ? <ModificarMonto arancel={arancel} openC={activeModificacion} confirm={okModificar} montoNuevo={changeMonto} cuota={checkConfig().Cuota} /> : <></>}
             {openInsertar ? <InsertarCuota openC={activeInsertar} id_inscripcion={id_inscripcion} aranceles_list={aranceles} confirm={okInsertar} /> : <></>}
 
-            <div className="max-w-7xl mx-auto pt-2 pb-8 sm:px-6 lg:px-8">
+            <div className="max-w-7xl mx-auto pt-1 pb-8 sm:px-6 lg:px-8">
                 <div className="lg:flex lg:items-center lg:justify-between">
                     <div className="flex-1 min-w-0">
                         <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">Cuentas alumnos</h2>
@@ -375,10 +377,10 @@ const Deudas = () => {
                                             </thead>
                                             <tbody className="bg-white divide-y divide-gray-200">
                                                 {Object.keys(deudas).map((key, item) => (
-                                                    <tr key={key}>
+                                                    <tr key={key} className="hover:bg-gray-50">
 
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            <div className="text-sm text-gray-900">{deudas[item].Cuota}</div>
+                                                        <td className={`px-6 py-4 whitespace-nowrap ${deudas[item].Pagada === 0 ? cuotaVencida ? 'bg-red-100' : 'bg-yellow-100' : 'bg-green-100'}`}>
+                                                            <div className="text-sm font-semibold text-gray-900">{deudas[item].Cuota}</div>
                                                         </td>
 
                                                         <td className="px-6 py-4 whitespace-nowrap">

@@ -15,7 +15,7 @@ if (typeof document !== 'undefined') {
 
   const render = Comp => {
     renderMethod(
-          <Comp />,
+        <Comp />,
       target
     )
   }

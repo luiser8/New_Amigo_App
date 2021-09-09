@@ -6,7 +6,8 @@ const Storage = () => {
             data = {
                 'UsuarioId' : window.localStorage.getItem('UsuarioId'),
                 'Nombres' : window.localStorage.getItem('Nombres'),
-                'Apellidos' : window.localStorage.getItem('Apellidos')
+                'Apellidos' : window.localStorage.getItem('Apellidos'),
+                'Rol' : window.localStorage.getItem('Rol')
             };
         }else if(value === 'config'){
             data = {
@@ -23,10 +24,12 @@ const Storage = () => {
                 window.localStorage.setItem('UsuarioId', data.UsuarioId);
                 window.localStorage.setItem('Nombres', data.Nombres);
                 window.localStorage.setItem('Apellidos', data.Apellidos);
+                window.localStorage.setItem('Rol', data.Rol);
             } else {
                 window.localStorage.removeItem('UsuarioId');
                 window.localStorage.removeItem('Nombres');
                 window.localStorage.removeItem('Apellidos');
+                window.localStorage.removeItem('Rol');
             }
         }else if(value === 'config'){
             if (data !== null) {

@@ -43,7 +43,7 @@ const Reporte = () => {
         <div className="max-w-7xl mx-auto py-6">
             <div className="flex flex-col">
                 <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                    <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+                    <div className="py-0 align-middle inline-block min-w-full sm:px-6 lg:px-8">
                         <div className="overflow-hidden ">
                             <div className="mt-10 sm:mt-0">
                                 <div className="md:grid md:grid-cols-3 md:gap-6">
@@ -78,7 +78,7 @@ const Reporte = () => {
                                                                 disabled={btnEstablecer}
                                                                 className={`inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${btnEstablecer ? 'bg-indigo-200 hover:bg-indigo-200' : 'bg-indigo-600 hover:bg-indigo-700'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
                                                             >
-                                                                Crear reporte
+                                                                Generar
                                                             </button>
                                                         </div>
                                                     </div>
