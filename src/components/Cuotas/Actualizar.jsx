@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
-import { Toast } from '../../utils/Toast';
-import { Context } from '../../utils/Context';
-import { put } from '../../utils/Fetch';
+import { Toast } from '../../helpers/Toast';
+import { Context } from '../../context/Context';
+import { put } from '../../helpers/Fetch';
 import Loading from '../Layouts/Loading';
 import { CheckCircleIcon, PencilIcon } from '@heroicons/react/outline';
 

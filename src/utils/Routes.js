@@ -1,13 +1,13 @@
 import React, { useContext } from 'react';
 import { Router, Redirect } from '@reach/router';
-import { Context } from '../utils/Context';
+import { Context } from '../context/Context';
 import Login from '../components/User/Login';
-import Error from './Error';
+import Error from '../components/Layouts/Error';
 import Deudas from '../components/Deudas/Deudas';
 import Reporte from '../components/Deudas/Reporte';
 import Actualizar from '../components/Cuotas/Actualizar';
 import Insertar from '../components/Cuotas/Insertar';
-import Config from '../components/Configuraciones/Config';
+import Configuracion from '../components/Configuraciones/Configuracion';
 
 const Routes = () => {
     const { checkUser } = useContext(Context);
@@ -35,7 +35,7 @@ const Routes = () => {
             <Redirect from="/insertar" to="/"/>
         }
         {(checkUser().UsuarioId) !== null && (checkUser().Rol) === '1' ? 
-            <Config path="/configuracion" user={checkUser().UsuarioId}></Config>
+            <Configuracion path="/configuracion" user={checkUser().UsuarioId}></Configuracion>
             :
             <Redirect from="/configuracion" to="/"/>
         }

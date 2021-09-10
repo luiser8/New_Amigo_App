@@ -10,7 +10,7 @@ import {
 } from '@heroicons/react/outline';
 import { ChevronDownIcon } from '@heroicons/react/solid';
 import { Link } from "@reach/router";
-import { Context } from '../../utils/Context';
+import { Context } from '../../context/Context';
 import Routes from '../../utils/Routes';
 
 const Layout = () => {

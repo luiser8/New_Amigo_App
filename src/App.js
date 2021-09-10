@@ -1,5 +1,5 @@
 import './index.css';
-import { ContextProvider } from './utils/Context';
+import { ContextProvider } from './context/Context';
 import Layout from './components/Layouts/Layout';
 
 function App() {

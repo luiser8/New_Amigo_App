@@ -1,6 +1,6 @@
 import React, { useState, useContext, Fragment } from 'react';
-import { Context } from '../../utils/Context';
-import { post } from '../../utils/Fetch';
+import { Context } from '../../context/Context';
+import { post } from '../../helpers/Fetch';
 
 const Login = () => {
     const { login } = useContext(Context);

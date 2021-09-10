@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import './Config';
+import '../utils/Config';
 
 export const get = async (route) => {
     let url = global.config.url.production ? `${global.config.url.prod}${route}` : `${global.config.url.dev}${route}`;

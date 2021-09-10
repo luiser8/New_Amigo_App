@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useContext } from 'react';
 import Moment from 'moment';
-import { Toast } from '../../utils/Toast';
-import { Context } from '../../utils/Context';
-import { get, post } from '../../utils/Fetch';
+import { Toast } from '../../helpers/Toast';
+import { Context } from '../../context/Context';
+import { get, post } from '../../helpers/Fetch';
 import Loading from '../Layouts/Loading';
 
 const Insertar = () => {

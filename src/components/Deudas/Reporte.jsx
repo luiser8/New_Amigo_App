@@ -1,8 +1,8 @@
 import React, { useState, useContext } from 'react';
 import Moment from 'moment';
-import { Toast } from '../../utils/Toast';
-import { Context } from '../../utils/Context';
-import { blob } from '../../utils/Fetch';
+import { Toast } from '../../helpers/Toast';
+import { Context } from '../../context/Context';
+import { blob } from '../../helpers/Fetch';
 import Loading from '../Layouts/Loading';
 
 const Reporte = () => {

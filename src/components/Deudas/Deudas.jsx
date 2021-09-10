@@ -1,11 +1,11 @@
 import React, { Fragment, useState, useEffect, useContext } from 'react';
 import { PencilIcon, TrashIcon, PlusIcon, SearchIcon } from '@heroicons/react/solid';
 import Moment from 'moment';
-import { get, post, put, del } from '../../utils/Fetch';
+import { get, post, put, del } from '../../helpers/Fetch';
 import ConfirmDelete from './modals/ConfirmDelete';
 import ModificarMonto from './modals/ModificarMonto';
-import { Toast } from '../../utils/Toast';
-import { Context } from '../../utils/Context';
+import { Toast } from '../../helpers/Toast';
+import { Context } from '../../context/Context';
 import InsertarCuota from './modals/InsertarCuota';
 
 const Deudas = () => {
@@ -55,7 +55,6 @@ const Deudas = () => {
         setOpenInsertar(open);
     }
     const okInsertar = async (value) => {
-        console.log(value);
         setOpenInsertar(false);
         if (value.Id_Inscripcion !== '')
             await postDeuda(value);

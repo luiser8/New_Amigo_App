@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Dialog, Transition } from '@headlessui/react';
 import { ExclamationIcon } from '@heroicons/react/outline';
 import Moment from 'moment';
-import { Context } from '../../../utils/Context';
+import { Context } from '../../../context/Context';
 
 const InsertarCuota = ({ openC, confirm, id_inscripcion, aranceles_list }) => {
     const { checkConfig } = useContext(Context);
