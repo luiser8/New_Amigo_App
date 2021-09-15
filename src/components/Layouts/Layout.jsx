@@ -48,7 +48,10 @@ const Layout = () => {
                                     <Popover.Group as="nav" className="hidden md:flex space-x-10">
                                         {/* <Link to="/deudas" className="text-base font-medium text-gray-500 hover:text-gray-900">Deudas</Link> */}
                                         {/* <Link to="/reportes" className="text-base font-medium text-gray-500 hover:text-gray-900">Reportes</Link> */}
-                                        <span className="font-semibold">Lapso: {checkConfig().Lapso ? checkConfig().Lapso : 'Lapso sin establecer'}</span>
+                                        <span className="font-semibold">
+                                            Lapso: {checkConfig().Lapso ? checkConfig().Lapso : 'Lapso sin establecer'}
+                                            <span className="pl-4">Cuota: {checkConfig().Cuota ? checkConfig().Cuota : 'Cuota sin establecer'}</span>
+                                        </span>
                                         <Popover className="relative">
                                             {({ open }) => (
                                                 <>

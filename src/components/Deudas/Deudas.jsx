@@ -7,11 +7,13 @@ import ModificarMonto from './modals/ModificarMonto';
 import { Toast } from '../../helpers/Toast';
 import { Context } from '../../context/Context';
 import InsertarCuota from './modals/InsertarCuota';
+import Facturas from '../Facturas/Facturas';
 
 const Deudas = () => {
     const [lapsos, setLapsos] = useState([]);
     const [deudas, setDeudas] = useState([]);
     const [alumno, setAlumno] = useState([]);
+    const [facturas, setFacturas] = useState([]);
     const [aranceles, setAranceles] = useState([]);
     const [id_inscripcion, setId_inscripcion] = useState('');
     const [identificador, setIdentificador] = useState('');
@@ -37,16 +39,16 @@ const Deudas = () => {
     /* Inicio Modales*/
     const activeConfirmacion = async (...params) => {
         setOpenConfirm(params[0].open);
-        if (params[0].idCuenta !== '' && params[0].pagada !== '') {
-            setId_cuenta(params[0].idCuenta); setPagada(params[0].pagada); setId_arancel(params[0].idArancel); setArancel(params[0].arancel);
+        if (params[0].pagada !== '') {
+            setPagada(params[0].pagada); setId_arancel(params[0].id_arancel); setArancel(params[0].arancel);
         } else {
             setId_cuenta(''); setPagada(''); setId_arancel(''); setArancel('');
         }
     }
 
     const okEliminar = async () => {
-        if (id_cuenta !== '' && pagada !== '') {
-            await delDeuda({'id_cuenta': id_cuenta, 'pagada': pagada, 'id_inscripcion': id_inscripcion, 'id_arancel': id_arancel});
+        if (id_inscripcion !== '' && id_arancel !== '') {
+            await delDeuda({'pagada': pagada, 'id_inscripcion': id_inscripcion, 'id_arancel': id_arancel});
         }
         setOpenConfirm(false);
     }
@@ -135,10 +137,7 @@ const Deudas = () => {
             items !== undefined ? Toast({ show: true, title: 'Información!', msj: 'Monto nuevo ha sido aplicado.', color: 'yellow' }) : Toast({ show: false });
         });
     }
-    const check = async () => {
-        await checkDeuda();
-        await getAlumno();
-    }
+
     const getAlumno = async () => {
         await get(`alumno/get?cedula=${identificador}`).then((items) => {
             items !== undefined ? setAlumno(items) : setAlumno([]); 
@@ -155,6 +154,16 @@ const Deudas = () => {
             }
         }); 
     }
+    const getFacturas = async () => {
+        await get(`inscripcion/get?identificador=${identificador}&lapso=${lapso}`).then((items) => {
+            items !== undefined ? setFacturas(items) : setFacturas([]); 
+            if (items !== undefined) {
+                items.map((item) => {
+                    setId_inscripcion(item.Id_Inscripcion);
+                });
+            }
+        }); 
+    }
     const checkDeuda = async () => {
         await post('deudas/check', { "Lapso": lapso !== '' ? lapso : checkConfig().Lapso, "Identificador": identificador }).then((items) => {
             items !== undefined ? setDeudas(items) : setDeudas([]); 
@@ -163,12 +172,11 @@ const Deudas = () => {
                 items.map((item) => {
                     setId_inscripcion(item.Id_Inscripcion);
                     if(item.Pagada === 0){
-                        console.log(Moment(item.FechaVencimiento).isBefore(Date.now()));
                         setCuotaVencida(Moment(item.FechaVencimiento).isBefore(Date.now()));
                     }
                 });
                 if (items.length === 0) {
-                    Toast({ show: true, title: 'Advertencia!', msj: 'No se consigueron registros.', color: 'red' });
+                    Toast({ show: true, title: 'Advertencia!', msj: 'No se consigueron registros de duedas.', color: 'red' });
                 } else {
                     Toast({ show: false });
                 }
@@ -176,11 +184,17 @@ const Deudas = () => {
         });
     }
     const delDeuda = async (...params) => {
-        await del(`deudas/delete?id_cuenta=${params[0].id_cuenta}&pagada=${params[0].pagada}&id_inscripcion=${id_inscripcion}&id_arancel=${id_arancel}`).then((items) => {
-            items !== undefined ? setDeudas(deudas.filter(item => item.Id_Cuenta !== params[0].id_cuenta)) : setDeudas([]);
+        await del(`deudas/delete?pagada=${params[0].pagada}&id_inscripcion=${params[0].id_inscripcion}&id_arancel=${params[0].id_arancel}`).then((items) => {
+            items !== undefined ? setDeudas(deudas.filter(item => item.Id_Arancel !== params[0].id_arancel)) : setDeudas([]);
             items !== undefined ? Toast({ show: true, title: 'Advertencia!', msj: `Cuota ${params[0].pagada === 0 ? 'no pagada' : 'pagada'} ha sido eliminada.`, color: 'red' }) : Toast({ show: false });
+            getFacturas();
         });
         Toast({ show: false });
+    }
+    const check = async () => {
+        await checkDeuda();
+        await getAlumno();
+        await getFacturas();
     }
     /* Fin Peticiones*/
     useEffect(() => {
@@ -264,7 +278,7 @@ const Deudas = () => {
                                     name="indentificador"
                                     id="indentificador"
                                     autoFocus
-                                    className="mt-1 block w-full py-2 pl-2 pr-24 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base"
+                                    className="mt-1 block w-full py-3 pl-2 pr-24 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base"
                                     placeholder="Identificador"
                                     value={identificador}
                                     onChange={async (event) => setIdentificador(event.target.value)}
@@ -277,7 +291,7 @@ const Deudas = () => {
                                     <select
                                         id="lapso"
                                         name="lapso"
-                                        className="mt-0 block w-full py-2 px-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base"
+                                        className="mt-0 block w-full py-3 px-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base"
                                         value={lapso}
                                         onChange={async (event) => establecerLapso(event.target.value)}
                                     >
@@ -305,7 +319,7 @@ const Deudas = () => {
                                 className="inline-flex items-center px-2 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                                 onClick={async () => check()}
                             >
-                                <SearchIcon className="-ml-1 mr-0 h-6 w-6 text-gray-500" aria-hidden="true" />
+                                <SearchIcon className="-ml-1 mr-0 h-8 w-8 text-gray-500" aria-hidden="true" />
                                 Buscar
                             </button>
                         </span>
@@ -314,11 +328,11 @@ const Deudas = () => {
                         <span className="hidden sm:block">
                             <button
                                 type="button"
-                                disabled={(Object.keys(deudas).length !== 0) ? false : true}
-                                className={`inline-flex items-center px-2 py-2 border ${(Object.keys(deudas).length !== 0) ? 'border-gray-300 text-gray-700 hover:bg-gray-50' : 'border-gray-200 text-gray-200 hover:bg-gray-20'} rounded-md shadow-sm text-sm font-medium  bg-white  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
+                                disabled={false /*(Object.keys(deudas).length !== 0) ? false : true*/}
+                                className={`inline-flex items-center px-2 py-2 border ${/*(Object.keys(deudas).length !== 0)*/true ? 'border-gray-300 text-gray-700 hover:bg-gray-50' : 'border-gray-200 text-gray-200 hover:bg-gray-20'} rounded-md shadow-sm text-sm font-medium  bg-white  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
                                 onClick={async () => activeInsertar(true)}
                             >
-                                <PlusIcon className="-ml-1 mr-0 h-6 w-6 text-gray-500" aria-hidden="true" />
+                                <PlusIcon className="-ml-1 mr-0 h-8 w-8 text-gray-500" aria-hidden="true" />
                                 Cargar
                             </button>
                         </span>
@@ -398,19 +412,14 @@ const Deudas = () => {
                                                             <div className="mt-2 flex items-center text-sm text-gray-500">
                                                                 {deudas[item].Pagada === 0 ?
                                                                     <>
-                                                                        <TrashIcon className="-ml-1 mr-2 h-7 w-7 text-gray-500" style={{ cursor: 'pointer' }} onClick={async () => activeConfirmacion({'open':true, 'idCuenta': deudas[item].Id_Cuenta, 'pagada': deudas[item].Pagada, 'idArancel': deudas[item].Id_Arancel,'arancel': deudas[item].Cuota})} aria-hidden="true" />
-                                                                        <PencilIcon className="-ml-1 mr-2 h-7 w-7 text-gray-500" style={{ cursor: 'pointer' }} onClick={async () => activeModificacion(true, deudas[item].Id_Cuenta, deudas[item].Cuota)} aria-hidden="true" />
-                                                                        {/* {deudas[item].Total <= 0 ?
-                                                                            <CalculatorIcon className="-ml-1 mr-2 h-7 w-7 text-gray-500" style={{ cursor: 'pointer' }} onClick={async () => window.alert(deudas[item].Id_Cuenta)} aria-hidden="true" />
-                                                                            :
-                                                                            <></>
-                                                                        } */}
+                                                                        <TrashIcon className="-ml-1 mr-2 h-8 w-8 text-gray-500" style={{ cursor: 'pointer' }} onClick={async () => activeConfirmacion({'open':true, 'pagada': deudas[item].Pagada, 'id_inscripcion': deudas[item].Id_Inscripcion,'id_arancel': deudas[item].Id_Arancel,'arancel': deudas[item].Cuota})} aria-hidden="true" />
+                                                                        <PencilIcon className="-ml-1 mr-2 h-8 w-8 text-gray-500" style={{ cursor: 'pointer' }} onClick={async () => activeModificacion(true, deudas[item].Id_Cuenta, deudas[item].Cuota)} aria-hidden="true" />
                                                                     </>
                                                                     :
                                                                     <></>
                                                                 }
                                                                 {deudas[item].Pagada === 1 ?
-                                                                    <TrashIcon className="-ml-1 mr-2 h-7 w-7 text-gray-500" style={{ cursor: 'pointer' }} onClick={async () => activeConfirmacion({'open':true, 'idCuenta': deudas[item].Id_Cuenta, 'pagada': deudas[item].Pagada, 'idArancel': deudas[item].Id_Arancel,'arancel': deudas[item].Cuota})} aria-hidden="true" />
+                                                                    <TrashIcon className="-ml-1 mr-2 h-8 w-8 text-gray-500" style={{ cursor: 'pointer' }} onClick={async () => activeConfirmacion({'open':true, 'pagada': deudas[item].Pagada, 'id_inscripcion': deudas[item].Id_Inscripcion,'id_arancel': deudas[item].Id_Arancel,'arancel': deudas[item].Cuota})} aria-hidden="true" />
                                                                     :
                                                                     <></>
                                                                 }
@@ -448,6 +457,7 @@ const Deudas = () => {
                         </div>
                     </div>
                 }
+                <Facturas factura_list={facturas} openC={activeConfirmacion} confirm={okEliminar} />
             </div>
 
         </Fragment>
