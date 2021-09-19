@@ -9,7 +9,6 @@ const Insertar = () => {
     const { checkConfig } = useContext(Context);
     const [planes, setPlanes] = useState([]);
     const [aranceles, setAranceles] = useState([]);
-    const [cuotasInsertadas, setCuotasInsertadas] = useState([]);
     const [planesCheck, setPlanesCheck] = useState([]);
     const [lapso, setLapso] = useState(checkConfig().Lapso);
     const [cuota, setCuota] = useState(checkConfig().Cuota);
@@ -25,13 +24,8 @@ const Insertar = () => {
         });
     }
     const getPlanes = async (lapso) => {
-        await get(`planes/get?lapso=${lapso}`).then((items) => {
+        await get(`planes/get?lapso=${lapso}&tipo=${1}`).then((items) => {
             items !== undefined ? setPlanes(items) : setPlanes([]);
-        });
-    }
-    const getCuotasInsertadas = async (lapso) => {
-        await get(`cuotas/insertsAll?lapso=${lapso}`).then((items) => {
-            items !== undefined ? setCuotasInsertadas(items) : setCuotasInsertadas([]);
         });
     }
 
@@ -49,8 +43,8 @@ const Insertar = () => {
                         'FechaVencimiento': fechaVencimiento 
                     }
                 ).then((items) => {
-                    items !== undefined ? Toast({ show: true, title: 'Información!', msj: `Cuota nueva ha sido aplicado en los ${items.length} estudiantes`, color: 'green' }) : Toast({ show: false });
-                    getCuotasInsertadas(checkConfig().Lapso); getAranceles(checkConfig().Lapso); getPlanes(checkConfig().Lapso);
+                    items !== undefined ? Toast({ show: true, title: 'Información!', msj: `Cuota nueva ha sido aplicado a los estudiantes inscritos`, color: 'green' }) : Toast({ show: false });
+                    getAranceles(checkConfig().Lapso); getPlanes(checkConfig().Lapso);
                     Toast({ show: false });
             });
         setBtnEstablecer(false); setLoading(false);
@@ -76,7 +70,6 @@ const Insertar = () => {
     }
     /* Fin Peticiones*/
     useEffect(() => {
-        getCuotasInsertadas(checkConfig().Lapso);
         getAranceles(checkConfig().Lapso);
         getPlanes(checkConfig().Lapso);
     }, []);
@@ -108,6 +101,7 @@ const Insertar = () => {
                                                     <div className="px-4 py-5 bg-white sm:p-6">
                                                         <div className="grid grid-cols-10 gap-6">
                                                             <div className="col-span-10 sm:col-span-8">
+                                                            {(Object.keys(planes).length !== 0) ?
                                                                 <div className="px-4 py-0">
                                                                     <h3 className="-mx-2 -my-3 flow-root">
                                                                         <span className="font-medium text-gray-900">
@@ -133,6 +127,27 @@ const Insertar = () => {
                                                                         </div>
                                                                     </div>
                                                                 </div>
+                                                                :
+                                                                <div className="flex flex-col">
+                                                                    <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                                                                        <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+                                                                            <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+                                                                                <div className="border border-blue-300 shadow rounded-md p-8 w-full mx-auto">
+                                                                                    <div className="animate-pulse flex space-x-4">
+                                                                                        <div className="flex-1 space-y-4 py-1">
+                                                                                            <div className="h-4 bg-blue-400 rounded w-3/4"></div>
+                                                                                            <div className="space-y-2">
+                                                                                                <div className="h-4 bg-blue-400 rounded"></div>
+                                                                                                <div className="h-4 bg-blue-400 rounded w-5/6"></div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            }
                                                             </div>
                                                             <div className="col-span-8 sm:col-span-3">
                                                                 <label htmlFor="cuota" className="block text-sm font-medium text-gray-700">
@@ -199,83 +214,6 @@ const Insertar = () => {
                     </div>
                 </div>
             </div>
-            {(Object.keys(cuotasInsertadas).length !== 0) ?
-                    <div className="max-w-7xl mx-auto">      
-                        <div className="flex flex-col">
-                            <div className="-my-2 mb-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                                <div className="align-middle inline-block min-w-full sm:px-6 lg:px-8">
-                                <h3 className="text-lg font-medium leading-6 text-gray-900">Cuotas asignadas</h3>
-                                    <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
-                                        <table className="min-w-full divide-y divide-gray-200">
-                                            <thead className="bg-gray-50">
-                                                <tr>
-                                                    <th
-                                                        scope="col"
-                                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                                    >
-                                                        Id_Arancel
-                                                    </th>
-                                                    <th
-                                                        scope="col"
-                                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                                    >
-                                                        Descripción
-                                                    </th>
-                                                    <th
-                                                        scope="col"
-                                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                                    >
-                                                        Monto
-                                                    </th>
-                                                    <th
-                                                        scope="col"
-                                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                                    >
-                                                        Fecha Vencimiento
-                                                    </th>
-                                                </tr>
-                                            </thead>
-                                            <tbody className="bg-white divide-y divide-gray-200">
-                                                {Object.keys(cuotasInsertadas).map((key, item) => (
-                                                    <tr key={key} className="hover:bg-green-100 bg-green-50">
-                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{cuotasInsertadas[item].Id_Arancel}</td>
-                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{cuotasInsertadas[item].Descripcion}</td>
-                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Bsf. {cuotasInsertadas[item].Monto}</td>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            <div className="text-sm text-gray-900">{Moment(cuotasInsertadas[item].FechaVencimiento).format('DD-MM-YYYY')}</div>
-                                                        </td>
-                                                    </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    :
-                    <div className="max-w-7xl mx-auto pt-4 pb-10">
-                        <div className="flex flex-col">
-                            <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                                <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-                                    <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
-                                        <div className="border border-blue-300 shadow rounded-md p-8 w-full mx-auto">
-                                            <div className="animate-pulse flex space-x-4">
-                                                <div className="flex-1 space-y-4 py-1">
-                                                    <div className="h-4 bg-blue-400 rounded w-3/4"></div>
-                                                    <div className="space-y-2">
-                                                        <div className="h-4 bg-blue-400 rounded"></div>
-                                                        <div className="h-4 bg-blue-400 rounded w-5/6"></div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                }
         </div>
     )
 }

@@ -1,5 +1,5 @@
 import React, { Fragment, useState, useEffect, useContext } from 'react';
-import { PencilIcon, TrashIcon, PlusIcon, SearchIcon } from '@heroicons/react/solid';
+import { PencilIcon, TrashIcon, PlusCircleIcon, SearchCircleIcon, AdjustmentsIcon } from '@heroicons/react/solid';
 import Moment from 'moment';
 import { get, post, put, del } from '../../helpers/Fetch';
 import ConfirmDelete from './modals/ConfirmDelete';
@@ -8,6 +8,7 @@ import { Toast } from '../../helpers/Toast';
 import { Context } from '../../context/Context';
 import InsertarCuota from './modals/InsertarCuota';
 import Facturas from '../Facturas/Facturas';
+import ModificarInscripcion from './modals/ModificarInscripcion';
 
 const Deudas = () => {
     const [lapsos, setLapsos] = useState([]);
@@ -16,17 +17,22 @@ const Deudas = () => {
     const [facturas, setFacturas] = useState([]);
     const [aranceles, setAranceles] = useState([]);
     const [id_inscripcion, setId_inscripcion] = useState('');
+    const [id_plan, setId_plan] = useState(0);
+    const [id_tipoIngreso, setId_tipoIngreso] = useState(0);
+    const [id_carrera, setId_carrera] = useState('');
     const [identificador, setIdentificador] = useState('');
+    const [tipoingreso, setTipoingreso] = useState('');
+    const [plandepago, setPlandepago] = useState('');
     const [lapso, setLapso] = useState('');
     const [monto, setMonto] = useState('');
     const [fullNombre, setFullNombre] = useState('');
-    const [lapCur, setLapCur] = useState('');
     const [sexo, setSexo] = useState('');
     const [estAca, setEstAca] = useState('');
     const [foto, setFoto] = useState('');
     const [carrera, setCarrera] = useState('');
     const [openConfirm, setOpenConfirm] = useState(false);
     const [openModificar, setOpenModificar] = useState(false);
+    const [openModificarInsc, setOpenModificarInsc] = useState(false);
     const [openInsertar, setOpenInsertar] = useState(false);
     const [cuotaVencida, setCuotaVencida] = useState(false);
     const [id_cuenta, setId_cuenta] = useState('');
@@ -70,11 +76,21 @@ const Deudas = () => {
             setId_cuenta(''); setArancel('');
         }
     }
+    const activeModificacionInsc = async (open, id, plan) => {
+        setOpenModificarInsc(open);
+        if (id !== '') {
+            setId_tipoIngreso(id); setId_plan(plan);
+        }
+    }
 
     const okModificar = async () => {
         setOpenModificar(false);
         if (id_cuenta !== '' && monto !== '')
             await putDeuda(id_cuenta, monto);
+    }
+    const okModificarInsc = async (value) => {
+        setOpenModificarInsc(false);
+        await putInscripcion(id_inscripcion, value.Id_TipoIngreso, value.Id_Plan);
     }
 
     const changeMonto = async (value) => {
@@ -137,6 +153,12 @@ const Deudas = () => {
             items !== undefined ? Toast({ show: true, title: 'Información!', msj: 'Monto nuevo ha sido aplicado.', color: 'yellow' }) : Toast({ show: false });
         });
     }
+    const putInscripcion = async (id_inscripcion, id_tipoIngreso, id_plan) => {
+        await put(`inscripcion/update?id_inscripcion=${id_inscripcion}`, { 'Id_Plan': id_plan, 'Id_TipoIngreso': id_tipoIngreso }).then((items) => {
+            check();
+            items !== undefined ? Toast({ show: true, title: 'Información!', msj: 'Se ha actualizado tipo/plan de inscripción.', color: 'yellow' }) : Toast({ show: false });
+        });
+    }
 
     const getAlumno = async () => {
         await get(`alumno/get?cedula=${identificador}`).then((items) => {
@@ -144,22 +166,27 @@ const Deudas = () => {
             if (items !== undefined){
                 items.map((item) => {
                     if(item !== []){
-                        setFullNombre(item.Fullnombre); setLapCur(item.LapCur); setSexo(item.Sexo); setEstAca(item.EstAca); setFoto(item.Foto); setCarrera(item.codcarrera);
+                        setFullNombre(item.Fullnombre); setSexo(item.Sexo); setEstAca(item.EstAca); setFoto(item.Foto); setCarrera(item.codcarrera);
                     }else{
-                        setFullNombre(''); setLapCur(''); setSexo(''); setEstAca(''); setFoto(''); setCarrera('');
+                        setFullNombre(''); setSexo(''); setEstAca(''); setFoto(''); setCarrera('');
                     }
                 });
             }else{
-                setFullNombre(''); setLapCur(''); setSexo(''); setEstAca(''); setFoto(''); setCarrera('');
+                setFullNombre(''); setSexo(''); setEstAca(''); setFoto(''); setCarrera('');
             }
         }); 
     }
     const getFacturas = async () => {
-        await get(`inscripcion/get?identificador=${identificador}&lapso=${lapso}`).then((items) => {
+        await get(`inscripcion/get?identificador=${identificador}&lapso=${lapso ? lapso : checkConfig().Lapso }`).then((items) => {
             items !== undefined ? setFacturas(items) : setFacturas([]); 
             if (items !== undefined) {
                 items.map((item) => {
                     setId_inscripcion(item.Id_Inscripcion);
+                    setId_carrera(item.Id_Carrera);
+                    setTipoingreso(item.TipoIngreso);
+                    setPlandepago(item.PlanDePago);
+                    setId_plan(item.Id_Plan);
+                    setId_tipoIngreso(item.Id_TipoIngreso);
                 });
             }
         }); 
@@ -206,6 +233,7 @@ const Deudas = () => {
         <Fragment>
             {openConfirm ? <ConfirmDelete pagada={pagada} arancel={arancel} openC={activeConfirmacion} confirm={okEliminar} /> : <></>}
             {openModificar ? <ModificarMonto arancel={arancel} openC={activeModificacion} confirm={okModificar} montoNuevo={changeMonto} cuota={checkConfig().Cuota} /> : <></>}
+            {openModificarInsc ? <ModificarInscripcion openC={activeModificacionInsc} confirm={okModificarInsc} planDePago={tipoingreso} /> : <></>}
             {openInsertar ? <InsertarCuota openC={activeInsertar} id_inscripcion={id_inscripcion} aranceles_list={aranceles} confirm={okInsertar} /> : <></>}
 
             <div className="max-w-7xl mx-auto pt-1 pb-8 sm:px-6 lg:px-8">
@@ -233,21 +261,14 @@ const Deudas = () => {
                                     <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" class="w-3 h-3" viewBox="0 0 24 24">
                                         <path d="M20 6L9 17l-5-5"></path>
                                     </svg>
-                                    </span>{carrera}
+                                    </span>{id_carrera ? id_carrera : carrera }
                                 </p>
                                 <p class="flex items-center text-gray-600 mb-2">
                                     <span class="w-4 h-4 mr-2 inline-flex items-center justify-center bg-gray-400 text-white rounded-full flex-shrink-0">
                                     <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" class="w-3 h-3" viewBox="0 0 24 24">
                                         <path d="M20 6L9 17l-5-5"></path>
                                     </svg>
-                                    </span>{lapCur}
-                                </p>
-                                <p class="flex items-center text-gray-600 mb-2">
-                                    <span class="w-4 h-4 mr-2 inline-flex items-center justify-center bg-gray-400 text-white rounded-full flex-shrink-0">
-                                    <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" class="w-3 h-3" viewBox="0 0 24 24">
-                                        <path d="M20 6L9 17l-5-5"></path>
-                                    </svg>
-                                    </span>{estAca}
+                                    </span>{tipoingreso ? tipoingreso : estAca }
                                 </p>
                             </div>
                             :
@@ -278,7 +299,7 @@ const Deudas = () => {
                                     name="indentificador"
                                     id="indentificador"
                                     autoFocus
-                                    className="mt-1 block w-full py-3 pl-2 pr-24 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base"
+                                    className="mt-1 block w-full py-3 pl-2 pr-20 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base"
                                     placeholder="Identificador"
                                     value={identificador}
                                     onChange={async (event) => setIdentificador(event.target.value)}
@@ -291,7 +312,7 @@ const Deudas = () => {
                                     <select
                                         id="lapso"
                                         name="lapso"
-                                        className="mt-0 block w-full py-3 px-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base"
+                                        className="mt-0 block w-full py-3 px-1 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base"
                                         value={lapso}
                                         onChange={async (event) => establecerLapso(event.target.value)}
                                     >
@@ -316,11 +337,12 @@ const Deudas = () => {
                         <span className="hidden sm:block">
                             <button
                                 type="button"
+                                title="Buscar"
                                 className="inline-flex items-center px-2 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                                 onClick={async () => check()}
                             >
-                                <SearchIcon className="-ml-1 mr-0 h-8 w-8 text-gray-500" aria-hidden="true" />
-                                Buscar
+                                <SearchCircleIcon className=" mr-0 h-8 w-8 text-gray-500" aria-hidden="true" />
+                                
                             </button>
                         </span>
                     </div>
@@ -328,12 +350,27 @@ const Deudas = () => {
                         <span className="hidden sm:block">
                             <button
                                 type="button"
+                                title="Cargar"
                                 disabled={false /*(Object.keys(deudas).length !== 0) ? false : true*/}
                                 className={`inline-flex items-center px-2 py-2 border ${/*(Object.keys(deudas).length !== 0)*/true ? 'border-gray-300 text-gray-700 hover:bg-gray-50' : 'border-gray-200 text-gray-200 hover:bg-gray-20'} rounded-md shadow-sm text-sm font-medium  bg-white  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
                                 onClick={async () => activeInsertar(true)}
                             >
-                                <PlusIcon className="-ml-1 mr-0 h-8 w-8 text-gray-500" aria-hidden="true" />
-                                Cargar
+                                <PlusCircleIcon className=" mr-0 h-8 w-8 text-gray-500" aria-hidden="true" />
+                                
+                            </button>
+                        </span>
+                    </div>
+                    <div className="mt-5 flex">
+                        <span className="hidden sm:block">
+                            <button
+                                type="button"
+                                title="Cambiar Plan de Pago o Inscripción"
+                                disabled={false /*(Object.keys(deudas).length !== 0) ? false : true*/}
+                                className={`inline-flex items-center px-2 py-2 border ${/*(Object.keys(deudas).length !== 0)*/true ? 'border-gray-300 text-gray-700 hover:bg-gray-50' : 'border-gray-200 text-gray-200 hover:bg-gray-20'} rounded-md shadow-sm text-sm font-medium  bg-white  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
+                                onClick={async () => activeModificacionInsc(true)}
+                            >
+                                <AdjustmentsIcon className=" mr-0 h-8 w-8 text-gray-500" aria-hidden="true" />
+                                
                             </button>
                         </span>
                     </div>
