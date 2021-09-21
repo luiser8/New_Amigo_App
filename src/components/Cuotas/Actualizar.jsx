@@ -1,11 +1,12 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { Toast } from '../../helpers/Toast';
 import { Context } from '../../context/Context';
-import { put } from '../../helpers/Fetch';
+import { put, get } from '../../helpers/Fetch';
 import Loading from '../Layouts/Loading';
 import { CheckCircleIcon, PencilIcon } from '@heroicons/react/outline';
 
 const Actualizar = () => {
+    const [lapsos, setLapsos] = useState([]);
     const { checkConfig, setConfig } = useContext(Context);
     const [editCuota, setEditCuota] = useState(false);
     const [lapso, setLapso] = useState(checkConfig().Lapso);
@@ -22,7 +23,11 @@ const Actualizar = () => {
         if (checkConfig.Cuota !== cuota)
             await putCuota(1, cuota);
     }
-
+    const getLapsos = async () => {
+        await get('lapsos/all').then((items) => {
+            items !== undefined ? setLapsos(items) : setLapsos([]);
+        });
+    }
     const putCuota = async (id, monto) => {
         await put(`cuotas/update?cuotaId=${id}`, { 'Monto': monto, 'Estado': 1 }).then((items) => {
             items !== undefined ? Toast({ show: true, title: 'Información!', msj: 'Cuota nueva ha sido aplicada.', color: 'green' }) : Toast({ show: false });
@@ -38,6 +43,10 @@ const Actualizar = () => {
         });
         setBtnEstablecer(false); setCuota(checkConfig().Cuota); setLoading(false);
     }
+
+    useEffect(() => {
+        getLapsos();
+    }, []);
 
     return (
         <div className="max-w-7xl mx-auto py-2 sm:px-6 lg:px-8">
@@ -94,15 +103,18 @@ const Actualizar = () => {
                                                                 <label htmlFor="country" className="block text-sm font-medium text-gray-700">
                                                                     Lapso
                                                                 </label>
-                                                                <input
-                                                                    type="text"
-                                                                    name="lapso"
+                                                                <select
                                                                     id="lapso"
-                                                                    readOnly="true"
-                                                                    value={checkConfig().Lapso !== null ? checkConfig().Lapso : lapso}
+                                                                    name="lapso"
+                                                                    className="mt-0 block w-full py-2 px-1 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base"
+                                                                    value={lapso}
                                                                     onChange={async (event) => setLapso(event.target.value)}
-                                                                    className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-gray-100 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                                                />
+                                                                >
+                                                                    <option>Selecciona lapso</option>
+                                                                    {Object.keys(lapsos).map((key, item) => ( 
+                                                                        <option key={key} selected={true} >{lapsos[item].Lapso}</option>
+                                                                    ))}
+                                                                </select>
                                                             </div>
                                                             <div className="col-span-3">
                                                                 <button

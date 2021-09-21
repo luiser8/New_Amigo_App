@@ -6,6 +6,7 @@ import { get, post } from '../../helpers/Fetch';
 import Loading from '../Layouts/Loading';
 
 const Insertar = () => {
+    const [lapsos, setLapsos] = useState([]);
     const { checkConfig } = useContext(Context);
     const [planes, setPlanes] = useState([]);
     const [aranceles, setAranceles] = useState([]);
@@ -28,7 +29,11 @@ const Insertar = () => {
             items !== undefined ? setPlanes(items) : setPlanes([]);
         });
     }
-
+    const getLapsos = async () => {
+        await get('lapsos/all').then((items) => {
+            items !== undefined ? setLapsos(items) : setLapsos([]);
+        });
+    }
     const postCuota = async (ev) => {
         ev.preventDefault(); setBtnEstablecer(true); setLoading(true);
             await post('cuotas/insertAll', 
@@ -70,6 +75,7 @@ const Insertar = () => {
     }
     /* Fin Peticiones*/
     useEffect(() => {
+        getLapsos();
         getAranceles(checkConfig().Lapso);
         getPlanes(checkConfig().Lapso);
     }, []);
@@ -169,15 +175,18 @@ const Insertar = () => {
                                                                 <label htmlFor="country" className="block text-sm font-medium text-gray-700">
                                                                     Lapso
                                                                 </label>
-                                                                <input
-                                                                    type="text"
-                                                                    name="lapso"
+                                                                <select
                                                                     id="lapso"
-                                                                    readOnly="true"
-                                                                    value={checkConfig().Lapso !== null ? checkConfig().Lapso : lapso}
+                                                                    name="lapso"
+                                                                    className="mt-0 block w-full py-2 px-1 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base"
+                                                                    value={lapso}
                                                                     onChange={async (event) => setLapso(event.target.value)}
-                                                                    className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-gray-100 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                                                />
+                                                                >
+                                                                    <option>Selecciona lapso</option>
+                                                                    {Object.keys(lapsos).map((key, item) => ( 
+                                                                        <option key={key} selected={true} >{lapsos[item].Lapso}</option>
+                                                                    ))}
+                                                                </select>
                                                             </div>
                                                             <div className="col-span-6 sm:col-span-3">
                                                                 <label htmlFor="country" className="block text-sm font-medium text-gray-700">Arancel</label>

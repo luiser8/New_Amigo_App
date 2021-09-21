@@ -1,25 +1,31 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext,useEffect } from 'react';
 import Moment from 'moment';
 import { Toast } from '../../helpers/Toast';
 import { Context } from '../../context/Context';
-import { blob } from '../../helpers/Fetch';
+import { blob, get } from '../../helpers/Fetch';
 import Loading from '../Layouts/Loading';
 
 const Reporte = () => {
+    const [lapsos, setLapsos] = useState([]);
     const { checkConfig } = useContext(Context);
     const [lapso, setLapso] = useState(checkConfig().Lapso);
+    const [pagada, setPagada] = useState(0);
     const [btnEstablecer, setBtnEstablecer] = useState(checkConfig().Lapso ? false : true);
     const [loading, setLoading] = useState(false);
 
     const getReporte = async (ev) => {
         ev.preventDefault(); setBtnEstablecer(true); setLoading(true);
-        await blob(`reporte/get?lapso=${lapso}`).then((items) => {
+        await blob(`reporte/get?lapso=${lapso}&pagada=${pagada}`).then((items) => {
             items !== undefined ? items.blob().then(blob => downloadFile(blob)) : Toast({ show: true, title: 'Advertencia!', msj: `Por alguna razon el Reporte de deudas no ha sido creado!`, color: 'yellow' }); 
             items !== undefined ? Toast({ show: true, title: 'Información!', msj: `Reporte de deudas ha sido creado!`, color: 'yellow' }) : Toast({ show: false });
         });
         setBtnEstablecer(false); setLoading(false);
     }
-
+    const getLapsos = async () => {
+        await get('lapsos/all').then((items) => {
+            items !== undefined ? setLapsos(items) : setLapsos([]);
+        });
+    }
     const downloadFile = async (blob) => {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -32,6 +38,11 @@ const Reporte = () => {
         document.body.removeChild(a);
         window.URL.revokeObjectURL(url);
       }
+
+      useEffect(() => {
+        getLapsos();
+      }, []);
+
     return (
         <div className="max-w-7xl mx-auto py-2 sm:px-6 lg:px-8">
         {loading ? <Loading display={'block'} msj={'Creando reporte! espera un momento...'} /> : ''}
@@ -62,15 +73,33 @@ const Reporte = () => {
                                                             <label htmlFor="country" className="block text-sm font-medium text-gray-700">
                                                                 Lapso
                                                             </label>
-                                                            <input
-                                                                type="text"
-                                                                name="lapso"
+                                                            <select
                                                                 id="lapso"
-                                                                readOnly="true"
-                                                                value={checkConfig().Lapso !== null ? checkConfig().Lapso : lapso}
+                                                                name="lapso"
+                                                                className="mt-0 block w-full py-2 px-1 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base"
+                                                                value={lapso}
                                                                 onChange={async (event) => setLapso(event.target.value)}
-                                                                className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-gray-100 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                                            />
+                                                            >
+                                                                <option>Selecciona lapso</option>
+                                                                {Object.keys(lapsos).map((key, item) => ( 
+                                                                    <option key={key} selected={true} >{lapsos[item].Lapso}</option>
+                                                                ))}
+                                                            </select>
+                                                        </div>
+                                                        <div className="col-span-10 sm:col-span-3">
+                                                            <label htmlFor="country" className="block text-sm font-medium text-gray-700">
+                                                                Deudas Pagadas
+                                                            </label>
+                                                            <select
+                                                                id="pagada"
+                                                                name="pagada"
+                                                                className="mt-0 block w-full py-2 px-1 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base"
+                                                                value={pagada}
+                                                                onChange={async (event) => setPagada(event.target.value)}
+                                                            >
+                                                                <option value="1">Si</option>
+                                                                <option value="0">No</option>
+                                                            </select>
                                                         </div>
                                                         <div className="col-span-8">
                                                             <button
@@ -78,7 +107,7 @@ const Reporte = () => {
                                                                 disabled={btnEstablecer}
                                                                 className={`inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${btnEstablecer ? 'bg-indigo-200 hover:bg-indigo-200' : 'bg-indigo-600 hover:bg-indigo-700'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
                                                             >
-                                                                Generar
+                                                                Generar Reporte
                                                             </button>
                                                         </div>
                                                     </div>
