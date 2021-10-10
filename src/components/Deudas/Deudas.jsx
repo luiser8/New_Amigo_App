@@ -9,6 +9,7 @@ import { Context } from '../../context/Context';
 import InsertarCuota from './modals/InsertarCuota';
 import Facturas from '../Facturas/Facturas';
 import ModificarInscripcion from './modals/ModificarInscripcion';
+import ModificarCedula from './modals/ModificarCedula';
 
 const Deudas = () => {
     const { checkConfig, setConfig } = useContext(Context);
@@ -21,6 +22,7 @@ const Deudas = () => {
     const [id_plan, setId_plan] = useState(0);
     const [id_tipoIngreso, setId_tipoIngreso] = useState(0);
     const [id_carrera, setId_carrera] = useState('');
+    const [id_terceros, setId_terceros] = useState('');
     const [identificador, setIdentificador] = useState('');
     const [tipoingreso, setTipoingreso] = useState('');
     const [plandepago, setPlandepago] = useState('');
@@ -34,6 +36,7 @@ const Deudas = () => {
     const [openConfirm, setOpenConfirm] = useState(false);
     const [openModificar, setOpenModificar] = useState(false);
     const [openModificarInsc, setOpenModificarInsc] = useState(false);
+    const [openModificarCedula, setOpenModificarCedula] = useState(false);
     const [openInsertar, setOpenInsertar] = useState(false);
     const [cuotaVencida, setCuotaVencida] = useState(false);
     const [id_cuenta, setId_cuenta] = useState('');
@@ -82,15 +85,23 @@ const Deudas = () => {
             setId_tipoIngreso(id); setId_plan(plan);
         }
     }
+    const activeModificacionCedula = async (open) => {
+        setOpenModificarCedula(open);
+    }
+    const okModificarCedula = async (value) => {
+        await putTerceros(id_terceros, value.Cedula);
+        setOpenModificarCedula(false);
+    }
 
     const okModificar = async () => {
-        setOpenModificar(false);
         if (id_cuenta !== '' && monto !== '')
             await putDeuda(id_cuenta, monto);
+            setOpenModificar(false);
     }
     const okModificarInsc = async (value) => {
-        setOpenModificarInsc(false);
         await putInscripcion(id_inscripcion, value.Id_TipoIngreso, value.Id_Plan);
+        setOpenModificarInsc(false);
+        check();
     }
 
     const changeMonto = async (value) => {
@@ -159,7 +170,12 @@ const Deudas = () => {
             items !== undefined ? Toast({ show: true, title: 'Información!', msj: 'Se ha actualizado tipo/plan de inscripción.', color: 'yellow' }) : Toast({ show: false });
         });
     }
-
+    const putTerceros = async (id, cedula) => {
+        await put(`terceros/update?id_terceros=${id}&identificador=${cedula}`).then((items) => {
+            items !== undefined ? setIdentificador(cedula) : setIdentificador(cedula);
+            items !== undefined ? Toast({ show: true, title: 'Información!', msj: 'Cédula ha sido modificada.', color: 'yellow' }) : Toast({ show: false });
+        });
+    }
     const getAlumno = async () => {
         await get(`alumno/get?cedula=${identificador}`).then((items) => {
             items !== undefined ? setAlumno(items) : setAlumno([]); 
@@ -183,6 +199,7 @@ const Deudas = () => {
                 items.map((item) => {
                     setId_inscripcion(item.Id_Inscripcion);
                     setId_carrera(item.Id_Carrera);
+                    setId_terceros(item.Id_Terceros);
                     setTipoingreso(item.TipoIngreso);
                     setPlandepago(item.PlanDePago);
                     setId_plan(item.Id_Plan);
@@ -234,6 +251,7 @@ const Deudas = () => {
             {openConfirm ? <ConfirmDelete pagada={pagada} arancel={arancel} openC={activeConfirmacion} confirm={okEliminar} /> : <></>}
             {openModificar ? <ModificarMonto arancel={arancel} openC={activeModificacion} confirm={okModificar} montoNuevo={changeMonto} cuota={checkConfig().Cuota} /> : <></>}
             {openModificarInsc ? <ModificarInscripcion openC={activeModificacionInsc} confirm={okModificarInsc} planDePago={tipoingreso} /> : <></>}
+            {openModificarCedula ? <ModificarCedula openC={activeModificacionCedula} confirm={okModificarCedula} CedulaOld={identificador} /> : <></>}
             {openInsertar ? <InsertarCuota openC={activeInsertar} id_inscripcion={id_inscripcion} aranceles_list={aranceles} confirm={okInsertar} /> : <></>}
 
             <div className="max-w-7xl mx-auto pt-1 pb-8 sm:px-6 lg:px-8">
@@ -282,7 +300,11 @@ const Deudas = () => {
                                     </div>
                                 </div>
                                 :
-                                <></>
+                                <Fragment>
+                                    {(Object.keys(alumno).length === 0) ?
+                                        <p className="text-md font-medium leading-6 text-gray-900">Alumno no inscrito acádemicamente</p>
+                                    :<></>}
+                                </Fragment>
                                 }
                             </Fragment>
                         }
@@ -333,7 +355,7 @@ const Deudas = () => {
                         </div>
 
                     </div>
-                    <div className="mt-5 flex">
+                    {/* <div className="mt-5 flex">
                         <span className="hidden sm:block">
                             <button
                                 type="button"
@@ -342,7 +364,19 @@ const Deudas = () => {
                                 onClick={async () => check()}
                             >
                                 <SearchCircleIcon className=" mr-0 h-8 w-8 text-gray-500" aria-hidden="true" />
-                                
+                            </button>
+                        </span>
+                    </div> */}
+                    <div className="mt-5 flex">
+                        <span className="hidden sm:block">
+                            <button
+                                type="button"
+                                title="Editar Cédula"
+                                disabled={(Object.keys(deudas).length !== 0) || (Object.keys(facturas).length !== 0) ? false : true}
+                                className={`inline-flex items-center px-2 py-2 border rounded-md shadow-sm text-sm font-medium border-gray-300 text-gray-700 hover:bg-gray-50 bg-white  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
+                                onClick={async () => activeModificacionCedula(true)}
+                            >
+                                <PencilIcon className={`mr-0 h-8 w-8 ${(Object.keys(deudas).length !== 0) || (Object.keys(facturas).length !== 0) ? 'text-gray-500 cursor-pointer' : 'text-gray-100 cursor-no-drop'}`} aria-hidden="true" />
                             </button>
                         </span>
                     </div>
@@ -356,7 +390,6 @@ const Deudas = () => {
                                 onClick={async () => activeInsertar(true)}
                             >
                                 <PlusCircleIcon className={`mr-0 h-8 w-8 ${(Object.keys(deudas).length !== 0) || (Object.keys(facturas).length !== 0) ? 'text-gray-500 cursor-pointer' : 'text-gray-100 cursor-no-drop'}`} aria-hidden="true" />
-                                
                             </button>
                         </span>
                     </div>
@@ -370,7 +403,6 @@ const Deudas = () => {
                                 onClick={async () => activeModificacionInsc(true)}
                             >
                                 <AdjustmentsIcon className={`mr-0 h-8 w-8 ${(Object.keys(deudas).length !== 0) || (Object.keys(facturas).length !== 0) ? 'text-gray-500 cursor-pointer' : 'text-gray-100 cursor-no-drop'}`} aria-hidden="true" />
-                                
                             </button>
                         </span>
                     </div>

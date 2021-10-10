@@ -1,4 +1,4 @@
-import React, { useState, useContext,useEffect } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import Moment from 'moment';
 import { Toast } from '../../helpers/Toast';
 import { Context } from '../../context/Context';
@@ -88,7 +88,7 @@ const Reporte = () => {
                                                         </div>
                                                         <div className="col-span-10 sm:col-span-3">
                                                             <label htmlFor="country" className="block text-sm font-medium text-gray-700">
-                                                                Deudas Pagadas
+                                                                Tipo
                                                             </label>
                                                             <select
                                                                 id="pagada"
@@ -97,8 +97,8 @@ const Reporte = () => {
                                                                 value={pagada}
                                                                 onChange={async (event) => setPagada(event.target.value)}
                                                             >
-                                                                <option value="1">Si</option>
-                                                                <option value="0">No</option>
+                                                                <option value="1">Deudas pagadas</option>
+                                                                <option value="0">Deudas sin pagar</option>
                                                             </select>
                                                         </div>
                                                         <div className="col-span-8">
