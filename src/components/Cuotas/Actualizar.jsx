@@ -1,52 +1,113 @@
 import React, { useState, useContext, useEffect } from 'react';
+import Moment from 'moment';
 import { Toast } from '../../helpers/Toast';
 import { Context } from '../../context/Context';
-import { put, get } from '../../helpers/Fetch';
 import Loading from '../Layouts/Loading';
-import { CheckCircleIcon, PencilIcon } from '@heroicons/react/outline';
+import { getLapsos } from '../../services/lapsosService';
+import { putCuotas, postCuotas, putCuotaAll, getCuotasByLapso } from '../../services/cuotasService';
+import Form from './Form';
+import CuotasTasas from './CuotasTasas';
 
 const Actualizar = () => {
     const [lapsos, setLapsos] = useState([]);
+    const [cuotas, setCuotas] = useState([]);
     const { checkConfig, setConfig } = useContext(Context);
     const [editCuota, setEditCuota] = useState(false);
     const [lapso, setLapso] = useState(checkConfig().Lapso);
-    const [cuota, setCuota] = useState(checkConfig().Cuota);
+    const [cuota, setCuota] = useState(0);
+    const [dolar, setDolar] = useState(0);
+    const [tasa, setTasa] = useState(0);
+    const [fechaDesde, setFechaDesde] = useState(Moment(new Date() - 10 * 24 * 3600 * 1000).format('DD/MM/YYYY'));
+    const [fechaHasta, setFechaHasta] = useState(Moment(new Date()).format('DD/MM/YYYY'));
     const [btnEstablecer, setBtnEstablecer] = useState(checkConfig().Lapso ? false : true);
     const [loading, setLoading] = useState(false);
+    const [tipoCuota, setTipoCuota] = useState(0);
 
     const activarEditCuota = async (value) => {
         value ? setEditCuota(true) : setEditCuota(false);
     }
-
+    const activarTipoCuota = async (tipo, value) => {
+        console.log('tipo ' + tipo + ' value ' + value);
+    }
     const establecerCuota = async (value) => {
-        value ? setEditCuota(true) : setEditCuota(false);
-        if (checkConfig.Cuota !== cuota)
-            await putCuota(1, cuota);
+       value ? setEditCuota(true) : setEditCuota(false);
+       let cuotaId = tipoCuota === '1' ? checkConfig().CuotaId : checkConfig().CuotaSAIAId;
+        if (cuotaId !== '')
+            (Promise.all([
+                postCuotas(cuotaId, dolar, tasa, tipoCuota, cuota, lapso, 0).then((items) => {
+                    items !== undefined ? Toast({ show: true, title: 'Información!', msj: 'Cuota nueva ha sido aplicada.', color: 'green' }) : Toast({ show: false });
+                    items !== undefined ? getCuotasByLapsos(fechaDesde) : getCuotasByLapsos('');
+                    items.map((_, item) => {
+                        if(tipoCuota === '1'){
+                            setConfig(2, {
+                                'Lapso': null,
+                                'DolarN': dolar,
+                                'DolarI': checkConfig().DolarI !== null ? checkConfig().DolarI : dolar,
+                                'CuotaId': items[item].CuotaId,
+                                'Cuota': cuota,
+                                'CuotaSAIAId': checkConfig().CuotaSAIAId !== null ? checkConfig().CuotaSAIAId : items[item].CuotaId,
+                                'CuotaSAIA':  checkConfig().CuotaSAIA !== null ? checkConfig().CuotaSAIA : cuota,
+                            });
+                        }else if(tipoCuota === '2'){
+                            setConfig(2, {
+                                'Lapso': null,
+                                'DolarN': checkConfig().DolarN !== null ? checkConfig().DolarN : dolar,
+                                'DolarI': dolar,
+                                'CuotaId': checkConfig().CuotaId !== null ? checkConfig().CuotaId : items[item].CuotaId,
+                                'Cuota': checkConfig().Cuota !== null ? checkConfig().Cuota : cuota,
+                                'CuotaSAIAId': items[item].CuotaId,
+                                'CuotaSAIA':  cuota,
+                            });
+                        }
+                    });
+                }),
+            ]).catch(error => {
+                new Error(error);
+            }));
     }
-    const getLapsos = async () => {
-        await get('lapsos/all').then((items) => {
-            items !== undefined ? setLapsos(items) : setLapsos([]);
-        });
-    }
-    const putCuota = async (id, monto) => {
-        await put(`cuotas/update?cuotaId=${id}`, { 'Monto': monto, 'Estado': 1 }).then((items) => {
-            items !== undefined ? Toast({ show: true, title: 'Información!', msj: 'Cuota nueva ha sido aplicada.', color: 'green' }) : Toast({ show: false });
-            setConfig(2, { 'Lapso': null, 'Cuota': monto });
-        });
+    const putCuotasAll = async () => {
+        //Guardar tasa en local
+        let cuotaLocal = cuota === 0 ? (tipoCuota === '1' ? checkConfig().Cuota : checkConfig().CuotaSAIA) : cuota;
+        console.log('tipo ' + tipoCuota + ' tasa ' + tasa + ' lapso ' + lapso + ' cuota ' + cuotaLocal);
+        setBtnEstablecer(true); setLoading(true);
+        if (cuota !== '' && lapso !== ''){
+            (Promise.all([
+                putCuotaAll(cuotaLocal, lapso, tipoCuota).then((items) => {
+                    items !== undefined ? Toast({ show: true, title: 'Información!', msj: `Cuota nueva ha sido aplicado en las ${items} cuotas sin pagar`, color: 'yellow' }) : Toast({ show: false });
+                    setBtnEstablecer(false); setCuota(checkConfig().Cuota); setLoading(false);
+                }),
+            ]).catch(error => {
+                new Error(error);
+            }));
+        }
     }
 
-    const putCuotaAll = async () => {
-        setBtnEstablecer(true); setLoading(true);
-        await put(`cuotas/updateAll`, { 'Cuota': cuota, 'Abono': 1, 'Lapso': lapso, Pagada: 0 }).then((items) => {
-            console.log(items);
-            items !== undefined ? Toast({ show: true, title: 'Información!', msj: `Cuota nueva ha sido aplicado en las ${items} cuotas sin pagar`, color: 'yellow' }) : Toast({ show: false });
-        });
-        setBtnEstablecer(false); setCuota(checkConfig().Cuota); setLoading(false);
+    const changeTasaAndCuota = (value) => {
+        if(value !== '' || value !== 0){
+            setTipoCuota(value);
+            setTasa(value !== '' ? 0 : 0);
+            setCuota(value !== '' ? 0 : 0);
+        }
+    }
+
+    const getCuotasByLapsos = (fecha) => {
+        if(fecha !== ''){
+            getCuotasByLapso(checkConfig().Lapso, fecha, fechaHasta).then((items) => {
+                setCuotas(items !== undefined ? items : []);
+            });
+        }
     }
 
     useEffect(() => {
-        getLapsos();
-    }, []);
+        (Promise.all([
+            getLapsos().then((items) => {
+                setLapsos(items !== undefined ? items : []);
+            }),  
+            getCuotasByLapsos(fechaDesde),  
+        ]).catch(error => {
+            new Error(error);
+        }));
+    }, [fechaDesde]);
 
     return (
         <div className="max-w-7xl mx-auto py-2 sm:px-6 lg:px-8">
@@ -66,77 +127,77 @@ const Actualizar = () => {
                                         <div className="md:col-span-1">
                                             <div className="px-4 sm:px-0">
                                                 <h3 className="text-lg font-medium leading-6 text-gray-900">Actualización de cuotas diarias, individuales y masivas</h3>
-                                                <p className="mt-1 text-sm text-gray-600">Estas dos maneras de actualización es algo delicado por favor atento al proceso.</p>
+                                                <p className="mt-1 text-sm text-gray-600">Estas dos maneras de actualización es algo delicado por favor atención al proceso.</p>
                                             </div>
                                         </div>
                                         <div className="mt-5 md:mt-0 md:col-span-2">
-                                            <form>
-                                                <div className="shadow overflow-hidden sm:rounded-md">
-                                                    <div className="px-4 py-2 bg-white sm:p-6">
-                                                        <div className="grid grid-cols-8 gap-6">
-                                                            <div className="col-span-6 sm:col-span-3">
-                                                                <label htmlFor="cuota" className="pb-1 block text-sm font-medium text-gray-700">
-                                                                    Cuota
-                                                                </label>
-                                                                <div class="mt-0 flex rounded-md shadow-sm">
-                                                                    <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
-                                                                        {!editCuota ? 
-                                                                            <PencilIcon className="ml-0 mr-1 h-6 w-6 text-gray-500" style={{ cursor: 'pointer' }} onClick={async () => activarEditCuota(true)} aria-hidden="true" />
-                                                                        : 
-                                                                            <CheckCircleIcon className="ml-0 mr-1 h-6 w-6 text-gray-500" style={{ cursor: 'pointer' }} onClick={async () => establecerCuota(false)} aria-hidden="true" />  
-                                                                         }
-                                                                    </span>
-                                                                    <input
-                                                                        type="text"
-                                                                        name="cuota"
-                                                                        id="cuota"
-                                                                        readOnly={!editCuota}
-                                                                        value={cuota}
-                                                                        autoFocus
-                                                                        autoComplete="cuota"
-                                                                        onChange={async (event) => setCuota(event.target.value)}
-                                                                        className={`mt-0 block w-full py-2 px-3 border border-gray-300 ${editCuota ? 'bg-white-100' : 'bg-gray-100'} rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm`}
-                                                                    />
-                                                                </div>
-                                                            </div>
-                                                            <div className="col-span-8 sm:col-span-3">
-                                                                <label htmlFor="country" className="block text-sm font-medium text-gray-700">
-                                                                    Lapso
-                                                                </label>
-                                                                <select
-                                                                    id="lapso"
-                                                                    name="lapso"
-                                                                    className="mt-0 block w-full py-2 px-1 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base"
-                                                                    value={lapso}
-                                                                    onChange={async (event) => setLapso(event.target.value)}
-                                                                >
-                                                                    <option>Selecciona lapso</option>
-                                                                    {Object.keys(lapsos).map((key, item) => ( 
-                                                                        <option key={key} selected={true} >{lapsos[item].Lapso}</option>
-                                                                    ))}
-                                                                </select>
-                                                            </div>
-                                                            <div className="col-span-3">
-                                                                <button
-                                                                    type="button"
-                                                                    disabled={editCuota === true ? true : false}
-                                                                    onClick={async () => putCuotaAll()}
-                                                                    className={`inline-flex justify-center py-2 px-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${editCuota === true ? 'bg-indigo-200 hover:bg-indigo-200' : 'bg-indigo-600 hover:bg-indigo-700'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
-                                                                > 
-                                                                    Actualizar cuota a todos
-                                                                </button>
-                                                            </div>
-                                                        </div>
+                                            <div className="col-span-8 sm:col-span-3">
+                                                <label htmlFor="country" className="block text-sm font-medium text-gray-700">
+                                                    Tipo de cuota por actualizar
+                                                </label>
+                                                {/* <div className="flex items-center justify-between">
+                                                    <div className="flex items-center pt-2">
+                                                        <input id="normal" name="normal" defaultValue={activeNormal} onChange={async (ev) => activarTipoCuota(1, ev.target.value)} type="radio" className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded" />
+                                                        <label for="normal" className="ml-2 block text-sm text-gray-900">Cuota normal</label>
+                                                        <input id="saia" name="saia" defaultValue={activeSAIA} onChange={async (ev) => activarTipoCuota(2, ev.target.value)} type="radio" className="ml-4 h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded" />
+                                                        <label for="saia" className="ml-2 block text-sm text-gray-900">Cuota SAIA Internacional</label>
                                                     </div>
-                                                </div>
-                                            </form>
-                                        </div>
-                                        
+                                                </div> */}
+                                                <select
+                                                    id="lapso"
+                                                    name="lapso"
+                                                    className="mt-0 block w-full py-2 px-1 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base"
+                                                    value={tipoCuota}
+                                                    onChange={async (event) => changeTasaAndCuota(event.target.value)}
+                                                >
+                                                    <option value={0} selected>Selecciona cuota a actualizar</option>
+                                                    <option value={1}>Cuota Nacional</option>
+                                                    <option value={2}>Cuota Internacional</option>
+                                                </select>
+                                            </div>
+                                            {tipoCuota != '0' ?
+                                                <Form 
+                                                    checkConfig={checkConfig}
+                                                    tipo={tipoCuota}
+                                                    editCuota={editCuota}
+                                                    activarEditCuota={activarEditCuota}
+                                                    establecerCuota={establecerCuota}
+                                                    cuota={cuota}
+                                                    setCuota={setCuota}
+                                                    putCuotasAll={putCuotasAll}
+                                                    lapsos={lapsos}
+                                                    lapso={lapso}
+                                                    setLapso={setLapso}
+                                                    tasa={tasa}
+                                                    setTasa={setTasa}
+                                                    dolar={dolar}
+                                                    setDolar={setDolar}
+                                                />
+                                                :
+                                                <></>
+                                            }
+                                        </div>                                       
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                        <div className="py-0 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+                            <div className="overflow-hidden ">
+                                <div className="mt-10 sm:mt-0">
+                                    <CuotasTasas 
+                                        cuotas={cuotas}
+                                        fechaDesde={fechaDesde}
+                                        setFechaDesde={setFechaDesde}
+                                        fechaHasta={fechaHasta}
+                                        setFechaHasta={setFechaHasta}
+                                        getCuotasByLapsos={getCuotasByLapsos}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>       
                 </div>
             </div>
         </div>

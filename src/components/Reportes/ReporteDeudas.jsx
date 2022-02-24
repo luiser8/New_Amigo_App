@@ -1,56 +1,16 @@
-import React, { useState, useContext, useEffect } from 'react';
-import Moment from 'moment';
-import { Toast } from '../../helpers/Toast';
-import { Context } from '../../context/Context';
-import { blob, get } from '../../helpers/Fetch';
-import Loading from '../Layouts/Loading';
+import React from 'react';
+import PropTypes from 'prop-types';
 
-const Reporte = () => {
-    const [lapsos, setLapsos] = useState([]);
-    const { checkConfig } = useContext(Context);
-    const [lapso, setLapso] = useState(checkConfig().Lapso);
-    const [pagada, setPagada] = useState(0);
-    const [btnEstablecer, setBtnEstablecer] = useState(checkConfig().Lapso ? false : true);
-    const [loading, setLoading] = useState(false);
-
-    const getReporte = async (ev) => {
-        ev.preventDefault(); setBtnEstablecer(true); setLoading(true);
-        await blob(`reporte/get?lapso=${lapso}&pagada=${pagada}`).then((items) => {
-            items !== undefined ? items.blob().then(blob => downloadFile(blob)) : Toast({ show: true, title: 'Advertencia!', msj: `Por alguna razon el Reporte de deudas no ha sido creado!`, color: 'yellow' }); 
-            items !== undefined ? Toast({ show: true, title: 'Información!', msj: `Reporte de deudas ha sido creado!`, color: 'yellow' }) : Toast({ show: false });
-        });
-        setBtnEstablecer(false); setLoading(false);
-    }
-    const getLapsos = async () => {
-        await get('lapsos/all').then((items) => {
-            items !== undefined ? setLapsos(items) : setLapsos([]);
-        });
-    }
-    const downloadFile = async (blob) => {
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.style.display = 'none';
-        a.href = url;
-        // the filename you want
-        a.download = `Reporte Cuentas ${Moment(new Date()).format('DD-MM-YYYY')}`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
-      }
-
-      useEffect(() => {
-        getLapsos();
-      }, []);
-
+const ReporteDeudas = ({ 
+    getReporte, 
+    setLapso, 
+    lapsos, 
+    lapso,
+    setPagada, 
+    pagada, 
+    btnEstablecer 
+}) => {
     return (
-        <div className="max-w-7xl mx-auto py-2 sm:px-6 lg:px-8">
-        {loading ? <Loading display={'block'} msj={'Creando reporte! espera un momento...'} /> : ''}
-        <div className="lg:flex lg:items-center lg:justify-between">
-            <div className="flex-1 min-w-0">
-                <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">Reporte de cuentas</h2>
-            </div>
-        </div>
         <div className="max-w-7xl mx-auto py-6">
             <div className="flex flex-col">
                 <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -81,7 +41,7 @@ const Reporte = () => {
                                                                 onChange={async (event) => setLapso(event.target.value)}
                                                             >
                                                                 <option>Selecciona lapso</option>
-                                                                {Object.keys(lapsos).map((key, item) => ( 
+                                                                {Object.keys(lapsos).map((key, item) => (
                                                                     <option key={key} selected={true} >{lapsos[item].Lapso}</option>
                                                                 ))}
                                                             </select>
@@ -122,8 +82,17 @@ const Reporte = () => {
                 </div>
             </div>
         </div>
-    </div>
     )
 }
 
-export default Reporte;
+ReporteDeudas.propTypes = {
+    getReporte: PropTypes.func,
+    setLapso: PropTypes.func,
+    lapsos: PropTypes.array,
+    lapso: PropTypes.string,
+    setPagada: PropTypes.func,
+    pagada: PropTypes.number,
+    btnEstablecer: PropTypes.bool,
+}
+
+export default ReporteDeudas;

@@ -1,83 +1,111 @@
 import React, { useState, useEffect, useContext } from 'react';
-import Moment from 'moment';
 import { Toast } from '../../helpers/Toast';
 import { Context } from '../../context/Context';
-import { get, post } from '../../helpers/Fetch';
 import Loading from '../Layouts/Loading';
+import { getLapsos } from '../../services/lapsosService';
+import { getAranceles, getArancelesSAIA } from '../../services/arancelesService';
+import { getPlanes, getPlanesSAIA } from '../../services/planesService';
+import { postCuotaAll, postCuotaAllSAIA } from '../../services/cuotasService';
+import Cuotas from './Cuotas';
+import CuotasSAIA from './CuotasSAIA';
 
 const Insertar = () => {
     const [lapsos, setLapsos] = useState([]);
     const { checkConfig } = useContext(Context);
     const [planes, setPlanes] = useState([]);
     const [aranceles, setAranceles] = useState([]);
+    const [arancelesSAIA, setArancelesSAIA] = useState([]);
+    const [planesSAIA, setPlanesSAIA] = useState([]);
     const [planesCheck, setPlanesCheck] = useState([]);
     const [lapso, setLapso] = useState(checkConfig().Lapso);
     const [cuota, setCuota] = useState(checkConfig().Cuota);
+    const [cuotaSAIA, setCuotaSAIA] = useState(checkConfig().CuotaSAIA);
     const [id_arancel, setId_arancel] = useState(0);
+    const [id_arancelSAIA, setId_arancelSAIA] = useState(0);
     const [fechaVencimiento, setFechaVencimiento] = useState('');
+    const [fechaVencimientoSAIA, setFechaVencimientoSAIA] = useState('');
     const [btnEstablecer, setBtnEstablecer] = useState(true);
     const [loading, setLoading] = useState(false);
+    const [tipoCuota, setTipoCuota] = useState(0);
 
     /* Inicio Peticiones*/
-    const getAranceles = async (lapso) => {
-        await get(`arancel/get?lapso=${lapso}&tipoArancel=${2}`).then((items) => {
-            items !== undefined ? setAranceles(items) : setAranceles([]);
-        });
-    }
-    const getPlanes = async (lapso) => {
-        await get(`planes/get?lapso=${lapso}&tipo=${1}`).then((items) => {
-            items !== undefined ? setPlanes(items) : setPlanes([]);
-        });
-    }
-    const getLapsos = async () => {
-        await get('lapsos/all').then((items) => {
-            items !== undefined ? setLapsos(items) : setLapsos([]);
-        });
-    }
     const postCuota = async (ev) => {
         ev.preventDefault(); setBtnEstablecer(true); setLoading(true);
-            await post('cuotas/insertAll', 
-                    {
-                        'Lapso': lapso, 
-                        'Monto': cuota, 
-                        'Id_Arancel': id_arancel, 
-                        'Plan1': Number.parseInt(planesCheck[0].toString()),
-                        'Plan2': Number.parseInt(planesCheck[1].toString()),
-                        'Plan3': Number.parseInt(planesCheck[2].toString()),
-                        'Plan4': Number.parseInt(planesCheck[3].toString()),
-                        'FechaVencimiento': fechaVencimiento 
-                    }
-                ).then((items) => {
-                    items !== undefined ? Toast({ show: true, title: 'Información!', msj: `Cuota nueva ha sido aplicado a los estudiantes inscritos`, color: 'green' }) : Toast({ show: false });
-                    getAranceles(checkConfig().Lapso); getPlanes(checkConfig().Lapso);
-                    Toast({ show: false });
-            });
-        setBtnEstablecer(false); setLoading(false);
+        (Promise.all([
+            postCuotaAll(lapso, cuota, id_arancel, planesCheck, fechaVencimiento).then((items) => {
+                items !== undefined ? Toast({ show: true, title: 'Información!', msj: `Cuota nueva ha sido aplicado a los estudiantes inscritos`, color: 'green' }) : Toast({ show: false });
+                setBtnEstablecer(false); setLoading(false);
+                Toast({ show: false });
+            }),
+            getAranceles(checkConfig().Lapso),
+            getPlanes(checkConfig().Lapso),
+        ]).catch(error => {
+            new Error(error);
+        }));
+    }
+    const postCuotaSAIA = async (ev) => {
+        ev.preventDefault(); setBtnEstablecer(true); setLoading(true);
+        (Promise.all([
+            postCuotaAllSAIA(lapso, cuotaSAIA, id_arancelSAIA, planesCheck, fechaVencimientoSAIA).then((items) => {
+                items !== undefined ? Toast({ show: true, title: 'Información!', msj: `Cuota nueva ha sido aplicado a los estudiantes de SAIA Internacional inscritos`, color: 'green' }) : Toast({ show: false });
+                setBtnEstablecer(false); setLoading(false);
+                Toast({ show: false });
+            }),
+            getArancelesSAIA(checkConfig().Lapso),
+            getPlanesSAIA(checkConfig().Lapso),
+        ]).catch(error => {
+            new Error(error);
+        }));
     }
     const changeArancelFecha = async (value) => {
-        let fecha = aranceles.find(item => item.Id_Arancel == value);
+        let fecha = aranceles.find(item => item.Id_Arancel === value);
         value !== 0 ? setId_arancel(Number.parseInt(value)) : setId_arancel(0);
-        if(value !== 0 && fecha !== undefined){
+        if (value !== 0 && fecha !== undefined) {
             setFechaVencimiento(fecha.FechaVencimiento);
-        }else{
+        } else {
             setFechaVencimiento('');
         }
     }
-    const changeMonto = async (value) => {
+    const changeArancelFechaSAIA = async (value) => {
+        let fecha = arancelesSAIA.find(item => item.Id_Arancel === value);
+        value !== 0 ? setId_arancelSAIA(Number.parseInt(value)) : setId_arancelSAIA(0);
+        if (value !== 0 && fecha !== undefined) {
+            setFechaVencimientoSAIA(fecha.FechaVencimiento);
+        } else {
+            setFechaVencimientoSAIA('');
+        }
+    }
+    const changeMonto = async (checked, value) => {
         let planesSelected = [];
         let find = planes.indexOf(value);
-        if(find > -1) {
+        if (find > -1) {
             planesSelected.splice(find, 1);
-          } else {
+        } else {
             planesSelected.push(value);
             setPlanesCheck(planesCheck => [...planesCheck, planesSelected]);
-          }
+        }
     }
     /* Fin Peticiones*/
     useEffect(() => {
-        getLapsos();
-        getAranceles(checkConfig().Lapso);
-        getPlanes(checkConfig().Lapso);
+        (Promise.all([
+            getLapsos().then((items) => {
+                setLapsos(items !== undefined ? items : []);
+            }),
+            getAranceles(checkConfig().Lapso).then((items) => {
+                setAranceles(items !== undefined ? items : []);
+            }),
+            getArancelesSAIA(checkConfig().Lapso).then((items) => {
+                setArancelesSAIA(items !== undefined ? items : []);
+            }),
+            getPlanes(checkConfig().Lapso).then((items) => {
+                setPlanes(items !== undefined ? items : []);
+            }),
+            getPlanesSAIA(checkConfig().Lapso).then((items) => {
+                setPlanesSAIA(items !== undefined ? items : []);
+            }),
+        ]).catch(error => {
+            new Error(error);
+        }));
     }, []);
 
     return (
@@ -94,128 +122,55 @@ const Insertar = () => {
                         <div className="py-0 align-middle inline-block min-w-full sm:px-6 lg:px-8">
                             <div className="overflow-hidden ">
                                 <div className="mt-10 sm:mt-0">
-                                    <div className="md:grid md:grid-cols-3 md:gap-6">
-                                        <div className="md:col-span-1">
-                                            <div className="px-4 sm:px-0">
-                                                <h3 className="text-lg font-medium leading-6 text-gray-900">Insertar de cuotas individuales y masivas</h3>
-                                                <p className="mt-1 text-sm text-gray-600">Estas dos maneras de insertar es algo delicado por favor atento al proceso.</p>
+                                    <div className="md:grid md:grid-cols-2 md:gap-6">
+                                    <div className="col-span-0">
+                                                <label htmlFor="country" className="block text-sm font-medium text-gray-700">
+                                                    Tipo de cuota a insertar
+                                                </label>
+                                                <select
+                                                    id="lapso"
+                                                    name="lapso"
+                                                    className="mt-0 block w-full py-2 px-1 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base"
+                                                    value={tipoCuota}
+                                                    onChange={async (event) => setTipoCuota(Number(event.target.value))}
+                                                >
+                                                    <option value={0} selected>Selecciona cuota a insertar</option>
+                                                    <option value={1}>Cuota Nacional</option>
+                                                    <option value={2}>Cuota Internacional</option>
+                                                </select>
                                             </div>
-                                        </div>
-                                        <div className="mt-5 md:mt-0 md:col-span-2">
-                                            <form onSubmit={async (ev) => postCuota(ev)}>
-                                                <div className="shadow overflow-hidden sm:rounded-md">
-                                                    <div className="px-4 py-5 bg-white sm:p-6">
-                                                        <div className="grid grid-cols-10 gap-6">
-                                                            <div className="col-span-10 sm:col-span-8">
-                                                            {(Object.keys(planes).length !== 0) ?
-                                                                <div className="px-4 py-0">
-                                                                    <h3 className="-mx-2 -my-3 flow-root">
-                                                                        <span className="font-medium text-gray-900">
-                                                                            Planes de pago
-                                                                        </span>
-                                                                    </h3>
-                                                                    <div className="pt-6" id="filter-section-mobile-1">
-                                                                        <div className="space-y-1">
-                                                                            {Object.keys(planes).map((key, plan) => (
-                                                                                <div className="flex items-center">
-                                                                                    <input   
-                                                                                        type="checkbox" 
-                                                                                        defaultValue={planes[plan].Id_Plan}
-                                                                                        defaultChecked={false}
-                                                                                        id={`Plan${planes[plan].Id_Plan.toString().slice(-1)}`}
-                                                                                        onChange={async (ev) => changeMonto(planes[plan].Id_Plan)}
-                                                                                        
-                                                                                        className="h-4 w-4 border-gray-300 rounded text-indigo-600 focus:ring-indigo-500" />
-                                                                                    <label className="ml-3 min-w-0 flex-1 text-gray-500">{planes[plan].Descripcion}</label>
-                                                                                </div>
-                                                                            ))}
-
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                :
-                                                                <div className="flex flex-col">
-                                                                    <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                                                                        <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-                                                                            <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
-                                                                                <div className="border border-blue-300 shadow rounded-md p-8 w-full mx-auto">
-                                                                                    <div className="animate-pulse flex space-x-4">
-                                                                                        <div className="flex-1 space-y-4 py-1">
-                                                                                            <div className="h-4 bg-blue-400 rounded w-3/4"></div>
-                                                                                            <div className="space-y-2">
-                                                                                                <div className="h-4 bg-blue-400 rounded"></div>
-                                                                                                <div className="h-4 bg-blue-400 rounded w-5/6"></div>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            }
-                                                            </div>
-                                                            <div className="col-span-8 sm:col-span-3">
-                                                                <label htmlFor="cuota" className="block text-sm font-medium text-gray-700">
-                                                                    Cuota
-                                                                </label>
-                                                                <input
-                                                                    type="text"
-                                                                    name="cuota"
-                                                                    id="cuota"
-                                                                    readOnly="true"
-                                                                    value={cuota}
-                                                                    autoComplete="cuota"
-                                                                    onChange={async (event) => setCuota(event.target.value)}
-                                                                    className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-gray-100 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                                                />
-                                                            </div>
-
-                                                            <div className="col-span-8 sm:col-span-3">
-                                                                <label htmlFor="country" className="block text-sm font-medium text-gray-700">
-                                                                    Lapso
-                                                                </label>
-                                                                <select
-                                                                    id="lapso"
-                                                                    name="lapso"
-                                                                    className="mt-0 block w-full py-2 px-1 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base"
-                                                                    value={lapso}
-                                                                    onChange={async (event) => setLapso(event.target.value)}
-                                                                >
-                                                                    <option>Selecciona lapso</option>
-                                                                    {Object.keys(lapsos).map((key, item) => ( 
-                                                                        <option key={key} selected={true} >{lapsos[item].Lapso}</option>
-                                                                    ))}
-                                                                </select>
-                                                            </div>
-                                                            <div className="col-span-6 sm:col-span-3">
-                                                                <label htmlFor="country" className="block text-sm font-medium text-gray-700">Arancel</label>
-                                                                <select
-                                                                    id="arancel"
-                                                                    name="arancel"
-                                                                    className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                                                    onChange={async (event) => changeArancelFecha(event.target.value)}
-                                                                >
-                                                                    <option value={0}>Seleciona Arancel</option>
-                                                                    {Object.keys(aranceles).map((key, it) => (
-                                                                        <option key={key} value={`${aranceles[it].Id_Arancel}`} >{aranceles[it].Descripcion} - {Moment(aranceles[it].FechaVencimiento, "YYYY-MM-DD").format("YYYY-MM-DD")}</option>
-                                                                    ))}
-                                                                </select>
-                                                            </div>
-                                                            <div className="col-span-8 sm:col-span-3">
-                                                                <button
-                                                                    type="submit"
-                                                                    disabled={planesCheck.length !== 0 && id_arancel !== 0 ? false : true}
-                                                                    className={`inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${planesCheck.length !== 0 && id_arancel !== 0 ? 'bg-indigo-600 hover:bg-indigo-700' : 'bg-indigo-200 hover:bg-indigo-200'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
-                                                                >
-                                                                    Insertar
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </form>
-                                        </div>
+                                        {tipoCuota === 0 ? <></>:<></> }
+                                        {tipoCuota === 1 ?
+                                            <Cuotas
+                                                planes={planes}
+                                                lapsos={lapsos}
+                                                aranceles={aranceles}
+                                                postCuota={postCuota}
+                                                changeMonto={changeMonto}
+                                                setCuota={setCuota}
+                                                setLapso={setLapso}
+                                                changeArancelFecha={changeArancelFecha}
+                                                planesCheck={planesCheck}
+                                                cuota={cuota}
+                                                lapso={lapso}
+                                                id_arancel={id_arancel}
+                                            /> : <></>  
+                                        }
+                                        {tipoCuota === 2 ? 
+                                            <CuotasSAIA
+                                                planesSAIA={planesSAIA}
+                                                lapsos={lapsos}
+                                                arancelesSAIA={arancelesSAIA}
+                                                postCuotaSAIA={postCuotaSAIA}
+                                                changeMonto={changeMonto}
+                                                setCuotaSAIA={setCuotaSAIA}
+                                                setLapso={setLapso}
+                                                changeArancelFechaSAIA={changeArancelFechaSAIA}
+                                                planesCheck={planesCheck}
+                                                cuotaSAIA={cuotaSAIA}
+                                                lapso={lapso}
+                                                id_arancelSAIA={id_arancelSAIA}
+                                            />:<></> }
                                     </div>
                                 </div>
                             </div>

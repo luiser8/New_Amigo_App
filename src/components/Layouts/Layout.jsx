@@ -19,27 +19,26 @@ const Layout = () => {
     function classNames(...classes) {
         return classes.filter(Boolean).join(' ')
     }
-
     return (
         <Fragment>
             {(checkUser().UsuarioId) !== null ?
                 <Fragment>
                     <Popover className="relative bg-white">
-                        {({ open }) => (
-                            <div className="max-w-7xl mx-auto px-4 sm:px-6">
-                                <div className="flex justify-between items-center border-b-2 border-gray-100 py-4 md:justify-start md:space-x-10">
+                        {({ _ }) => (
+                            <div className="max-w-7xl mx-auto px-4">
+                                <div className="flex justify-between items-center border-b-2 border-gray-100 py-2 md:justify-start md:space-x-10">
                                     <div className="flex justify-start lg:w-0 lg:flex-1">
                                         <Link to="/" className="flex title-font font-medium items-center text-gray-900 mb-4 md:mb-0">
                                             <img
-                                                className="h-10 w-8 md:w-14 lg:w-16"
+                                                className="h-10 w-8 md:w-12 lg:w-16"
                                                 src={`${process.env.PUBLIC_URL}/logopsm.jpg`}
                                                 alt="Logo PSM"
                                             />
-                                            <span class="ml-3 text-xl">Instituto Universitario Politécnico "Santiago Mariño"</span>
+                                            {/* <span class="ml-3 text-xl">Instituto Universitario Politécnico "Santiago Mariño"</span> */}
                                         </Link>
 
                                     </div>
-                                    <div className="-mr-2 -my-2 md:hidden">
+                                    <div className="-mr-1 -my-2 md:hidden">
                                         <Popover.Button className="bg-white rounded-md p-2 inline-flex items-center justify-center text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500">
                                             <span className="sr-only">Open menu</span>
                                             <MenuIcon className="h-6 w-6" aria-hidden="true" />
@@ -49,8 +48,9 @@ const Layout = () => {
                                         {/* <Link to="/deudas" className="text-base font-medium text-gray-500 hover:text-gray-900">Deudas</Link> */}
                                         {/* <Link to="/reportes" className="text-base font-medium text-gray-500 hover:text-gray-900">Reportes</Link> */}
                                         <span className="font-semibold">
-                                            Lapso: {checkConfig().Lapso ? checkConfig().Lapso : 'Lapso sin establecer'}
-                                            <span className="pl-4">Cuota: {checkConfig().Cuota ? checkConfig().Cuota : 'Cuota sin establecer'}</span>
+                                            Lapso: {checkConfig().Lapso ? checkConfig().Lapso : 'Lapso ?'}
+                                            <span className="pl-3">Cuota Nacional: {checkConfig().DolarN ? (`$${checkConfig().DolarN}`) : 'Dolar ?'} {checkConfig().Cuota ? (`Bs.${checkConfig().Cuota}`) : 'Cuota ?'}</span>
+                                            <span className="pl-3">Cuota Internacional: {checkConfig().DolarI ? (`$${checkConfig().DolarI}`): 'Dolar ?'} {checkConfig().CuotaSAIA ? (`Bs.${checkConfig().CuotaSAIA}`) : 'Cuota Internacional ?'}</span>
                                         </span>
                                         <Popover className="relative">
                                             {({ open }) => (
@@ -89,37 +89,37 @@ const Layout = () => {
                                                                 <div className="relative grid gap-6 bg-white px-4 py-4 sm:gap-8 sm:p-8">
 
                                                                     <Link
-                                                                        to={`/reporte`}
+                                                                        to={`/reportes`}
                                                                         className="-m-4 p-2 flex items-start rounded-lg hover:bg-gray-50"
                                                                     >
                                                                         <ChartPieIcon className="flex-shrink-0 h-6 w-6" aria-hidden="true" />
                                                                         <p className="pl-2 text-base font-semibold">Reporte</p>
                                                                     </Link>
-                                                                    {checkUser().Rol === '1' || checkUser().Rol === '2'?
-                                                                    <Link
-                                                                        to={`/actualizar`}
-                                                                        className="-m-4 p-2 flex items-start rounded-lg hover:bg-gray-50"
-                                                                    >
-                                                                        <RefreshIcon className="flex-shrink-0 h-6 w-6" aria-hidden="true" />
-                                                                        <p className="pl-2 text-base font-semibold">Actualizar cuotas</p>
-                                                                    </Link>: <></>}
+                                                                    {checkUser().Rol === '1' || checkUser().Rol === '2' ?
+                                                                        <Link
+                                                                            to={`/actualizar`}
+                                                                            className="-m-4 p-2 flex items-start rounded-lg hover:bg-gray-50"
+                                                                        >
+                                                                            <RefreshIcon className="flex-shrink-0 h-6 w-6" aria-hidden="true" />
+                                                                            <p className="pl-2 text-base font-semibold">Actualizar cuotas</p>
+                                                                        </Link> : <></>}
 
-                                                                    {checkUser().Rol === '1' || checkUser().Rol === '2'?
-                                                                    <Link
-                                                                        to={`/insertar`}
-                                                                        className="-m-4 p-2 flex items-start rounded-lg hover:bg-gray-50"
-                                                                    >
-                                                                        <ViewGridAddIcon className="flex-shrink-0 h-6 w-6" aria-hidden="true" />
-                                                                        <p className="pl-2 text-base font-semibold">Insertar cuotas</p>
-                                                                    </Link> : <></>}
+                                                                    {checkUser().Rol === '1' || checkUser().Rol === '2' ?
+                                                                        <Link
+                                                                            to={`/insertar`}
+                                                                            className="-m-4 p-2 flex items-start rounded-lg hover:bg-gray-50"
+                                                                        >
+                                                                            <ViewGridAddIcon className="flex-shrink-0 h-6 w-6" aria-hidden="true" />
+                                                                            <p className="pl-2 text-base font-semibold">Insertar cuotas</p>
+                                                                        </Link> : <></>}
                                                                     {checkUser().Rol === '1' ?
-                                                                    <Link
-                                                                        to={`/configuracion`}
-                                                                        className="-m-4 p-2 flex items-start rounded-lg hover:bg-gray-50"
-                                                                    >
-                                                                        <CogIcon className="flex-shrink-0 h-6 w-6" aria-hidden="true" />
-                                                                        <p className="pl-2 text-base font-semibold">Configuración</p>
-                                                                    </Link>:<></>}
+                                                                        <Link
+                                                                            to={`/configuracion`}
+                                                                            className="-m-4 p-2 flex items-start rounded-lg hover:bg-gray-50"
+                                                                        >
+                                                                            <CogIcon className="flex-shrink-0 h-6 w-6" aria-hidden="true" />
+                                                                            <p className="pl-2 text-base font-semibold">Configuración</p>
+                                                                        </Link> : <></>}
 
                                                                     <Link
                                                                         to={``}
@@ -137,9 +137,7 @@ const Layout = () => {
                                                 </>
                                             )}
                                         </Popover>
-
                                     </Popover.Group>
-
                                 </div>
                             </div>
                         )}

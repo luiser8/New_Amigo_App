@@ -1,6 +1,6 @@
 import React, { useState, useContext, Fragment } from 'react';
 import { Context } from '../../context/Context';
-import { post } from '../../helpers/Fetch';
+import { loginUsuario } from '../../services/usuarioService';
 
 const Login = () => {
     const { login } = useContext(Context);
@@ -15,22 +15,26 @@ const Login = () => {
     const handleLogin = async (event) => {
         setLoadingBtn(true); setLoadingBtnMsj('Entrando... Espere un momento.');
         event.preventDefault();
-        await post('users/login', { "Usuario": usuario, "Contrasena":contrasena }).then((items) => {
-            if(items !== undefined){
-                if (items.length !== 0) {
-                        login(0,{
-                            'UsuarioId' : items[0].UsuarioId !== undefined ? items[0].UsuarioId : '',
-                            'Nombres' : items[0].Nombres !== undefined ? items[0].Nombres : '',
-                            'Apellidos' : items[0].Apellidos !== undefined ? items[0].Apellidos : '',
-                            'Rol' : items[0].Rol !== undefined ? items[0].Rol : ''
-                        });
+        (Promise.all([
+            loginUsuario(usuario, contrasena).then((items) => {
+                if(items !== undefined){
+                    if (items.length !== 0) {
+                            login(0,{
+                                'UsuarioId' : items[0].UsuarioId !== undefined ? items[0].UsuarioId : '',
+                                'Nombres' : items[0].Nombres !== undefined ? items[0].Nombres : '',
+                                'Apellidos' : items[0].Apellidos !== undefined ? items[0].Apellidos : '',
+                                'Rol' : items[0].Rol !== undefined ? items[0].Rol : ''
+                            });
+                        }else{
+                            setError(true); setErrorMsjTitle('Error de sesión'); setErrorMsj('Ocurrio un problema intentando iniciar la sesión. Usuario / Contraseña erronea, intenta de nuevo');
+                        }
                     }else{
-                        setError(true); setErrorMsjTitle('Error de sesión'); setErrorMsj('Ocurrio un problema intentando iniciar la sesión. Usuario / Contraseña erronea, intenta de nuevo');
+                        setError(true); setErrorMsjTitle('Error de red'); setErrorMsj('Ocurrio un error en la comunicación');
                     }
-                }else{
-                    setError(true); setErrorMsjTitle('Error de red'); setErrorMsj('Ocurrio un error en la comunicación');
-                }
-        });
+            }),
+        ]).catch(error => {
+            new Error(error);
+        }));
         setLoadingBtn(false); setLoadingBtnMsj('Iniciar sesión');
     }
 
@@ -50,7 +54,7 @@ const Login = () => {
                 <></>
             }
             </>
-        <div className={`${error !== true ? 'min-h-screen' : ''} flex items-center justify-center ${error !== true ? 'py-10' : 'py-16'} px-4 sm:px-6 lg:px-8`}>
+        <div className={`${error !== true ? 'min-h-screen' : ''} flex items-center justify-center ${error !== true ? 'py-10' : 'py-32'} px-4 sm:px-6 lg:px-8`}>
             <div className="max-w-md w-full space-y-8">
                 <div>
                     <h2 className="mt-0 text-center text-3xl font-extrabold text-gray-900">

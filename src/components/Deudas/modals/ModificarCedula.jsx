@@ -43,6 +43,7 @@ const ModificarCedula = ({ openC, confirm, CedulaOld }) => {
                     <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">
                         &#8203;
                     </span>
+                    
                     <Transition.Child
                         as={Fragment}
                         enter="ease-out duration-300"

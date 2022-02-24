@@ -1,7 +1,7 @@
 module.exports = global.config = {
     url: {
         production: false,
-        dev: 'http://192.168.1.59/ApiPSM/api/', //http://192.168.1.59/ApiPSM/api/ https://localhost:44311/api/
+        dev: 'http://192.168.1.49/ApiPSM/api/', //http://192.168.1.59/ApiPSM/api/ https://localhost:44311/api/
         prod: 'http://10.0.0.2/API/api/'
     },
     headers: {

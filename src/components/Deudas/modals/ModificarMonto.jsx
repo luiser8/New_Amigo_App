@@ -100,7 +100,7 @@ const ModificarMonto = ({ openC, confirm, montoNuevo, cuota, arancel }) => {
                                                         </div>
                                                         <div className="col-span-6 sm:col-span-12">
                                                             <label htmlFor="first-name" className="block text-sm font-medium text-gray-800">Establecer monto manual</label>
-                                                            <input id="monto" disabled={checkMonto} defaultValue={checkMonto ? cuota : montoTemp} name="monto" onChange={async (ev) => changeMonto(ev.target.value)} type="text" required className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder={`Monto nuevo ${checkMonto ? cuota : 'xxxxx.xx'}`} />
+                                                            <input id="monto" disabled={checkMonto} value={checkMonto ? cuota : montoTemp} name="monto" onChange={async (ev) => changeMonto(ev.target.value)} type="text" required className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder={`Monto nuevo ${checkMonto ? cuota : 'xxxxx.xx'}`} />
                                                         </div>
                                                     </div>
                                                 </div>   

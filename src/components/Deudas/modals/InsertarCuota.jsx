@@ -5,27 +5,27 @@ import { ExclamationIcon } from '@heroicons/react/outline';
 import Moment from 'moment';
 import { Context } from '../../../context/Context';
 
-const InsertarCuota = ({ openC, confirm, id_inscripcion, aranceles_list }) => {
+const InsertarCuota = ({ openC, confirm, id_inscripcion, aranceles_list, cuota, setCuota }) => {
     const { checkConfig } = useContext(Context);
     const [open, setOpen] = useState(true);
+    const [initialCuota] = useState(cuota);
     const [id_arancel, setId_arancel] = useState(0);
-    const [monto, setMonto] = useState(checkConfig().Cuota);
     const [fechaVencimiento, setFechaVencimiento] = useState('');
     const cancelButtonRef = useRef(null);
 
     const activeInsertar = (open) => {
-        openC(open); setOpen(open);
+        openC(open); setOpen(open); setCuota(initialCuota);
     }
 
     const okInsertar = async () => {
-        if (id_inscripcion !== '' && id_arancel !== 0 && monto !== '' && fechaVencimiento !== '') {
-            confirm({ 'Id_Inscripcion': id_inscripcion, 'Id_Arancel': id_arancel, 'Monto': monto, 'FechaVencimiento': Moment(fechaVencimiento,"YYYY-MM-DD").format("YYYY-MM-DD")});
+        if (id_inscripcion !== '' && id_arancel !== 0 && cuota !== '' && fechaVencimiento !== '') {
+            confirm({ 'Id_Inscripcion': id_inscripcion, 'Id_Arancel': id_arancel, 'Monto': cuota, 'FechaVencimiento': Moment(fechaVencimiento,"YYYY-MM-DD").format("YYYY-MM-DD")});
         }
         setOpen(open);
     }
 
     const changeArancelFecha = async (value) => {
-        let fecha = aranceles_list.find(item => item.Id_Arancel == value);
+        let fecha = aranceles_list.find(item => item.Id_Arancel === value);
         value !== 0 ? setId_arancel(value) : setId_arancel(0);
         fecha.FechaVencimiento !== '' ? setFechaVencimiento(fecha.FechaVencimiento) : setFechaVencimiento('');
         /*value.substring(0, 4) !== 0 ? setId_arancel(value.substring(0, 4)) : setId_arancel(0);
@@ -55,7 +55,6 @@ const InsertarCuota = ({ openC, confirm, id_inscripcion, aranceles_list }) => {
                         <Dialog.Overlay className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
                     </Transition.Child>
 
-                    {/* This element is to trick the browser into centering the modal contents. */}
                     <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">
                         &#8203;
                     </span>
@@ -93,7 +92,7 @@ const InsertarCuota = ({ openC, confirm, id_inscripcion, aranceles_list }) => {
                                                                 id="arancel"
                                                                 name="arancel"
                                                                 className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                                                onChange={async (event) => changeArancelFecha(event.target.value)}
+                                                                onChange={async (event) => changeArancelFecha(Number(event.target.value))}
                                                             >
                                                                 <option value={0}>Seleciona Arancel</option>
                                                                 {Object.keys(aranceles_list).map((key, it) => (
@@ -103,7 +102,7 @@ const InsertarCuota = ({ openC, confirm, id_inscripcion, aranceles_list }) => {
                                                         </div>
                                                         <div className="col-span-6 sm:col-span-3">
                                                             <label htmlFor="first-name" className="block text-sm font-medium text-gray-700">Monto</label>
-                                                            <input id="monto" name="monto" value={monto} onChange={async (ev) => setMonto(ev.target.value)} type="text" required className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Monto" />
+                                                            <input id="cuota" name="cuota" value={cuota} onChange={async (ev) => setCuota(ev.target.value)} type="text" required className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Monto" />
                                                         </div>
                                                     </div>
                                                 </div>   
@@ -115,13 +114,13 @@ const InsertarCuota = ({ openC, confirm, id_inscripcion, aranceles_list }) => {
                             <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                                 <button
                                     type="button"
-                                    disabled={id_inscripcion !== '' && id_arancel !== 0 && monto !== '' && fechaVencimiento !== '' ? false : true}
-                                    className={`w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 ${id_inscripcion !== '' && id_arancel !== 0 && monto !== '' && fechaVencimiento !== '' ? 'bg-green-600 hover:bg-green-700' : 'bg-green-200 hover:bg-green-200'} text-base font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm`}
+                                    disabled={id_inscripcion !== '' && id_arancel !== 0 && cuota !== '' && fechaVencimiento !== '' ? false : true}
+                                    className={`w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 ${id_inscripcion !== '' && id_arancel !== 0 && cuota !== '' && fechaVencimiento !== '' ? 'bg-green-600 hover:bg-green-700' : 'bg-green-200 hover:bg-green-200'} text-base font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm`}
                                     onClick={() => okInsertar(true)}
                                 >
                                     Guardar
                                 </button>
-                                <button
+                                <button 
                                     type="button"
                                     className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
                                     onClick={() => activeInsertar(false)}
@@ -143,6 +142,8 @@ InsertarCuota.propTypes = {
     confirm : PropTypes.func,
     id_inscripcion : PropTypes.number,
     aranceles_list : PropTypes.array,
+    cuota : PropTypes.string,
+    setCuota : PropTypes.func,
 }
 
 export default InsertarCuota;

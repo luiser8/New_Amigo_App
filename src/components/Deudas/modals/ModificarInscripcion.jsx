@@ -15,7 +15,7 @@ const ModificarInscripcion = ({ openC, confirm, planDePago }) => {
     const cancelButtonRef = useRef(null);
 
     const getPlanes = async (lapso) => {
-        await get(`planes/get?lapso=${lapso}&tipo=${2}`).then((items) => {
+        await get(`planes/get?lapso=${lapso}&tipo=${3}`).then((items) => {
             items !== undefined ? setPlanes(items) : setPlanes([]);
         });
     }
