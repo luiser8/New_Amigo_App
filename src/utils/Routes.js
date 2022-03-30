@@ -25,9 +25,14 @@ const Routes = () => {
             <Redirect from="/actualizar" to="/"/>
         }
         {(checkUser().UsuarioId) !== null ? 
-            <Reportes path="/reportes" user={checkUser().UsuarioId}></Reportes>
+            <Reportes path="/reportes/deudas" type={1} user={checkUser().UsuarioId}></Reportes>
             :
-            <Redirect from="/reportes" to="/"/>
+            <Redirect from="/reportes/deudas" to="/"/>
+        }
+        {(checkUser().UsuarioId) !== null ? 
+            <Reportes path="/reportes/inscripciones" type={2} user={checkUser().UsuarioId}></Reportes>
+            :
+            <Redirect from="/reportes/inscripciones" to="/"/>
         }
         {(checkUser().UsuarioId) !== null && (checkUser().Rol) === '1' || (checkUser().Rol) === '2' ? 
             <Insertar path="/insertar" user={checkUser().UsuarioId}></Insertar>

@@ -20,8 +20,8 @@ const ReporteDeudas = ({
                                 <div className="md:grid md:grid-cols-3 md:gap-6">
                                     <div className="md:col-span-1">
                                         <div className="px-4 sm:px-0">
-                                            <h3 className="text-lg font-medium leading-6 text-gray-900">Reporte de cuentas por cobrar</h3>
-                                            <p className="mt-1 text-sm text-gray-600">Generación de reporte de cuentas por cobrar de estudiantes por lapso / cuotas</p>
+                                            <h3 className="text-lg font-medium leading-6 text-gray-900">Reporte de deudas</h3>
+                                            <p className="mt-1 text-sm text-gray-600">Generación de reporte de deudas de estudiantes por lapso / cuotas</p>
                                         </div>
                                     </div>
                                     <div className="mt-5 md:mt-0 md:col-span-2">
@@ -67,7 +67,7 @@ const ReporteDeudas = ({
                                                                 disabled={btnEstablecer}
                                                                 className={`inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${btnEstablecer ? 'bg-indigo-200 hover:bg-indigo-200' : 'bg-indigo-600 hover:bg-indigo-700'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
                                                             >
-                                                                Generar Reporte
+                                                                Generar reporte
                                                             </button>
                                                         </div>
                                                     </div>

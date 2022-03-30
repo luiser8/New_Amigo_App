@@ -89,11 +89,18 @@ const Layout = () => {
                                                                 <div className="relative grid gap-6 bg-white px-4 py-4 sm:gap-8 sm:p-8">
 
                                                                     <Link
-                                                                        to={`/reportes`}
+                                                                        to={`/reportes/deudas`}
                                                                         className="-m-4 p-2 flex items-start rounded-lg hover:bg-gray-50"
                                                                     >
                                                                         <ChartPieIcon className="flex-shrink-0 h-6 w-6" aria-hidden="true" />
-                                                                        <p className="pl-2 text-base font-semibold">Reporte</p>
+                                                                        <p className="pl-2 text-base font-semibold">Deudas</p>
+                                                                    </Link>
+                                                                    <Link
+                                                                        to={`/reportes/inscripciones`}
+                                                                        className="-m-4 p-2 flex items-start rounded-lg hover:bg-gray-50"
+                                                                    >
+                                                                        <ChartPieIcon className="flex-shrink-0 h-6 w-6" aria-hidden="true" />
+                                                                        <p className="pl-2 text-base font-semibold">Inscripciones</p>
                                                                     </Link>
                                                                     {checkUser().Rol === '1' || checkUser().Rol === '2' ?
                                                                         <Link
