@@ -6,31 +6,11 @@ export const getCuotas = async (tipo, estado) => {
 export const getCuotasByLapso = async (lapso, fechaDesde, fechaHasta) => {
     return await get(`cuotas/bylapso?lapso=${lapso}&fechaDesde=${fechaDesde}&fechaHasta=${fechaHasta}`);
 }
-export const postCuotaAll = async (lapso, cuota, id_arancel, planesCheck, fechaVencimiento) => {
-    return await post('cuotas/insertAll',
-        {
-            'Lapso': lapso,
-            'Monto': cuota,
-            'Id_Arancel': id_arancel,
-            'Plan1': Number.parseInt(planesCheck[0].toString()),
-            'Plan2': Number.parseInt(planesCheck[1].toString()),
-            'Plan3': Number.parseInt(planesCheck[2].toString()),
-            'Plan4': Number.parseInt(planesCheck[3].toString()),
-            'FechaVencimiento': fechaVencimiento
-        }
-    );
+export const postCuotaAll = async (data) => {
+    return await post('cuotas/insertAll', data);
 } 
-export const postCuotaAllSAIA = async (lapso, cuotaSAIA, id_arancelSAIA, planesCheck, fechaVencimientoSAIA) => {
-    return await post('cuotas/insertAllSAIA',
-        {
-            'Lapso': lapso,
-            'Monto': cuotaSAIA,
-            'Id_Arancel': id_arancelSAIA,
-            'Plan1': Number.parseInt(planesCheck[0].toString()),
-            'Plan2': Number.parseInt(planesCheck[1].toString()),
-            'FechaVencimiento': fechaVencimientoSAIA
-        }
-    );
+export const postCuotaAllSAIA = async (data) => {
+    return await post('cuotas/insertAllSAIA', data);
 }  
 export const postCuotas = async (id, dolar, tasa, tipo, monto, lapso, estado) => {
     return await post('cuotas/insert',

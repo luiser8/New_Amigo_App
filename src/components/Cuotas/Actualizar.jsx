@@ -107,7 +107,7 @@ const Actualizar = () => {
         ]).catch(error => {
             new Error(error);
         }));
-    }, [fechaDesde]);
+    }, []);
 
     return (
         <div className="max-w-7xl mx-auto py-2 sm:px-6 lg:px-8">
@@ -135,14 +135,6 @@ const Actualizar = () => {
                                                 <label htmlFor="country" className="block text-sm font-medium text-gray-700">
                                                     Tipo de cuota por actualizar
                                                 </label>
-                                                {/* <div className="flex items-center justify-between">
-                                                    <div className="flex items-center pt-2">
-                                                        <input id="normal" name="normal" defaultValue={activeNormal} onChange={async (ev) => activarTipoCuota(1, ev.target.value)} type="radio" className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded" />
-                                                        <label for="normal" className="ml-2 block text-sm text-gray-900">Cuota normal</label>
-                                                        <input id="saia" name="saia" defaultValue={activeSAIA} onChange={async (ev) => activarTipoCuota(2, ev.target.value)} type="radio" className="ml-4 h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded" />
-                                                        <label for="saia" className="ml-2 block text-sm text-gray-900">Cuota SAIA Internacional</label>
-                                                    </div>
-                                                </div> */}
                                                 <select
                                                     id="lapso"
                                                     name="lapso"

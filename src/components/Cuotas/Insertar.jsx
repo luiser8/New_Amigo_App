@@ -31,8 +31,17 @@ const Insertar = () => {
     /* Inicio Peticiones*/
     const postCuota = async (ev) => {
         ev.preventDefault(); setBtnEstablecer(true); setLoading(true);
+        let data = {
+            'Lapso': lapso,
+            'Monto': cuota,
+            'Id_Arancel': id_arancel,
+            'FechaVencimiento': fechaVencimiento,
+        };
+        for(const key of Object.keys(planesCheck)){
+            data[`Plan${key}`] = Number.parseInt(planesCheck[key].toString());
+        };
         (Promise.all([
-            postCuotaAll(lapso, cuota, id_arancel, planesCheck, fechaVencimiento).then((items) => {
+            postCuotaAll(data).then((items) => {
                 items !== undefined ? Toast({ show: true, title: 'Información!', msj: `Cuota nueva ha sido aplicado a los estudiantes inscritos`, color: 'green' }) : Toast({ show: false });
                 setBtnEstablecer(false); setLoading(false);
                 Toast({ show: false });
@@ -45,8 +54,17 @@ const Insertar = () => {
     }
     const postCuotaSAIA = async (ev) => {
         ev.preventDefault(); setBtnEstablecer(true); setLoading(true);
+        let data = {
+            'Lapso': lapso,
+            'Monto': cuota,
+            'Id_Arancel': id_arancelSAIA,
+            'FechaVencimiento': fechaVencimientoSAIA,
+        };
+        for(const key of Object.keys(planesCheck)){
+            data[`Plan${key}`] = Number.parseInt(planesCheck[key].toString());
+        };
         (Promise.all([
-            postCuotaAllSAIA(lapso, cuotaSAIA, id_arancelSAIA, planesCheck, fechaVencimientoSAIA).then((items) => {
+            postCuotaAllSAIA(data).then((items) => {
                 items !== undefined ? Toast({ show: true, title: 'Información!', msj: `Cuota nueva ha sido aplicado a los estudiantes de SAIA Internacional inscritos`, color: 'green' }) : Toast({ show: false });
                 setBtnEstablecer(false); setLoading(false);
                 Toast({ show: false });
@@ -76,14 +94,9 @@ const Insertar = () => {
         }
     }
     const changeMonto = async (checked, value) => {
-        let planesSelected = [];
-        let find = planes.indexOf(value);
-        if (find > -1) {
-            planesSelected.splice(find, 1);
-        } else {
-            planesSelected.push(value);
-            setPlanesCheck(planesCheck => [...planesCheck, planesSelected]);
-        }
+        checked 
+            ? setPlanesCheck(planesCheck => [...planesCheck, value]) 
+            : setPlanesCheck([...planesCheck.filter(item => item !== value)]);
     }
     /* Fin Peticiones*/
     useEffect(() => {
