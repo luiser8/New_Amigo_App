@@ -8,6 +8,7 @@ import {
     getReporteDeudas, 
     getReporteMenu, 
     getReporteMenuCarreras, 
+    getReportePagadas, 
     getReportePlanesDePago,
     getReportePorCarreras
 } from '../../services/reporteService';
@@ -31,15 +32,27 @@ const Reportes = (props) => {
 
     const getReporte = async (ev) => {
         ev.preventDefault(); setBtnEstablecer(true); setLoading(true);
-            (Promise.all([
-                getReporteDeudas(lapso, pagada).then((items) => {
-                    items !== undefined ? items.blob().then(blob => downloadFile(blob, 1, 1)) : Toast({ show: true, title: 'Advertencia!', msj: `Por alguna razon el Reporte de deudas no ha sido creado!`, color: 'yellow' }); 
-                    items !== undefined ? Toast({ show: true, title: 'Información!', msj: `Reporte de deudas ha sido creado!`, color: 'yellow' }) : Toast({ show: false });
-                    setBtnEstablecer(false); setLoading(false);
-                }),
-            ]).catch(error => {
-                new Error(error);
-            }));
+            if(pagada === '0'){
+                (Promise.all([
+                    getReporteDeudas(lapso, pagada).then((items) => {
+                        items !== undefined ? items.blob().then(blob => downloadFile(blob, 'deudas', 1)) : Toast({ show: true, title: 'Advertencia!', msj: `Por alguna razon el Reporte de deudas no ha sido creado!`, color: 'yellow' }); 
+                        items !== undefined ? Toast({ show: true, title: 'Información!', msj: `Reporte de deudas ha sido creado!`, color: 'yellow' }) : Toast({ show: false });
+                        setBtnEstablecer(false); setLoading(false);
+                    }),
+                ]).catch(error => {
+                    new Error(error);
+                }));
+            }else if(pagada === '1'){
+                (Promise.all([
+                    getReportePagadas(lapso).then((items) => {
+                        items !== undefined ? items.blob().then(blob => downloadFile(blob, 'pagadas', 1)) : Toast({ show: true, title: 'Advertencia!', msj: `Por alguna razon el Reporte de deudas no ha sido creado!`, color: 'yellow' }); 
+                        items !== undefined ? Toast({ show: true, title: 'Información!', msj: `Reporte deudas pagadas ha sido creado!`, color: 'yellow' }) : Toast({ show: false });
+                        setBtnEstablecer(false); setLoading(false);
+                    }),
+                ]).catch(error => {
+                    new Error(error);
+                }));
+            }
     }
     const getReporteMenus = async (ev) => {
         ev.preventDefault(); setBtnEstablecer(true);
@@ -79,7 +92,7 @@ const Reportes = (props) => {
                     desde ? Moment(desde).format('DD-MM-YYYY') : Moment(new Date() - 15 * 24 * 3600 * 1000).format('DD-MM-YYYY'), 
                     hasta ? Moment(hasta).format('DD-MM-YYYY') : Moment(new Date()).format('DD-MM-YYYY'))
                 .then((items) => {
-                    items !== undefined ? items.blob().then(blob => downloadFile(blob, 2, 2)) : Toast({ show: true, title: 'Advertencia!', msj: `Por alguna razon el Reporte de deudas no ha sido creado!`, color: 'yellow' }); 
+                    items !== undefined ? items.blob().then(blob => downloadFile(blob, 'por plan de pago', 2)) : Toast({ show: true, title: 'Advertencia!', msj: `Por alguna razon el Reporte de deudas no ha sido creado!`, color: 'yellow' }); 
                     items !== undefined ? Toast({ show: true, title: 'Información!', msj: `Reporte de inscritos por planes de pago ha sido creado!`, color: 'yellow' }) : Toast({ show: false });
                     setBtnEstablecer(false); setLoading(false);
                 }),
@@ -95,7 +108,7 @@ const Reportes = (props) => {
                     desde ? Moment(desde).format('DD-MM-YYYY') : Moment(new Date() - 15 * 24 * 3600 * 1000).format('DD-MM-YYYY'), 
                     hasta ? Moment(hasta).format('DD-MM-YYYY') : Moment(new Date()).format('DD-MM-YYYY'))
                 .then((items) => {
-                    items !== undefined ? items.blob().then(blob => downloadFile(blob, 3, 3)) : Toast({ show: true, title: 'Advertencia!', msj: `Por alguna razon el Reporte de deudas no ha sido creado!`, color: 'yellow' }); 
+                    items !== undefined ? items.blob().then(blob => downloadFile(blob, 'por carreras', 3)) : Toast({ show: true, title: 'Advertencia!', msj: `Por alguna razon el Reporte de deudas no ha sido creado!`, color: 'yellow' }); 
                     items !== undefined ? Toast({ show: true, title: 'Información!', msj: `Reporte de inscritos por carrera ha sido creado!`, color: 'yellow' }) : Toast({ show: false });
                     setBtnEstablecer(false); setLoading(false);
                 }),
@@ -104,12 +117,12 @@ const Reportes = (props) => {
             }));
     }
     const downloadFile = async (blob, type, source) => {
-        let msj = source === 2 ? 'inscritos por planes de pago' : 'inscritos por carreras';
+        //let msj = source === 2 ? 'inscritos por planes de pago' : 'inscritos por carreras';
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.style.display = 'none';
         a.href = url;
-        a.download = `Reporte ${type === 1 ? 'deudas' : `${msj}`} ${Moment(new Date()).format('DD-MM-YYYY')}`;
+        a.download = `Reporte ${type} ${Moment(new Date()).format('DD-MM-YYYY')}`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);

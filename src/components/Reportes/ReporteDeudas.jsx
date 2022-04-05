@@ -57,8 +57,8 @@ const ReporteDeudas = ({
                                                                 value={pagada}
                                                                 onChange={async (event) => setPagada(event.target.value)}
                                                             >
-                                                                <option value="1">Deudas pagadas</option>
                                                                 <option value="0">Deudas sin pagar</option>
+                                                                <option value="1">Deudas pagadas</option>
                                                             </select>
                                                         </div>
                                                         <div className="col-span-8">
