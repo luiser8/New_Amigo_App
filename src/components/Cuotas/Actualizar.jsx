@@ -4,7 +4,7 @@ import { Toast } from '../../helpers/Toast';
 import { Context } from '../../context/Context';
 import Loading from '../Layouts/Loading';
 import { getLapsos } from '../../services/lapsosService';
-import { putCuotas, postCuotas, putCuotaAll, getCuotasByLapso } from '../../services/cuotasService';
+import { postCuotas, putCuotaAll, getCuotasByLapso } from '../../services/cuotasService';
 import Form from './Form';
 import CuotasTasas from './CuotasTasas';
 
@@ -22,13 +22,12 @@ const Actualizar = () => {
     const [btnEstablecer, setBtnEstablecer] = useState(checkConfig().Lapso ? false : true);
     const [loading, setLoading] = useState(false);
     const [tipoCuota, setTipoCuota] = useState(0);
+    const [cuotaLength, setCuotaLength] = useState(undefined);
 
     const activarEditCuota = async (value) => {
         value ? setEditCuota(true) : setEditCuota(false);
     }
-    const activarTipoCuota = async (tipo, value) => {
-        console.log('tipo ' + tipo + ' value ' + value);
-    }
+
     const establecerCuota = async (value) => {
        value ? setEditCuota(true) : setEditCuota(false);
        let cuotaId = tipoCuota === '1' ? checkConfig().CuotaId : checkConfig().CuotaSAIAId;
@@ -68,7 +67,6 @@ const Actualizar = () => {
     const putCuotasAll = async () => {
         //Guardar tasa en local
         let cuotaLocal = cuota === 0 ? (tipoCuota === '1' ? checkConfig().Cuota : checkConfig().CuotaSAIA) : cuota;
-        console.log('tipo ' + tipoCuota + ' tasa ' + tasa + ' lapso ' + lapso + ' cuota ' + cuotaLocal);
         setBtnEstablecer(true); setLoading(true);
         if (cuota !== '' && lapso !== ''){
             (Promise.all([
@@ -87,6 +85,7 @@ const Actualizar = () => {
             setTipoCuota(value);
             setTasa(value !== '' ? 0 : 0);
             setCuota(value !== '' ? 0 : 0);
+            setCuotaLength(cuotas.filter((c) => c.Estado !== 0 && c.Tipo === Number(value)).length);
         }
     }
 
@@ -94,6 +93,7 @@ const Actualizar = () => {
         if(fecha !== ''){
             getCuotasByLapso(checkConfig().Lapso, fecha, fechaHasta).then((items) => {
                 setCuotas(items !== undefined ? items : []);
+                setCuotaLength(cuotas.filter((c) => c.Estado !== 0).length);
             });
         }
     }
@@ -103,7 +103,7 @@ const Actualizar = () => {
             getLapsos().then((items) => {
                 setLapsos(items !== undefined ? items : []);
             }),  
-            getCuotasByLapsos(fechaDesde),  
+            getCuotasByLapsos(fechaDesde),
         ]).catch(error => {
             new Error(error);
         }));
@@ -164,6 +164,7 @@ const Actualizar = () => {
                                                     setTasa={setTasa}
                                                     dolar={dolar}
                                                     setDolar={setDolar}
+                                                    checkCuotas={cuotaLength}
                                                 />
                                                 :
                                                 <></>

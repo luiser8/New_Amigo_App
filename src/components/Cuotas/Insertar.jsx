@@ -56,7 +56,7 @@ const Insertar = () => {
         ev.preventDefault(); setBtnEstablecer(true); setLoading(true);
         let data = {
             'Lapso': lapso,
-            'Monto': cuota,
+            'Monto': cuotaSAIA,
             'Id_Arancel': id_arancelSAIA,
             'FechaVencimiento': fechaVencimientoSAIA,
         };

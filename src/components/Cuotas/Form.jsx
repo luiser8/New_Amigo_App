@@ -5,7 +5,6 @@ const Form = ({
     checkConfig,
     tipo,
     editCuota,
-    activarEditCuota,
     establecerCuota,
     cuota,
     setCuota,
@@ -17,6 +16,7 @@ const Form = ({
     setTasa,
     dolar,
     setDolar,
+    checkCuotas,
 }) => {
 
     const calculaCuota = (value) => {
@@ -31,7 +31,7 @@ const Form = ({
 
     useEffect(() => {
         tipo === '1' ? setDolar(checkConfig().DolarN) : setDolar(checkConfig().DolarI);
-    }, [tipo]);
+    }, [checkConfig, setDolar, tipo]);
     return (
         <form>
             <div className="shadow overflow-hidden sm:rounded-md">
@@ -125,9 +125,9 @@ const Form = ({
                         <div className="col-span-3 pt-5">
                             <button
                                 type="button"
-                                disabled={editCuota === true ? true : false}
+                                disabled={editCuota === true || checkCuotas === 0 ? true : false}
                                 onClick={async () => putCuotasAll()}
-                                className={`inline-flex justify-center py-2 px-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${editCuota === true ? 'bg-indigo-200 hover:bg-indigo-200' : 'bg-indigo-600 hover:bg-indigo-700'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
+                                className={`inline-flex justify-center py-2 px-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${editCuota === true || checkCuotas === 0 ? 'bg-indigo-200 hover:bg-indigo-200' : 'bg-indigo-600 hover:bg-indigo-700'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
                             >
                                 Actualizar cuota {tipo == '1' ? 'Nacionales' : 'Internacionales'}
                             </button>
@@ -154,5 +154,6 @@ Form.propTypes = {
     setTasa: PropTypes.func,
     dolar: PropTypes.number,
     setDolar: PropTypes.func,
+    checkCuotas: PropTypes.number,
 }
 export default Form;
