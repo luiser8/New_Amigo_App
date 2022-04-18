@@ -49,6 +49,7 @@ const Configuracion = () => {
                 <Insertar 
                     openInsert={activeInsertar} 
                     roles={roles} 
+                    usuarios={usuarios}
                     confirm={okInsertar} 
                 /> : <></>}
             <UsuariosDetalle 

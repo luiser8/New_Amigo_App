@@ -5,11 +5,11 @@ import { AdjustmentsIcon, PencilIcon, PlusCircleIcon } from '@heroicons/react/so
 const PanelEdicion = ({ deudas, facturas, activeModificacionCedula, activeInsertar, activeModificacionInsc }) => {
     return (
         <Fragment>
-            <div className="mt-5 flex">
+            <div className="mt-6 flex">
                 <span className="hidden sm:block">
                     <button
                         type="button"
-                        title="Editar Cédula"
+                        title="Editar datos Estudiantes"
                         disabled={(Object.keys(deudas).length !== 0) || (Object.keys(facturas).length !== 0) ? false : true}
                         className={`inline-flex items-center px-2 py-2 border rounded-md shadow-sm text-sm font-medium border-gray-300 text-gray-700 hover:bg-gray-50 bg-white  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
                         onClick={async () => activeModificacionCedula(true)}
@@ -18,11 +18,11 @@ const PanelEdicion = ({ deudas, facturas, activeModificacionCedula, activeInsert
                     </button>
                 </span>
             </div>
-            <div className="mt-5 flex">
+            <div className="mt-6 flex">
                 <span className="hidden sm:block">
                     <button
                         type="button"
-                        title="Cargar"
+                        title="Cargar aranceles"
                         disabled={(Object.keys(deudas).length !== 0) || (Object.keys(facturas).length !== 0) ? false : true}
                         className={`inline-flex items-center px-2 py-2 border rounded-md shadow-sm text-sm font-medium border-gray-300 text-gray-700 hover:bg-gray-50 bg-white  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
                         onClick={async () => activeInsertar(true)}
@@ -31,11 +31,11 @@ const PanelEdicion = ({ deudas, facturas, activeModificacionCedula, activeInsert
                     </button>
                 </span>
             </div>
-            <div className="mt-5 flex">
+            <div className="mt-6 flex">
                 <span className="hidden sm:block">
                     <button
                         type="button"
-                        title="Cambiar Plan de Pago o Inscripción"
+                        title="Ajustes de Inscripción"
                         disabled={(Object.keys(deudas).length !== 0) || (Object.keys(facturas).length !== 0) ? false : true}
                         className={`inline-flex items-center px-2 py-2 border rounded-md shadow-sm text-sm font-medium border-gray-300 text-gray-700 hover:bg-gray-50 bg-white  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
                         onClick={async () => activeModificacionInsc(true)}

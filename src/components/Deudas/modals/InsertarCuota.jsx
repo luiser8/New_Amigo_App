@@ -75,7 +75,7 @@ const InsertarCuota = ({ openC, confirm, id_inscripcion, aranceles_list, cuota, 
                                     </div>
                                     <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                                         <Dialog.Title as="h3" className="text-lg leading-6 font-medium text-gray-900">
-                                            Insertar deuda <span style={{ color: 'red' }}>Lapso {checkConfig().Lapso}</span>
+                                            Insertar arancel <span style={{ color: 'red' }}>Lapso {checkConfig().Lapso}</span>
                                         </Dialog.Title>
                                         <div className="mt-2">
                                             <p className="text-sm text-gray-500">
@@ -85,8 +85,8 @@ const InsertarCuota = ({ openC, confirm, id_inscripcion, aranceles_list, cuota, 
                                         <form className="mt-8 space-y-6">
                                             <div className="shadow overflow-hidden sm:rounded-md">
                                                 <div className="px-4 py-5 bg-white sm:p-6">
-                                                    <div className="grid grid-cols-6 gap-6">
-                                                        <div className="col-span-6 sm:col-span-3">
+                                                    <div className="grid grid-cols-5 gap-4">
+                                                        <div className="col-span-6 sm:col-span-4">
                                                             <label htmlFor="country" className="block text-sm font-medium text-gray-700">Arancel</label>
                                                             <select
                                                                 id="arancel"
@@ -100,7 +100,7 @@ const InsertarCuota = ({ openC, confirm, id_inscripcion, aranceles_list, cuota, 
                                                                 ))}
                                                             </select>
                                                         </div>
-                                                        <div className="col-span-6 sm:col-span-3">
+                                                        <div className="col-span-6 sm:col-span-4">
                                                             <label htmlFor="first-name" className="block text-sm font-medium text-gray-700">Monto</label>
                                                             <input id="cuota" name="cuota" value={cuota} onChange={async (ev) => setCuota(ev.target.value)} type="text" required className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Monto" />
                                                         </div>

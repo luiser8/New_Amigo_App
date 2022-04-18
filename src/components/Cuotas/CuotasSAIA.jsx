@@ -38,7 +38,7 @@ const CuotasSAIA = ({
                                         <div className="pt-6" id="filter-section-mobile-1">
                                             <div className="space-y-1">
                                                 {Object.keys(planesSAIA).map((key, plan) => (
-                                                    <div className="flex items-center">
+                                                    <div className="flex items-center" key={planesSAIA[plan].Id_Plan}>
                                                         <input
                                                             type="checkbox"
                                                             defaultValue={planesSAIA[plan].Id_Plan}

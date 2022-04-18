@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 import Moment from 'moment';
-import { KeyIcon, PencilIcon, RefreshIcon, UserAddIcon, UserRemoveIcon } from '@heroicons/react/outline';
+import { KeyIcon, PencilIcon, TrashIcon, UserAddIcon } from '@heroicons/react/outline';
+import { Context } from '../../context/Context';
 
 const UsuariosDetalle = ({ usuarios, activeInsertar }) => {
+    const { checkConfig } = useContext(Context);
     return (
         <div className="max-w-7xl mx-auto pt-1 pb-8 sm:px-6 lg:px-8">
             <div className="lg:flex lg:items-center lg:justify-between mb-6">
@@ -82,7 +84,7 @@ const UsuariosDetalle = ({ usuarios, activeInsertar }) => {
 
                                                     <td className={`px-6 py-4 whitespace-nowrap `}>
                                                         <div className="text-sm font-semibold text-gray-900">
-                                                            {usuarios[item].Rol} - {usuarios[item].Rol === 2 ? 'Administrador' : 'Operador'}
+                                                            {usuarios[item].Rol} - {usuarios[item].NombreRol}
                                                         </div>
                                                     </td>
 
@@ -95,10 +97,9 @@ const UsuariosDetalle = ({ usuarios, activeInsertar }) => {
                                                     </td>
                                                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                                         <div className="mt-2 flex items-center text-sm text-gray-500">
-                                                            <UserRemoveIcon className="-ml-1 mr-2 h-7 w-7 text-gray-500" style={{ cursor: 'pointer' }} aria-hidden="true" />
-                                                            <RefreshIcon className="-ml-1 mr-2 h-7 w-7 text-gray-500" style={{ cursor: 'pointer' }} aria-hidden="true" />
                                                             <PencilIcon className="-ml-1 mr-2 h-7 w-7 text-gray-500" style={{ cursor: 'pointer' }} aria-hidden="true" />
                                                             <KeyIcon className="-ml-1 mr-2 h-7 w-7 text-gray-500" style={{ cursor: 'pointer' }} aria-hidden="true" />
+                                                            <TrashIcon className="-ml-1 mr-2 h-7 w-7 text-gray-500" style={{ cursor: 'pointer' }} aria-hidden="true" />
                                                         </div>
                                                     </td>
                                                 </tr>

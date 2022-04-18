@@ -7,12 +7,12 @@ import { Context } from '../../context/Context';
 import InsertarCuota from './modals/InsertarCuota';
 import Facturas from '../Facturas/Facturas';
 import ModificarInscripcion from './modals/ModificarInscripcion';
-import ModificarCedula from './modals/ModificarCedula';
+import ModificarTerceros from './modals/ModificarTerceros';
 import { getLapsos } from '../../services/lapsosService';
 import { getAranceles } from '../../services/arancelesService';
 import { getCuotas } from '../../services/cuotasService';
 import { getFacturas } from '../../services/facturasServices';
-import { putInscripcion } from '../../services/inscripcionService';
+import { delInscripcion, putInscripcion } from '../../services/inscripcionService';
 import { getAlumnos, putTerceros } from '../../services/alumnosService';
 import { checkDeuda, postDeuda, putDeuda, delDeuda } from '../../services/deudasServices';
 import Alumnos from '../Alumnos/Alumnos';
@@ -33,6 +33,8 @@ const Deudas = () => {
     const [id_carrera, setId_carrera] = useState('');
     const [id_terceros, setId_terceros] = useState('');
     const [identificador, setIdentificador] = useState('');
+    const [telefonos, setTelefonos] = useState('');
+    const [emails, setEmails] = useState('');
     const [tipoingreso, setTipoingreso] = useState('');
     const [plandepago, setPlandepago] = useState('');
     const [lapso, setLapso] = useState(checkConfig().Lapso ? checkConfig().Lapso : '');
@@ -45,7 +47,7 @@ const Deudas = () => {
     const [openConfirm, setOpenConfirm] = useState(false);
     const [openModificar, setOpenModificar] = useState(false);
     const [openModificarInsc, setOpenModificarInsc] = useState(false);
-    const [openModificarCedula, setOpenModificarCedula] = useState(false);
+    const [openModificarTerceros, setOpenModificarTerceros] = useState(false);
     const [openInsertar, setOpenInsertar] = useState(false);
     const [cuotaVencida, setCuotaVencida] = useState(false);
     const [id_cuenta, setId_cuenta] = useState('');
@@ -114,19 +116,21 @@ const Deudas = () => {
             setId_tipoIngreso(id); setId_plan(plan);
         }
     }
-    const activeModificacionCedula = async (open) => {
-        setOpenModificarCedula(open);
+    const activeModificacionTerceros = async (open) => {
+        setOpenModificarTerceros(open);
     }
-    const okModificarCedula = async (value) => {
+    const okModificarTerceros = async (value) => {
         (Promise.all([
-            putTerceros(id_terceros, value.Cedula).then((items) => {
-                items !== undefined ? setIdentificador(value.Cedula) : setIdentificador(value.Cedula);
-                items !== undefined ? Toast({ show: true, title: 'Información!', msj: 'Cédula ha sido modificada.', color: 'yellow' }) : Toast({ show: false });
+            putTerceros(id_terceros, value.Identificador, value.Telefonos, value.Emails).then((items) => {
+                items !== undefined ? setIdentificador(value.Identificador) : setIdentificador(value.Identificador);
+                items !== undefined ? setTelefonos(value.Telefonos) : setTelefonos(value.Telefonos);
+                items !== undefined ? setEmails(value.Emails) : setEmails(value.Emails);
+                items !== undefined ? Toast({ show: true, title: 'Información!', msj: 'Datos del Estudiante han sido modificados.', color: 'yellow' }) : Toast({ show: false });
             }),
         ]).catch(error => {
             new Error(error);
         }));
-        setOpenModificarCedula(false);
+        setOpenModificarTerceros(false);
     }
 
     const okModificar = async () => {
@@ -151,9 +155,18 @@ const Deudas = () => {
             new Error(error);
         }));
         setOpenModificarInsc(false);
-        check();
     }
-
+    const okModificarInscDelete = async (value) => {
+        (Promise.all([
+            delInscripcion(value).then((items) => {
+                check();
+                items !== undefined ? Toast({ show: true, title: 'Información!', msj: 'Se ha eliminado una inscripción.', color: 'yellow' }) : Toast({ show: false });
+            }),
+        ]).catch(error => {
+            new Error(error);
+        }));
+        setOpenModificarInsc(false);
+    }
     const changeMonto = async (value) => {
         if (value !== '') {
             setMonto(value);
@@ -225,6 +238,8 @@ const Deudas = () => {
                         setId_plan(item.Id_Plan);
                         setId_tipoIngreso(item.Id_TipoIngreso);
                         tipoDeCuota(item.PlanDePago.substring(0, 7), 1);
+                        setTelefonos(item.Telefonos);
+                        setEmails(item.Emails);
                     });
                 }
             }),
@@ -285,8 +300,8 @@ const Deudas = () => {
         <Fragment>
             {openConfirm ? <ConfirmDelete pagada={pagada} factura={id_factura} arancel={arancel} openC={activeConfirmacion} confirm={okEliminar} /> : <></>}
             {openModificar ? <ModificarMonto arancel={arancel} openC={activeModificacion} confirm={okModificar} montoNuevo={changeMonto} cuota={cuota} /> : <></>}
-            {openModificarInsc ? <ModificarInscripcion openC={activeModificacionInsc} confirm={okModificarInsc} planDePago={tipoingreso} /> : <></>}
-            {openModificarCedula ? <ModificarCedula openC={activeModificacionCedula} confirm={okModificarCedula} CedulaOld={identificador} /> : <></>}
+            {openModificarInsc ? <ModificarInscripcion openC={activeModificacionInsc} confirm={okModificarInsc} deleteIns={okModificarInscDelete} planDePago={tipoingreso} inscripciones={facturas} /> : <></>}
+            {openModificarTerceros ? <ModificarTerceros openC={activeModificacionTerceros} confirm={okModificarTerceros} data={{'identificador': identificador, 'telefonos': telefonos,'emails': emails}} /> : <></>}
             {openInsertar ? <InsertarCuota openC={activeInsertar} id_inscripcion={id_inscripcion} aranceles_list={aranceles} confirm={okInsertar} cuota={cuota} setCuota={setCuota}/> : <></>}
 
             <div className="max-w-7xl mx-auto pt-1 pb-8 sm:px-6 lg:px-8">
@@ -311,7 +326,7 @@ const Deudas = () => {
                     <PanelEdicion
                         deudas={deudas}
                         facturas={facturas}
-                        activeModificacionCedula={activeModificacionCedula}
+                        activeModificacionCedula={activeModificacionTerceros}
                         activeInsertar={activeInsertar}
                         activeModificacionInsc={activeModificacionInsc}
                     />

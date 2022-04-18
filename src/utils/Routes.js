@@ -39,7 +39,7 @@ const Routes = () => {
             :
             <Redirect from="/insertar" to="/"/>
         }
-        {(checkUser().UsuarioId) !== null && (checkUser().Rol) === '1' ? 
+        {(checkUser().UsuarioId) !== null && (checkUser().Rol) === '1' || (checkUser().Rol) === '2' ? 
             <Configuracion path="/configuracion" user={checkUser().UsuarioId}></Configuracion>
             :
             <Redirect from="/configuracion" to="/"/>

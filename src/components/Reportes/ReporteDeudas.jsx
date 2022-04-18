@@ -55,10 +55,10 @@ const ReporteDeudas = ({
                                                                 name="pagada"
                                                                 className="mt-0 block w-full py-2 px-1 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base"
                                                                 value={pagada}
-                                                                onChange={async (event) => setPagada(event.target.value)}
+                                                                onChange={async (event) => setPagada(Number(event.target.value))}
                                                             >
-                                                                <option value="0">Deudas sin pagar</option>
-                                                                <option value="1">Deudas pagadas</option>
+                                                                <option value={0} selected>Deudas sin pagar</option>
+                                                                <option value={1}>Deudas pagadas</option>
                                                             </select>
                                                         </div>
                                                         <div className="col-span-8">

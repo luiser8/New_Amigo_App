@@ -38,7 +38,7 @@ const Cuotas = ({
                                         <div className="pt-6" id="filter-section-mobile-1">
                                             <div className="space-y-1">
                                                 {Object.keys(planes).map((_, plan) => (
-                                                    <div className="flex items-center">
+                                                    <div className="flex items-center" key={planes[plan].Id_Plan}>
                                                         <input
                                                             type="checkbox"
                                                             defaultValue={planes[plan].Id_Plan}

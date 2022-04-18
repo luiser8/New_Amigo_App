@@ -32,7 +32,7 @@ const Reportes = (props) => {
 
     const getReporte = async (ev) => {
         ev.preventDefault(); setBtnEstablecer(true); setLoading(true);
-            if(pagada === '0'){
+            if(pagada === 0){
                 (Promise.all([
                     getReporteDeudas(lapso, pagada).then((items) => {
                         items !== undefined ? items.blob().then(blob => downloadFile(blob, 'deudas', 1)) : Toast({ show: true, title: 'Advertencia!', msj: `Por alguna razon el Reporte de deudas no ha sido creado!`, color: 'yellow' }); 
@@ -42,7 +42,7 @@ const Reportes = (props) => {
                 ]).catch(error => {
                     new Error(error);
                 }));
-            }else if(pagada === '1'){
+            }else if(pagada === 1){
                 (Promise.all([
                     getReportePagadas(lapso).then((items) => {
                         items !== undefined ? items.blob().then(blob => downloadFile(blob, 'pagadas', 1)) : Toast({ show: true, title: 'Advertencia!', msj: `Por alguna razon el Reporte de deudas no ha sido creado!`, color: 'yellow' }); 

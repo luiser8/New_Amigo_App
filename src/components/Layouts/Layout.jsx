@@ -86,8 +86,8 @@ const Layout = () => {
                                                             className="absolute z-10 -ml-4 mt-3 transform px-2 w-60 max-w-md sm:px-0 lg:ml-0 lg:left-1/2 lg:-translate-x-2/3"
                                                         >
                                                             <div className="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 overflow-hidden">
-                                                                <div className="relative grid gap-6 bg-white px-4 py-4 sm:gap-8 sm:p-8">
-
+                                                                <div className="relative grid gap-4 bg-white px-4 py-2 sm:gap-8 sm:p-6">
+                                                                    <span className="-mt-4 -mb-3 -ml-3 font-semibold">Perfil: {checkUser().NombreRol}</span>
                                                                     <Link
                                                                         to={`/reportes/deudas`}
                                                                         className="-m-4 p-2 flex items-start rounded-lg hover:bg-gray-50"
