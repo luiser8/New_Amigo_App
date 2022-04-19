@@ -1,11 +1,9 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import Moment from 'moment';
 import { KeyIcon, PencilIcon, TrashIcon, UserAddIcon } from '@heroicons/react/outline';
-import { Context } from '../../context/Context';
 
-const UsuariosDetalle = ({ usuarios, activeInsertar }) => {
-    const { checkConfig } = useContext(Context);
+const UsuariosDetalle = ({ usuarios, activeInsertar, activeDelete, activeCambiarClave }) => {
     return (
         <div className="max-w-7xl mx-auto pt-1 pb-8 sm:px-6 lg:px-8">
             <div className="lg:flex lg:items-center lg:justify-between mb-6">
@@ -79,8 +77,8 @@ const UsuariosDetalle = ({ usuarios, activeInsertar }) => {
                                             </tr>
                                         </thead>
                                         <tbody className="bg-white divide-y divide-gray-200">
-                                            {Object.keys(usuarios).map((key, item) => (
-                                                <tr key={key} className="hover:bg-gray-50">
+                                            {Object.keys(usuarios).map((_, item) => (
+                                                <tr key={usuarios[item].UsuarioId} className="hover:bg-gray-50">
 
                                                     <td className={`px-6 py-4 whitespace-nowrap `}>
                                                         <div className="text-sm font-semibold text-gray-900">
@@ -98,8 +96,8 @@ const UsuariosDetalle = ({ usuarios, activeInsertar }) => {
                                                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                                         <div className="mt-2 flex items-center text-sm text-gray-500">
                                                             <PencilIcon className="-ml-1 mr-2 h-7 w-7 text-gray-500" style={{ cursor: 'pointer' }} aria-hidden="true" />
-                                                            <KeyIcon className="-ml-1 mr-2 h-7 w-7 text-gray-500" style={{ cursor: 'pointer' }} aria-hidden="true" />
-                                                            <TrashIcon className="-ml-1 mr-2 h-7 w-7 text-gray-500" style={{ cursor: 'pointer' }} aria-hidden="true" />
+                                                            <KeyIcon onClick={async () => activeCambiarClave({'open': true, 'usuarioId': usuarios[item].UsuarioId, 'usuario': `${usuarios[item].Nombres} ${usuarios[item].Apellidos}`})} className="-ml-1 mr-2 h-7 w-7 text-gray-500" style={{ cursor: 'pointer' }} aria-hidden="true" />
+                                                            <TrashIcon onClick={async () => activeDelete({'open': true, 'usuarioId': usuarios[item].UsuarioId, 'usuario': `${usuarios[item].Nombres} ${usuarios[item].Apellidos}`})} className="-ml-1 mr-2 h-7 w-7 text-gray-500" style={{ cursor: 'pointer' }} aria-hidden="true" />
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -140,6 +138,8 @@ const UsuariosDetalle = ({ usuarios, activeInsertar }) => {
 
 UsuariosDetalle.propTypes = {
     activeInsertar: PropTypes.func,
+    activeDelete: PropTypes.func,
+    activeCambiarClave: PropTypes.func,
     usuarios: PropTypes.array,
 }
 

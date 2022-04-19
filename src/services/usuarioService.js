@@ -10,7 +10,7 @@ export const postUsuarios = async (values) => {
     return await post('users/add', values);
 } 
 export const putUsuarios = async (values) => {
-    return await put('users/update', values);
+    return await put(`users/update?usuarioid=${values.UsuarioId}`, values);
 }
 export const delUsuarios = async (values) => {
     return await del(`users/delete?usuarioId=${values}`);

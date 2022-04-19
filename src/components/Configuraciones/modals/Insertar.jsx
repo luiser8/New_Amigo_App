@@ -24,11 +24,11 @@ const Insertar = ({ openInsert, roles, usuarios, confirm }) => {
     const checkValid = (type, value) => {
         if (type === 1) {
             let valid = usuarios.filter(u => u.Cedula === Number(value));
-            valid.length === 0 ? setErrorCedula('') : setErrorCedula('Cédula existe');
+            valid.length === 0 ? setErrorCedula('') : setErrorCedula('Cédula existe. Rectifica...');
             valid.length === 0 ? setCedula(value) : setCedula('');
         } else if (type === 2) {
             let valid = usuarios.filter(u => u.Usuario === value);
-            valid.length === 0 ? setErrorUsuario('') : setErrorUsuario('Usuario existe');
+            valid.length === 0 ? setErrorUsuario('') : setErrorUsuario('Usuario existe. Rectifica...');
             valid.length === 0 ? setUsuario(value) : setUsuario('');
         }
     }
@@ -108,7 +108,7 @@ const Insertar = ({ openInsert, roles, usuarios, confirm }) => {
                                                     <div className="col-span-5">
                                                         <label htmlFor="cedula" className="block text-sm font-medium text-gray-700">Cédula</label>
                                                         <input id="cedula" name="cedula" onChange={async (ev) => checkValid(1, ev.target.value)/*setCedula(ev.target.value)*/} type="text" required className="mt-1 block w-full py-2 px-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Cédula" />
-                                                        {errorCedula !== '' ? <span>{errorCedula}</span> : <></>}
+                                                        {errorCedula !== '' ? <span className="text-xs text-red-500 font-semibold">{errorCedula}</span> : <></>}
                                                     </div>
                                                     <div className="col-span-5">
                                                         <label htmlFor="nombres" className="block text-sm font-medium text-gray-700">Nombres</label>
@@ -121,7 +121,7 @@ const Insertar = ({ openInsert, roles, usuarios, confirm }) => {
                                                     <div className="col-span-5">
                                                         <label htmlFor="usuario" className="block text-sm font-medium text-gray-700">Usuario</label>
                                                         <input id="usuario" name="usuario" onChange={async (ev) => checkValid(2, ev.target.value)/*setUsuario(ev.target.value)*/} type="text" required className="mt-1 block w-full py-2 px-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Usuario" />
-                                                        {errorUsuario !== '' ? <span>{errorUsuario}</span> : <></>}
+                                                        {errorUsuario !== '' ? <span className="text-xs text-red-500 font-semibold">{errorUsuario}</span> : <></>}
                                                     </div>
                                                     <div className="col-span-5">
                                                         <label htmlFor="contrasena" className="block text-sm font-medium text-gray-700">Contraseña</label>
