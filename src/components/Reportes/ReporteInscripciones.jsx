@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { RefreshIcon } from '@heroicons/react/solid';
 
@@ -20,6 +20,8 @@ const ReporteInscripciones = ({
     lapso,
     btnEstablecer 
 }) => {
+    const [totalInsPlan, setTotalInsPlan] = useState(0);
+    const [totalInsCarrera, setTotalInCarrera] = useState(0);
     const querys = async (ev) => {
         await getMenus(ev);
         await getMenusPorCarreras(ev);
@@ -30,6 +32,15 @@ const ReporteInscripciones = ({
         // eslint-disable-next-line no-unused-expressions
         await idCarrera !== 0 ? getReporteCarreras(ev) : null;
     }
+      useEffect(() => {
+        let totalPorPlanes = menus.reduce((accumulator, object) => {
+                return accumulator + object.Inscritos;
+            }, 0);
+        let totalPorCarreras = menusPorCarreras.reduce((accumulator, object) => {
+                return accumulator + object.Inscritos;
+            }, 0);
+        setTotalInsPlan(totalPorPlanes); setTotalInCarrera(totalPorCarreras);
+      }, [menus, totalInsPlan, menusPorCarreras, totalInsCarrera]);
     return (
         <div className="max-w-7xl mx-auto py-6">
             <div className="flex flex-col">
@@ -112,7 +123,6 @@ const ReporteInscripciones = ({
                                                 <h3 className="-mx-2 -my-3 flow-root">
                                                     <span className="font-medium text-gray-900">
                                                         Por planes de pago
-                                                        
                                                     </span>
                                                 </h3>
                                                 <div className="pt-6" id="filter-section-mobile-1">
@@ -129,30 +139,14 @@ const ReporteInscripciones = ({
                                                                 <label className="ml-3 min-w-0 flex-1 text-gray-500">{menus[menu].PlanPago} - <strong> Inscritos: {menus[menu].Inscritos}</strong></label>
                                                             </div>
                                                         ))}
-
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            :
-                                            <div className="flex flex-col">
-                                                <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                                                    <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-                                                        <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
-                                                            <div className="border border-blue-300 shadow rounded-md p-8 w-full mx-auto">
-                                                                <div className="animate-pulse flex space-x-4">
-                                                                    <div className="flex-1 space-y-4 py-1">
-                                                                        <div className="h-4 bg-blue-400 rounded w-3/4"></div>
-                                                                        <div className="space-y-2">
-                                                                            <div className="h-4 bg-blue-400 rounded"></div>
-                                                                            <div className="h-4 bg-blue-400 rounded w-5/6"></div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
+                                                        <div className="text-right">
+                                                            <span>Total: <strong>{totalInsPlan}</strong></span>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
+                                            :
+                                            <></>
                                         }
                                             </div>
                                         </div>
@@ -182,30 +176,14 @@ const ReporteInscripciones = ({
                                                                 <label className="ml-3 min-w-0 flex-1 text-gray-500">{menusPorCarreras[menu].Carrera} - <strong> Inscritos: {menusPorCarreras[menu].Inscritos}</strong></label>
                                                             </div>
                                                         ))}
-
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            :
-                                            <div className="flex flex-col">
-                                                <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                                                    <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-                                                        <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
-                                                            <div className="border border-blue-300 shadow rounded-md p-8 w-full mx-auto">
-                                                                <div className="animate-pulse flex space-x-4">
-                                                                    <div className="flex-1 space-y-4 py-1">
-                                                                        <div className="h-4 bg-blue-400 rounded w-3/4"></div>
-                                                                        <div className="space-y-2">
-                                                                            <div className="h-4 bg-blue-400 rounded"></div>
-                                                                            <div className="h-4 bg-blue-400 rounded w-5/6"></div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
+                                                        <div className="text-right">
+                                                            <span>Total: <strong>{totalInsPlan}</strong></span>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
+                                            :
+                                            <></>
                                         }
                                             </div>
                                         </div>

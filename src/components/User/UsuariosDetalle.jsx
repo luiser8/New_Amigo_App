@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import Moment from 'moment';
 import { KeyIcon, PencilIcon, TrashIcon, UserAddIcon } from '@heroicons/react/outline';
 
-const UsuariosDetalle = ({ usuarios, activeInsertar, activeDelete, activeCambiarClave }) => {
+const UsuariosDetalle = ({ usuarios, activeInsertar, activeDelete, activeCambiarClave, activeEditar }) => {
     return (
         <div className="max-w-7xl mx-auto pt-1 pb-8 sm:px-6 lg:px-8">
             <div className="lg:flex lg:items-center lg:justify-between mb-6">
@@ -69,6 +69,12 @@ const UsuariosDetalle = ({ usuarios, activeInsertar, activeDelete, activeCambiar
                                                     scope="col"
                                                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                                                 >
+                                                    Bloqueado
+                                                </th>
+                                                <th
+                                                    scope="col"
+                                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                                >
                                                     Fecha Creación
                                                 </th>
                                                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -78,7 +84,7 @@ const UsuariosDetalle = ({ usuarios, activeInsertar, activeDelete, activeCambiar
                                         </thead>
                                         <tbody className="bg-white divide-y divide-gray-200">
                                             {Object.keys(usuarios).map((_, item) => (
-                                                <tr key={usuarios[item].UsuarioId} className="hover:bg-gray-50">
+                                                <tr key={usuarios[item].UsuarioId} className={`hover:bg-gray-50 ${usuarios[item].Bloqueado === 0 ? 'bg-green-100' : 'bg-red-100'}`}>
 
                                                     <td className={`px-6 py-4 whitespace-nowrap `}>
                                                         <div className="text-sm font-semibold text-gray-900">
@@ -90,14 +96,19 @@ const UsuariosDetalle = ({ usuarios, activeInsertar, activeDelete, activeCambiar
                                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{usuarios[item].Nombres}</td>
                                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{usuarios[item].Apellidos}</td>
                                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{usuarios[item].Usuario}</td>
+                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{`${usuarios[item].Bloqueado === 0 ? 'No' : 'Si'}`}</td>
                                                     <td className="px-6 py-4 whitespace-nowrap">
                                                         <div className="text-sm text-gray-900">{Moment(usuarios[item].FechaCreacion).format('DD-MM-YYYY')}</div>
                                                     </td>
                                                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                                         <div className="mt-2 flex items-center text-sm text-gray-500">
-                                                            <PencilIcon className="-ml-1 mr-2 h-7 w-7 text-gray-500" style={{ cursor: 'pointer' }} aria-hidden="true" />
+                                                            {usuarios[item].Rol !== 1 ?
+                                                            <>
+                                                            <PencilIcon onClick={async () => activeEditar({'open': true, 'usuarioId': usuarios[item].UsuarioId, 'usuario': usuarios[item]})} className="-ml-1 mr-2 h-7 w-7 text-gray-500" style={{ cursor: 'pointer' }} aria-hidden="true" />
                                                             <KeyIcon onClick={async () => activeCambiarClave({'open': true, 'usuarioId': usuarios[item].UsuarioId, 'usuario': `${usuarios[item].Nombres} ${usuarios[item].Apellidos}`})} className="-ml-1 mr-2 h-7 w-7 text-gray-500" style={{ cursor: 'pointer' }} aria-hidden="true" />
                                                             <TrashIcon onClick={async () => activeDelete({'open': true, 'usuarioId': usuarios[item].UsuarioId, 'usuario': `${usuarios[item].Nombres} ${usuarios[item].Apellidos}`})} className="-ml-1 mr-2 h-7 w-7 text-gray-500" style={{ cursor: 'pointer' }} aria-hidden="true" />
+                                                            </>:<></>
+                                                            }
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -140,6 +151,7 @@ UsuariosDetalle.propTypes = {
     activeInsertar: PropTypes.func,
     activeDelete: PropTypes.func,
     activeCambiarClave: PropTypes.func,
+    activeEditar: PropTypes.func,
     usuarios: PropTypes.array,
 }
 

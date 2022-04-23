@@ -19,22 +19,22 @@ const Routes = () => {
             :
             <Login path="/" />
         }
-        {(checkUser().UsuarioId) !== null && (checkUser().Rol) === '1' || (checkUser().Rol) === '2' ? 
+        {(checkUser().UsuarioId) !== null && (checkUser().Rol) === '1' || (checkUser().Rol) === '2' || checkUser().Rol === '3' ? 
             <Actualizar path="/actualizar" user={checkUser().UsuarioId}></Actualizar>
             :
             <Redirect from="/actualizar" to="/"/>
         }
-        {(checkUser().UsuarioId) !== null ? 
+        {(checkUser().UsuarioId) !== null && (checkUser().Rol) === '1' || (checkUser().Rol) === '2' ? 
             <Reportes path="/reportes/deudas" type={1} user={checkUser().UsuarioId}></Reportes>
             :
             <Redirect from="/reportes/deudas" to="/"/>
         }
-        {(checkUser().UsuarioId) !== null ? 
+        {(checkUser().UsuarioId) !== null && (checkUser().Rol) === '1' || (checkUser().Rol) === '2' ? 
             <Reportes path="/reportes/inscripciones" type={2} user={checkUser().UsuarioId}></Reportes>
             :
             <Redirect from="/reportes/inscripciones" to="/"/>
         }
-        {(checkUser().UsuarioId) !== null && (checkUser().Rol) === '1' || (checkUser().Rol) === '2' ? 
+        {(checkUser().UsuarioId) !== null && (checkUser().Rol) === '1' || (checkUser().Rol) === '2' || (checkUser().Rol) === '3' ? 
             <Insertar path="/insertar" user={checkUser().UsuarioId}></Insertar>
             :
             <Redirect from="/insertar" to="/"/>

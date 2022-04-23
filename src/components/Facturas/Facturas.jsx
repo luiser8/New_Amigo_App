@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import Moment from 'moment';
 import PropTypes from 'prop-types';
-import { TrashIcon } from '@heroicons/react/solid';
+import { TrashIcon, StopIcon } from '@heroicons/react/solid';
+import { Context } from '../../context/Context';
 
 const Facturas = ({ factura_list, openC }) => {
+    const { checkUser } = useContext(Context);
     const activeConfirmacion = (open) => {
         openC(open);
     }
@@ -77,7 +79,11 @@ const Facturas = ({ factura_list, openC }) => {
                                                         </td>
                                                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                                             <div className="mt-2 flex items-center text-sm text-gray-500">
+                                                            {checkUser().Rol === '1' || checkUser().Rol === '2' ?
                                                                 <TrashIcon className="-ml-1 mr-2 h-8 w-8 text-gray-500" style={{ cursor: 'pointer' }} onClick={async () => activeConfirmacion({'open':true, 'pagada': 1, 'id_factura': factura_list[item].Factura[f].Id_Factura, 'id_inscripcion': factura_list[item].Factura[f].Id_Inscripcion,'id_arancel': factura_list[item].Factura[f].Id_Arancel,'arancel': factura_list[item].Factura[f].Descripcion})} aria-hidden="true" />
+                                                            :<>
+                                                                <StopIcon className="-ml-1 mr-2 h-8 w-8 text-gray-500" aria-hidden="true"/>
+                                                            </>}
                                                             </div>
                                                         </td>
                                                     </tr>

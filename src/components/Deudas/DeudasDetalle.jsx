@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import Moment from 'moment';
 import { PencilIcon, TrashIcon } from '@heroicons/react/solid';
 
-const DeudasDetalle = ({ deudas, cuotaVencida, activeConfirmacion, activeModificacion }) => {
+const DeudasDetalle = ({ checkuser, deudas, cuotaVencida, activeConfirmacion, activeModificacion }) => {
     return (
         <Fragment>
             {(Object.keys(deudas).length !== 0) ?
@@ -80,8 +80,10 @@ const DeudasDetalle = ({ deudas, cuotaVencida, activeConfirmacion, activeModific
                                                         <div className="mt-2 flex items-center text-sm text-gray-500">
                                                             {deudas[item].Pagada === 0 ?
                                                                 <>
+                                                                    {checkuser !== '4' ? <>
                                                                     <TrashIcon className="-ml-1 mr-2 h-8 w-8 text-gray-500" style={{ cursor: 'pointer' }} onClick={async () => activeConfirmacion({ 'open': true, 'pagada': deudas[item].Pagada, 'id_inscripcion': deudas[item].Id_Inscripcion, 'id_arancel': deudas[item].Id_Arancel, 'arancel': deudas[item].Cuota })} aria-hidden="true" />
                                                                     <PencilIcon className="-ml-1 mr-2 h-8 w-8 text-gray-500" style={{ cursor: 'pointer' }} onClick={async () => activeModificacion(true, deudas[item].Id_Cuenta, deudas[item].Cuota)} aria-hidden="true" />
+                                                                    </> : <></>}
                                                                 </>
                                                                 :
                                                                 <></>
@@ -103,33 +105,14 @@ const DeudasDetalle = ({ deudas, cuotaVencida, activeConfirmacion, activeModific
                     </div>
                 </div>
                 :
-                <div className="max-w-7xl mx-auto pt-4 pb-10">
-                    <div className="flex flex-col">
-                        <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                            <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-                                <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
-                                    <div className="border border-blue-300 shadow rounded-md p-8 w-full mx-auto">
-                                        <div className="animate-pulse flex space-x-4">
-                                            <div className="flex-1 space-y-4 py-1">
-                                                <div className="h-4 bg-blue-400 rounded w-3/4"></div>
-                                                <div className="space-y-2">
-                                                    <div className="h-4 bg-blue-400 rounded"></div>
-                                                    <div className="h-4 bg-blue-400 rounded w-5/6"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <></>
             }
         </Fragment>
     )
 }
 
 DeudasDetalle.propTypes = {
+    checkuser: PropTypes.string,
     activeConfirmacion: PropTypes.func,
     activeModificacion: PropTypes.func,
     deudas: PropTypes.array,

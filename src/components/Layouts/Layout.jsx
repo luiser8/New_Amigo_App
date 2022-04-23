@@ -88,21 +88,23 @@ const Layout = () => {
                                                             <div className="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 overflow-hidden">
                                                                 <div className="relative grid gap-4 bg-white px-4 py-2 sm:gap-8 sm:p-6">
                                                                     <span className="-mt-4 -mb-3 -ml-3 font-semibold">Perfil: {checkUser().NombreRol}</span>
+                                                                    {checkUser().Rol === '1' || checkUser().Rol === '2' ?
                                                                     <Link
                                                                         to={`/reportes/deudas`}
                                                                         className="-m-4 p-2 flex items-start rounded-lg hover:bg-gray-50"
                                                                     >
                                                                         <ChartPieIcon className="flex-shrink-0 h-6 w-6" aria-hidden="true" />
                                                                         <p className="pl-2 text-base font-semibold">Deudas</p>
-                                                                    </Link>
+                                                                    </Link>: <></>}
+                                                                    {checkUser().Rol === '1' || checkUser().Rol === '2' ?
                                                                     <Link
                                                                         to={`/reportes/inscripciones`}
                                                                         className="-m-4 p-2 flex items-start rounded-lg hover:bg-gray-50"
                                                                     >
                                                                         <ChartPieIcon className="flex-shrink-0 h-6 w-6" aria-hidden="true" />
                                                                         <p className="pl-2 text-base font-semibold">Inscripciones</p>
-                                                                    </Link>
-                                                                    {checkUser().Rol === '1' || checkUser().Rol === '2' ?
+                                                                    </Link>: <></>}
+                                                                    {checkUser().Rol === '1' || checkUser().Rol === '2' || checkUser().Rol === '3' ?
                                                                         <Link
                                                                             to={`/actualizar`}
                                                                             className="-m-4 p-2 flex items-start rounded-lg hover:bg-gray-50"
@@ -111,7 +113,7 @@ const Layout = () => {
                                                                             <p className="pl-2 text-base font-semibold">Actualizar cuotas</p>
                                                                         </Link> : <></>}
 
-                                                                    {checkUser().Rol === '1' || checkUser().Rol === '2' ?
+                                                                    {checkUser().Rol === '1' || checkUser().Rol === '2' || checkUser().Rol === '3' ?
                                                                         <Link
                                                                             to={`/insertar`}
                                                                             className="-m-4 p-2 flex items-start rounded-lg hover:bg-gray-50"
@@ -119,7 +121,7 @@ const Layout = () => {
                                                                             <ViewGridAddIcon className="flex-shrink-0 h-6 w-6" aria-hidden="true" />
                                                                             <p className="pl-2 text-base font-semibold">Insertar cuotas</p>
                                                                         </Link> : <></>}
-                                                                    {checkUser().Rol === '1' ?
+                                                                    {checkUser().Rol === '1' || checkUser().Rol === '2' ?
                                                                         <Link
                                                                             to={`/configuracion`}
                                                                             className="-m-4 p-2 flex items-start rounded-lg hover:bg-gray-50"

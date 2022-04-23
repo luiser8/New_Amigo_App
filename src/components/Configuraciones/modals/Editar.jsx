@@ -1,29 +1,63 @@
-import { Fragment, useRef, useState } from "react";
-import PropTypes from "prop-types";
-import { Dialog, Transition } from "@headlessui/react";
-import {
-    ExclamationIcon,
-} from "@heroicons/react/outline";
+import { Fragment, useRef, useState } from 'react';
+import PropTypes from 'prop-types';
+import { Dialog, Transition } from '@headlessui/react';
 
-const Editar = ({
-    openC,
-    confirm,
-    planDePago,
-}) => {
+const Editar = ({ openEdit, usuario, usuarios, confirm, roles }) => {
     const [open, setOpen] = useState(true);
-    const [id_tipoIngreso, setId_tipoIngreso] = useState(0);
-    const [id_plan, setId_plan] = useState(0);
     const cancelButtonRef = useRef(null);
+    const [errorCedula, setErrorCedula] = useState('');
+    const [errorUsuario, setErrorUsuario] = useState('');
+    const [rolId, setRolId] = useState(usuario.RolId);
+    const [cedula, setCedula] = useState(usuario.Cedula);
+    const [nombres, setNombres] = useState(usuario.Nombres);
+    const [apellidos, setApellidos] = useState(usuario.Apellidos);
+    const [usuarioNuevo, setUsuarioNuevo] = useState(usuario.Usuario);
+    const [bloqueado, setBloqueado] = useState(usuario.Bloqueado);
 
-    const activeCambiarClave = (open) => {
-        openC(open);
+    const activeEditar = (open) => {
+        openEdit(open); setOpen(open);
+    }
+    const okEditar = async () => {
+        confirm({ 'UsuarioId': usuario.UsuarioId, 'RolId': rolId, 'Cedula': cedula, 'Nombres': nombres, 'Apellidos': apellidos, 'Usuario': usuarioNuevo, 'Contrasena': null, 'Bloqueado': bloqueado ? 1 : 0});
         setOpen(open);
-    };
+    }
+    const checkValid = (type, value) => {
+        let usuarioActual = usuario.UsuarioId;
+        if (type === 1) {
+            let cedulaActual = Number(value);
+            let valid = usuarios.filter(u => u.Cedula === cedulaActual && u.UsuarioId === usuarioActual); 
+            let validOtra = usuarios.filter(u => u.Cedula === cedulaActual && u.UsuarioId !== usuarioActual);
 
-    const okCambiarClave = async () => {
-        confirm({ Id_TipoIngreso: id_tipoIngreso, Id_Plan: id_plan });
-        setOpen(open);
-    };
+            if(valid.length === 1){
+                setCedula(value); setErrorCedula('');
+            }if(valid.length === 0 && validOtra.length === 1){
+                setErrorCedula('Cédula existe. Rectifica...'); setCedula('');
+            }else{
+                setErrorCedula(''); setCedula(value);
+            }
+        } else if (type === 2) {
+            let valid = usuarios.filter(u => u.Usuario === value && u.UsuarioId === usuarioActual);
+            let validOtra = usuarios.filter(u => u.Usuario === value && u.UsuarioId !== usuarioActual);
+            if(valid.length === 1){
+                setUsuarioNuevo(value); setErrorUsuario('');
+            }if(valid.length === 0 && validOtra.length === 1){
+                setErrorUsuario('Usuario existe. Rectifica...'); setUsuarioNuevo('');
+            }else{
+                setErrorUsuario(''); setUsuarioNuevo(value);
+            }
+        }
+    }
+
+    const okValid = () => {
+        return rolId !== '' 
+        && cedula !== 0 
+        && nombres !== '' 
+        && apellidos !== '' 
+        && usuarioNuevo !== '' 
+        && errorCedula === '' 
+        && errorUsuario === ''
+        ? false : true;
+    }
 
     return (
         <Transition.Root show={open} as={Fragment}>
@@ -33,7 +67,7 @@ const Editar = ({
                 className="fixed z-10 inset-0 overflow-y-auto"
                 initialFocus={cancelButtonRef}
                 open={open}
-                onClose={() => activeCambiarClave(false)}
+                onClose={() => activeEditar(false)}
             >
                 <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
                     <Transition.Child
@@ -48,11 +82,7 @@ const Editar = ({
                         <Dialog.Overlay className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
                     </Transition.Child>
 
-                    {/* This element is to trick the browser into centering the modal contents. */}
-                    <span
-                        className="hidden sm:inline-block sm:align-middle sm:h-screen"
-                        aria-hidden="true"
-                    >
+                    <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">
                         &#8203;
                     </span>
                     <Transition.Child
@@ -65,61 +95,79 @@ const Editar = ({
                         leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                     >
                         <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                            <div className="bg-white px-4 pt-5 pb-2 sm:p-6 sm:pb-4">
-                                <div className="sm:flex sm:items-start">
-                                    <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-green-100 sm:mx-0 sm:h-10 sm:w-10">
-                                        <ExclamationIcon
-                                            className="h-6 w-6 text-green-600"
-                                            aria-hidden="true"
-                                        />
-                                    </div>
-                                    <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                                        <Dialog.Title
-                                            as="h3"
-                                            className="text-lg leading-6 font-medium text-gray-900"
-                                        >
-                                            Cambiar contraseña{" "}
-                                            <span style={{ color: "red" }}>{planDePago}</span>
-                                        </Dialog.Title>
-                                        <form className="mt-6 space-y-6">
-                                            <div className="shadow overflow-hidden sm:rounded-md">
-                                                <div className="px-4 py-5 bg-white sm:p-6">
-                                                    <div className="grid grid-cols-2 gap-6">
-                                                        <div className="col-span-10 sm:col-span-3">
-                                                            <label
-                                                                htmlFor="country"
-                                                                className="block text-sm font-medium text-gray-700"
-                                                            >
-                                                                Tipo de Ingreso
-                                                            </label>
+                            <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                                <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                                    <Dialog.Title as="h3" className="text-lg leading-6 font-medium text-gray-900">
+                                        Crear Usuario
+                                    </Dialog.Title>
 
-                                                        </div>
+                                    <form className="mt-4 space-y-6">
+                                        <div className="shadow overflow-hidden sm:rounded-md">
+                                            <div className="px-4 py-2 bg-white ">
+                                                <div className="grid grid-cols-10 gap-4">
+                                                    <div className="col-span-5">
+                                                        <label htmlFor="rol" className="block text-sm font-medium text-gray-700">Rol</label>
+                                                        <select
+                                                            id="rol"
+                                                            name="rol"
+                                                            className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                                            onChange={async (event) => setRolId(event.target.value)}
+                                                        >
+                                                            <option selected={roles.filter(r => r.RolId === usuario.RolId)} value={usuario.RolId}>{usuario.NombreRol}</option>
+                                                            {Object.keys(roles).map((key, it) => (
+                                                                <option key={key} value={`${roles[it].RolId}`}>{roles[it].Nombre}</option>
+                                                            ))}
+                                                        </select>
+                                                    </div>
+                                                    <div className="col-span-5">
+                                                        <label htmlFor="cedula" className="block text-sm font-medium text-gray-700">Cédula</label>
+                                                        <input id="cedula" name="cedula" defaultValue={usuario.Cedula} onChange={async (ev) => checkValid(1, ev.target.value)/*setCedula(ev.target.value)*/} type="text" required className="mt-1 block w-full py-2 px-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Cédula" />
+                                                        {errorCedula !== '' ? <span className="text-xs text-red-500 font-semibold">{errorCedula}</span> : <></>}
+                                                    </div>
+                                                    <div className="col-span-5">
+                                                        <label htmlFor="nombres" className="block text-sm font-medium text-gray-700">Nombres</label>
+                                                        <input id="nombres" name="nombres" defaultValue={usuario.Nombres} onChange={async (ev) => setNombres(ev.target.value)} type="text" required className="mt-1 block w-full py-2 px-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Nombres" />
+                                                    </div>
+                                                    <div className="col-span-5">
+                                                        <label htmlFor="apellidos" className="block text-sm font-medium text-gray-700">Apellidos</label>
+                                                        <input id="apellidos" name="apellidos" defaultValue={usuario.Apellidos} onChange={async (ev) => setApellidos(ev.target.value)} type="text" required className="mt-1 block w-full py-2 px-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Apellidos" />
+                                                    </div>
+                                                    <div className="col-span-5">
+                                                        <label htmlFor="usuario" className="block text-sm font-medium text-gray-700">Usuario</label>
+                                                        <input id="usuario" name="usuario" defaultValue={usuario.Usuario} onChange={async (ev) => checkValid(2, ev.target.value)} type="text" required className="mt-1 block w-full py-2 px-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Usuario" />
+                                                        {errorUsuario !== '' ? <span className="text-xs text-red-500 font-semibold">{errorUsuario}</span> : <></>}
+                                                    </div>
+                                                    <div className="col-span-5">
+                                                            <div className="flex items-center">
+                                                            <label className="ml-0 min-w-0 text-gray-500">Bloqueado</label>
+                                                                <input
+                                                                    type="checkbox"
+                                                                    value={bloqueado}
+                                                                    checked={bloqueado === null ? roles.filter(r => r.Bloqueado === usuario.Bloqueado) : bloqueado}
+                                                                    onChange={async (ev) => setBloqueado(ev.target.checked)}
+                                                                    className="h-4 w-4 ml-3 border-gray-300 rounded text-indigo-600 focus:ring-indigo-500" 
+                                                                />
+                                                                <span className="ml-2">{bloqueado ? 'Si' : 'No'}</span>
+                                                            </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </form>
-
-                                    </div>
+                                        </div>
+                                    </form>
                                 </div>
                             </div>
                             <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                                 <button
                                     type="button"
-                                    disabled={
-                                        id_plan !== 0 && id_tipoIngreso !== 0 ? false : true
-                                    }
-                                    className={`w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 ${id_plan !== 0 && id_tipoIngreso !== 0
-                                        ? "bg-green-600 hover:bg-green-700"
-                                        : "bg-green-200 hover:bg-green-200"
-                                        } text-base font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm`}
-                                    onClick={() => okCambiarClave(true)}
+                                    className={`${!okValid() ? 'bg-green-600 hover:bg-green-700' : 'bg-green-200 hover:bg-green-200'} w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2  text-base font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm`}
+                                    onClick={() => okEditar(true)}
                                 >
                                     Guardar
                                 </button>
                                 <button
                                     type="button"
                                     className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-                                    onClick={() => activeCambiarClave(false)}
+                                    onClick={() => activeEditar(false)}
                                     ref={cancelButtonRef}
                                 >
                                     Cancelar
@@ -130,13 +178,15 @@ const Editar = ({
                 </div>
             </Dialog>
         </Transition.Root>
-    );
-};
+    )
+}
+
 Editar.propTypes = {
-    openC: PropTypes.func,
+    openEdit: PropTypes.func,
     confirm: PropTypes.func,
-    deleteIns: PropTypes.func,
-    planDePago: PropTypes.string,
-    inscripciones: PropTypes.array,
-};
+    usuario: PropTypes.object,
+    usuarios: PropTypes.array,
+    roles: PropTypes.array,
+}
+
 export default Editar;

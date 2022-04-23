@@ -21,7 +21,7 @@ import PanelEdicion from './PanelEdicion';
 import DeudasDetalle from './DeudasDetalle';
 
 const Deudas = () => {
-    const { checkConfig, setConfig } = useContext(Context);
+    const { checkConfig, setConfig, checkUser } = useContext(Context);
     const [lapsos, setLapsos] = useState([]);
     const [deudas, setDeudas] = useState([]);
     const [alumno, setAlumno] = useState([]);
@@ -323,24 +323,27 @@ const Deudas = () => {
                         identificador={identificador}
                         check={check}
                     />
+                    {checkUser().Rol !== '4' ?
                     <PanelEdicion
                         deudas={deudas}
                         facturas={facturas}
                         activeModificacionCedula={activeModificacionTerceros}
                         activeInsertar={activeInsertar}
                         activeModificacionInsc={activeModificacionInsc}
-                    />
+                    /> : <></>}
                 </div>
                 <DeudasDetalle
+                    checkuser={checkUser().Rol}
                     deudas={deudas}
                     cuotaVencida={cuotaVencida}
                     activeConfirmacion={activeConfirmacion}
                     activeModificacion={activeModificacion}
                 />
+                {checkUser().Rol !== '4' ?
                 <Facturas
                     factura_list={facturas}
                     openC={activeConfirmacion}
-                />
+                /> : <></>}
             </div>
         </Fragment>
     )
