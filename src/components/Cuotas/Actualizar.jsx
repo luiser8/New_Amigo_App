@@ -143,8 +143,8 @@ const Actualizar = () => {
                                                     onChange={async (event) => changeTasaAndCuota(event.target.value)}
                                                 >
                                                     <option value={0} selected>Selecciona cuota a actualizar</option>
-                                                    <option value={1}>Cuota Nacional</option>
-                                                    <option value={2}>Cuota Internacional</option>
+                                                    <option value={1}>Cuota Internacional</option>
+                                                    <option value={2}>Cuota Nacional</option>
                                                 </select>
                                             </div>
                                             {tipoCuota != '0' ?

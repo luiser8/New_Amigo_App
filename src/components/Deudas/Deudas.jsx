@@ -177,7 +177,7 @@ const Deudas = () => {
     /* Fin Modales*/
     const establecerLapso = async (lapso) => {
         if (lapso !== '') {
-            getAranceles(lapso).then((items) => {
+            getAranceles(lapso, 1).then((items) => {
                 setAranceles(items !== undefined ? items : []);
             });
             setLapso(lapso); 
@@ -192,12 +192,12 @@ const Deudas = () => {
             });
         } else {
             if (checkConfig().Lapso !== lapso) {
-                getAranceles(lapso).then((items) => {
+                getAranceles(lapso, 1).then((items) => {
                     setAranceles(items !== undefined ? items : []);
                 });
                 setLapso(lapso);
             } else {
-                getAranceles(checkConfig().Lapso).then((items) => {
+                getAranceles(checkConfig().Lapso, 1).then((items) => {
                     setAranceles(items !== undefined ? items : []);
                 });
                 setLapso(checkConfig().Lapso);
@@ -223,7 +223,7 @@ const Deudas = () => {
                     }
                 }
             }),
-            getAranceles(checkConfig().Lapso).then((items) => {
+            getAranceles(checkConfig().Lapso, 1).then((items) => {
                 setAranceles(items !== undefined ? items : []);
             }),
             getFacturas(identificador, checkConfig().Lapso).then((items) => {

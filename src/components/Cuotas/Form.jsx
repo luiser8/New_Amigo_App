@@ -30,7 +30,7 @@ const Form = ({
     }
 
     useEffect(() => {
-        tipo === '1' ? setDolar(checkConfig().DolarN) : setDolar(checkConfig().DolarI);
+        tipo === '1' ? setDolar(checkConfig().DolarI) : setDolar(checkConfig().DolarN);
     }, [checkConfig, setDolar, tipo]);
     return (
         <form>
@@ -39,7 +39,7 @@ const Form = ({
                     <div className="grid grid-cols-8 gap-6">
                         <div className="col-span-6 sm:col-span-2">
                             <label htmlFor="cuota" className="pb-1 block text-sm font-medium text-gray-700">
-                                Dolar {tipo == '1' ? 'Nacional' : 'Internacional'}
+                                Dolar {tipo == '1' ? 'Internacional' : 'Nacional'}
                             </label>
                             <div className="mt-0 flex rounded-md shadow-sm">
                                 <input
@@ -56,7 +56,7 @@ const Form = ({
                         </div>
                         <div className="col-span-6 sm:col-span-2">
                             <label htmlFor="cuota" className="pb-1 block text-sm font-medium text-gray-700">
-                                Tasa {tipo === '1' ? 'Nacional' : 'Internacional'}
+                                Tasa {tipo === '1' ? 'Internacional' : 'Nacional'}
                             </label>
                             <div className="mt-0 flex rounded-md shadow-sm">
                                 <input
@@ -73,7 +73,7 @@ const Form = ({
                         </div>
                         <div className="col-span-6 sm:col-span-3">
                             <label htmlFor="cuota" className="pb-1 block text-sm font-medium text-gray-700">
-                                Cuota {tipo === '1' ? 'Nacional' : 'Internacional'}
+                                Cuota {tipo === '1' ? 'Internacional' : 'Nacional'}
                             </label>
                             <div className="mt-0 flex rounded-md shadow-sm">
                                 {/* <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
@@ -129,7 +129,7 @@ const Form = ({
                                 onClick={async () => putCuotasAll()}
                                 className={`inline-flex justify-center py-2 px-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${editCuota === true || checkCuotas === 0 ? 'bg-indigo-200 hover:bg-indigo-200' : 'bg-indigo-600 hover:bg-indigo-700'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
                             >
-                                Actualizar cuota {tipo == '1' ? 'Nacionales' : 'Internacionales'}
+                                Actualizar cuota {tipo == '1' ? 'Internacionales' : 'Nacionales'}
                             </button>
                         </div>
                     </div>
