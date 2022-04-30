@@ -14,11 +14,12 @@ const Actualizar = () => {
     const { checkConfig, setConfig } = useContext(Context);
     const [editCuota, setEditCuota] = useState(false);
     const [lapso, setLapso] = useState(checkConfig().Lapso);
+    const [lapsoTasa, setLapsoTasa] = useState(checkConfig().Lapso);
     const [cuota, setCuota] = useState(0);
     const [dolar, setDolar] = useState(0);
     const [tasa, setTasa] = useState(0);
-    const [fechaDesde, setFechaDesde] = useState(Moment(new Date() - 10 * 24 * 3600 * 1000).format('DD/MM/YYYY'));
-    const [fechaHasta, setFechaHasta] = useState(Moment(new Date()).format('DD/MM/YYYY'));
+    const [fechaDesde, setFechaDesde] = useState("");
+    const [fechaHasta, setFechaHasta] = useState("");
     const [btnEstablecer, setBtnEstablecer] = useState(checkConfig().Lapso ? false : true);
     const [loading, setLoading] = useState(false);
     const [tipoCuota, setTipoCuota] = useState(0);
@@ -29,15 +30,15 @@ const Actualizar = () => {
     }
 
     const establecerCuota = async (value) => {
-       value ? setEditCuota(true) : setEditCuota(false);
-       let cuotaId = tipoCuota === '1' ? checkConfig().CuotaId : checkConfig().CuotaSAIAId;
+        value ? setEditCuota(true) : setEditCuota(false);
+        let cuotaId = tipoCuota === '1' ? checkConfig().CuotaSAIAId : checkConfig().CuotaId;
         if (cuotaId !== '')
             (Promise.all([
                 postCuotas(cuotaId, dolar, tasa, tipoCuota, cuota, lapso, 0).then((items) => {
                     items !== undefined ? Toast({ show: true, title: 'Información!', msj: 'Cuota nueva ha sido aplicada.', color: 'green' }) : Toast({ show: false });
                     items !== undefined ? getCuotasByLapsos(fechaDesde) : getCuotasByLapsos('');
                     items.map((_, item) => {
-                        if(tipoCuota === '1'){
+                        if (tipoCuota === '2') {
                             setConfig(2, {
                                 'Lapso': null,
                                 'DolarN': dolar,
@@ -45,9 +46,9 @@ const Actualizar = () => {
                                 'CuotaId': items[item].CuotaId,
                                 'Cuota': cuota,
                                 'CuotaSAIAId': checkConfig().CuotaSAIAId !== null ? checkConfig().CuotaSAIAId : items[item].CuotaId,
-                                'CuotaSAIA':  checkConfig().CuotaSAIA !== null ? checkConfig().CuotaSAIA : cuota,
+                                'CuotaSAIA': checkConfig().CuotaSAIA !== null ? checkConfig().CuotaSAIA : cuota,
                             });
-                        }else if(tipoCuota === '2'){
+                        } else if (tipoCuota === '1') {
                             setConfig(2, {
                                 'Lapso': null,
                                 'DolarN': checkConfig().DolarN !== null ? checkConfig().DolarN : dolar,
@@ -55,7 +56,7 @@ const Actualizar = () => {
                                 'CuotaId': checkConfig().CuotaId !== null ? checkConfig().CuotaId : items[item].CuotaId,
                                 'Cuota': checkConfig().Cuota !== null ? checkConfig().Cuota : cuota,
                                 'CuotaSAIAId': items[item].CuotaId,
-                                'CuotaSAIA':  cuota,
+                                'CuotaSAIA': cuota,
                             });
                         }
                     });
@@ -66,9 +67,9 @@ const Actualizar = () => {
     }
     const putCuotasAll = async () => {
         //Guardar tasa en local
-        let cuotaLocal = cuota === 0 ? (tipoCuota === '1' ? checkConfig().Cuota : checkConfig().CuotaSAIA) : cuota;
+        let cuotaLocal = cuota === 0 ? (tipoCuota === '1' ? checkConfig().CuotaSAIA : checkConfig().Cuota) : cuota;
         setBtnEstablecer(true); setLoading(true);
-        if (cuota !== '' && lapso !== ''){
+        if (cuota !== '' && lapso !== '') {
             (Promise.all([
                 putCuotaAll(cuotaLocal, lapso, tipoCuota).then((items) => {
                     items !== undefined ? Toast({ show: true, title: 'Información!', msj: `Cuota nueva ha sido aplicado en las ${items} cuotas sin pagar`, color: 'yellow' }) : Toast({ show: false });
@@ -81,7 +82,7 @@ const Actualizar = () => {
     }
 
     const changeTasaAndCuota = (value) => {
-        if(value !== '' || value !== 0){
+        if (value !== '' || value !== 0) {
             setTipoCuota(value);
             setTasa(value !== '' ? 0 : 0);
             setCuota(value !== '' ? 0 : 0);
@@ -89,21 +90,23 @@ const Actualizar = () => {
         }
     }
 
-    const getCuotasByLapsos = (fecha) => {
-        if(fecha !== ''){
-            getCuotasByLapso(checkConfig().Lapso, fecha, fechaHasta).then((items) => {
-                setCuotas(items !== undefined ? items : []);
-                setCuotaLength(cuotas.filter((c) => c.Estado !== 0).length);
-            });
-        }
+    const getCuotasByLapsos = () => {
+        getCuotasByLapso(
+                lapsoTasa ? lapsoTasa : checkConfig().Lapso, 
+                fechaDesde ? Moment(fechaDesde).format('DD/MM/YYYY') : Moment(new Date() - 15 * 24 * 3600 * 1000).format('DD/MM/YYYY'), 
+                fechaHasta ? Moment(fechaHasta).format('DD/MM/YYYY') : Moment(new Date()).format('DD/MM/YYYY'))
+            .then((items) => {
+            setCuotas(items !== undefined ? items : []);
+            setCuotaLength(cuotas.filter((c) => c.Estado !== 0).length);
+        });
     }
 
     useEffect(() => {
         (Promise.all([
             getLapsos().then((items) => {
                 setLapsos(items !== undefined ? items : []);
-            }),  
-            getCuotasByLapsos(fechaDesde),
+            }),
+            getCuotasByLapsos(),
         ]).catch(error => {
             new Error(error);
         }));
@@ -148,7 +151,7 @@ const Actualizar = () => {
                                                 </select>
                                             </div>
                                             {tipoCuota != '0' ?
-                                                <Form 
+                                                <Form
                                                     checkConfig={checkConfig}
                                                     tipo={tipoCuota}
                                                     editCuota={editCuota}
@@ -169,7 +172,7 @@ const Actualizar = () => {
                                                 :
                                                 <></>
                                             }
-                                        </div>                                       
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -179,18 +182,19 @@ const Actualizar = () => {
                         <div className="py-0 align-middle inline-block min-w-full sm:px-6 lg:px-8">
                             <div className="overflow-hidden ">
                                 <div className="mt-10 sm:mt-0">
-                                    <CuotasTasas 
+                                    <CuotasTasas
                                         cuotas={cuotas}
-                                        fechaDesde={fechaDesde}
                                         setFechaDesde={setFechaDesde}
-                                        fechaHasta={fechaHasta}
                                         setFechaHasta={setFechaHasta}
                                         getCuotasByLapsos={getCuotasByLapsos}
+                                        lapsos={lapsos}
+                                        lapsoTasa={lapsoTasa}
+                                        setLapsoTasa={setLapsoTasa}
                                     />
                                 </div>
                             </div>
                         </div>
-                    </div>       
+                    </div>
                 </div>
             </div>
         </div>

@@ -281,12 +281,12 @@ const Deudas = () => {
                     items.map((_, item) => {
                         setConfig(2, {
                             'Lapso': null,
-                            'DolarN': items.filter((tipo) => tipo.Tipo === 1)[item].Dolar,
-                            'DolarI': items.filter((tipo) => tipo.Tipo === 2)[item].Dolar,
-                            'CuotaId': items.filter((tipo) => tipo.Tipo === 1)[item].CuotaId,
-                            'Cuota': items.filter((tipo) => tipo.Tipo === 1)[item].Monto,
-                            'CuotaSAIAId': items.filter((tipo) => tipo.Tipo === 2)[item].CuotaId,
-                            'CuotaSAIA': items.filter((tipo) => tipo.Tipo === 2)[item].Monto,
+                            'DolarN': items.filter((tipo) => tipo.Tipo === 2)[item].Dolar,
+                            'DolarI': items.filter((tipo) => tipo.Tipo === 1)[item].Dolar,
+                            'CuotaId': items.filter((tipo) => tipo.Tipo === 2)[item].CuotaId,
+                            'Cuota': items.filter((tipo) => tipo.Tipo === 2)[item].Monto,
+                            'CuotaSAIAId': items.filter((tipo) => tipo.Tipo === 1)[item].CuotaId,
+                            'CuotaSAIA': items.filter((tipo) => tipo.Tipo === 1)[item].Monto,
                         });
                     });
                 }
