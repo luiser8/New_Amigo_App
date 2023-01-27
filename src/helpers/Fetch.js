@@ -2,114 +2,100 @@ import PropTypes from 'prop-types';
 import '../utils/Config';
 
 export const get = async (route) => {
-    let url = global.config.url.production ? `${global.config.url.prod}${route}` : `${global.config.url.dev}${route}`;
-    let result = await fetch(`${url}`, {
+    const url = `${global.config.url}${route}`;
+    return await fetch(url, {
         method: 'GET',
         mode: 'cors',
-        headers: global.config.headers.production ? global.config.headers.prod : global.config.headers.dev,
+        cache: 'no-cache',
+        headers: global.config.headers,
         json: true
     }).then(response => {
         if (response.status >= 200 && response.status <= 299) {
-            return response.json()
-        }else {
-            response.json().then((json) => { 
-                return json; 
+            return response.json();
+        } if (response.status === 401) {
+            return response.text();
+        } else {
+            response.json().then((json) => {
+                return json;
             });
-            return null
+            return null;
         }
-    }).catch(e => console.log(e))
-    if (result == null) {
-        return result;
-    } else {
-        return result
-    }
+    }).catch(e => console.log(e));
 }
 export const post = async (route, data) => {
-    let url = global.config.url.production ? `${global.config.url.prod}${route}` : `${global.config.url.dev}${route}`;
-    let result = await fetch(`${url}`, {
+    const url = `${global.config.url}${route}`;
+    return await fetch(url, {
         method: 'POST',
         mode: 'cors',
-        headers: global.config.headers.production ? global.config.headers.prod : global.config.headers.dev,
+        cache: 'no-cache',
+        headers: global.config.headers,
         body: JSON.stringify(data),
         json: true
     }).then(response => {
         if (response.status >= 200 && response.status <= 299) {
-            return response.json()
-        }else {
-            response.json().then((json) => { 
-                return json; 
+            return response.json();
+        } if (response.status === 401) {
+            return response.text();
+        } else {
+            response.json().then((json) => {
+                return json;
             });
-            return null
+            return null;
         }
-    }).catch(e => console.log(e))
-    if (result == null) {
-        return result;
-    } else {
-        return result
-    }
+    }).catch(e => console.log(e));
 }
 export const put = async (route, data) => {
-    let url = global.config.url.production ? `${global.config.url.prod}${route}` : `${global.config.url.dev}${route}`;
-    let result = await fetch(`${url}`, {
+    const url = `${global.config.url}${route}`;
+    return await fetch(url, {
         method: 'PUT',
         mode: 'cors',
-        headers: global.config.headers.production ? global.config.headers.prod : global.config.headers.dev,
+        cache: 'no-cache',
+        headers: global.config.headers,
         body: JSON.stringify(data),
         json: true
     }).then(response => {
         if (response.status >= 200 && response.status <= 299) {
-            return response.json()
-        }else {
-            response.json().then((json) => { 
-                return json; 
+            return response.json();
+        } if (response.status === 401) {
+            return response.text();
+        } else {
+            response.json().then((json) => {
+                return json;
             });
-            return null
+            return null;
         }
-    }).catch(e => console.log(e))
-    if (result == null) {
-        return result;
-    } else {
-        return result
-    }
+    }).catch(e => console.log(e));
 }
 export const del = async (route) => {
-    let url = global.config.url.production ? `${global.config.url.prod}${route}` : `${global.config.url.dev}${route}`;
-    let result = await fetch(`${url}`, {
+    const url = `${global.config.url}${route}`;
+    return await fetch(url, {
         method: 'DELETE',
         mode: 'cors',
-        headers: global.config.headers.production ? global.config.headers.prod : global.config.headers.dev,
+        cache: 'no-cache',
+        headers: global.config.headers,
         json: true
     }).then(response => {
         if (response.status >= 200 && response.status <= 299) {
-            return response.json()
-        }else {
-            response.json().then((json) => { 
-                return json; 
+            return response.json();
+        } if (response.status === 401) {
+            return response.text();
+        } else {
+            response.json().then((json) => {
+                return json;
             });
-            return null
+            return null;
         }
-    }).catch(e => console.log(e))
-    if (result == null) {
-        return result;
-    } else {
-        return result
-    }
+    }).catch(e => console.log(e));
 }
-
 export const blob = async (route) => {
-    let url = global.config.url.production ? `${global.config.url.prod}${route}` : `${global.config.url.dev}${route}`;
-    let result = await fetch(`${url}`, {
+    const url = `${global.config.url}${route}`;
+    return await fetch(url, {
         method: 'GET',
         mode: 'cors',
-        headers: new Headers({ 'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'Authorization': 'Basic ' + btoa('P$m:Bn@')}),
+        headers: global.config.headersBlob,
     }).then(response => {
         return response;
-    }).catch(e => console.log(e))
-    if (result == null) {
-        return result;
-    } else {
-        return result
-    }
+    }).catch(e => console.log(e));
 }
 
 get.propTypes = {

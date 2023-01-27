@@ -13,11 +13,11 @@ const ModificarMonto = ({ openC, confirm, montoNuevo, cuota, arancel }) => {
         openC(open); setOpen(open);
     }
 
-    const okModificar = async () => { 
-        confirm(checkMonto ? cuota : montoTemp); 
+    const okModificar = async () => {
+        confirm(checkMonto ? cuota : montoTemp);
         if(checkMonto || montoTemp !== ''){
             setOpen(open);
-        } 
+        }
     }
     const changeMonto = async (value) => {
         if(typeof(value) === 'boolean'){
@@ -80,33 +80,13 @@ const ModificarMonto = ({ openC, confirm, montoNuevo, cuota, arancel }) => {
                                                 <div className="px-4 py-5 bg-white sm:p-6">
                                                     <div className="grid grid-cols-6 gap-6">
                                                         <div className="col-span-6 sm:col-span-12">
-                                                            <label htmlFor="country" className="block text-sm font-medium text-gray-800">Establecer monto configurado</label>
-                                                                <div className="flex items-start">
-                                                                    <div className="flex items-center h-5">
-                                                                        <input
-                                                                                id="checkMonto"
-                                                                                name="checkMonto"
-                                                                                type="checkbox"
-                                                                                className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
-                                                                                value={checkMonto}
-                                                                                onChange={async (ev) => changeMonto(ev.target.checked)}
-                                                                            />
-                                                                    </div>
-                                                                     <div className="ml-3 text-sm">
-                                                                
-                                                                <label htmlFor="checkMonto" className="font-medium text-gray-700">{cuota}</label>
-                                                            </div>
-                                                                </div>                                                         
-                                                        </div>
-                                                        <div className="col-span-6 sm:col-span-12">
-                                                            <label htmlFor="first-name" className="block text-sm font-medium text-gray-800">Establecer monto manual</label>
+                                                            <label htmlFor="first-name" className="block text-sm font-medium text-gray-800">Establecer nuevo monto</label>
                                                             <input id="monto" disabled={checkMonto} value={checkMonto ? cuota : montoTemp} name="monto" onChange={async (ev) => changeMonto(ev.target.value)} type="text" required className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder={`Monto nuevo ${checkMonto ? cuota : 'xxxxx.xx'}`} />
                                                         </div>
                                                     </div>
-                                                </div>   
+                                                </div>
                                             </div>
                                         </form>
-                                            
                                     </div>
                                 </div>
                             </div>

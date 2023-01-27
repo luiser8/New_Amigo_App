@@ -2,14 +2,14 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Moment from 'moment';
 
-const Cuotas = ({ 
-        planes, 
-        lapsos, 
-        aranceles, 
-        postCuota, 
-        changeMonto, 
-        setCuota, 
-        setLapso, 
+const Cuotas = ({
+        planes,
+        lapsos,
+        aranceles,
+        postCuota,
+        changeMonto,
+        setCuota,
+        setLapso,
         changeArancelFecha,
         planesCheck,
         cuota,

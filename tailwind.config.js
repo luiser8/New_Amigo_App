@@ -4,6 +4,7 @@ module.exports = {
   purge: [
     "./public/**/*.html",
     "./src/**/*.jsx",
+    "./src/**/*.js",
   ],
   presets: [],
   modules:[

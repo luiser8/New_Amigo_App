@@ -3,8 +3,8 @@ import { Toast } from '../../helpers/Toast';
 import { Context } from '../../context/Context';
 import Insertar from './modals/Insertar';
 import Eliminar from './modals/Eliminar';
-import { getRoles } from '../../services/rolesService';
-import { getUsuarios, postUsuarios, delUsuarios, putUsuarios } from '../../services/usuarioService';
+import { getRolesService } from '../../services/rolesService';
+import { delUsuariosService, postUsuariosService, putUsuariosService } from '../../services/usuarioService';
 import UsuariosDetalle from '../User/UsuariosDetalle';
 import CambiarClave from './modals/CambiarClave';
 import Editar from './modals/Editar';
@@ -20,24 +20,26 @@ const Configuracion = () => {
     const [usuario, setUsuario] = useState('');
     const [usuarioId, setUsuarioId] = useState('');
 
+    const getRoles = async () => {
+        setRoles(await getRolesService());
+    }
+
+    const getUsuarios = async () => {
+        setUsuarios(await getRolesService());
+    }
+
     //Modals Insertar
     const activeInsertar = async (open) => {
         setOpenInsertar(open);
     }
     const okInsertar = async (value) => {
         setOpenInsertar(false);
-        if (value)
-            (Promise.all([
-                postUsuarios(value).then((items) => {
-                    items !== undefined ? Toast({ show: true, title: 'Información!', msj: 'Nuevo usuario ha sido creado.', color: 'green' }) : Toast({ show: false });
-                    getUsuarios().then((items) => {
-                        setUsuarios(items !== undefined ? items : []);
-                    });
-                    Toast({ show: false });
-                }),
-            ]).catch(error => {
-                new Error(error);
-            }));
+        if (value) {
+            const userPost = await postUsuariosService(value);
+            userPost !== undefined ? Toast({ show: true, title: 'Información!', msj: 'Nuevo usuario ha sido creado.', color: 'green' }) : Toast({ show: false });
+            getUsuarios();
+            Toast({ show: false });
+        }
     }
     //Modals eliminar
     const activeDelete = async (open) => {
@@ -45,14 +47,9 @@ const Configuracion = () => {
     }
     const okEliminar = async (value) => {
         if (value.usuarioId !== '') {
-            (Promise.all([
-                delUsuarios(value.usuarioId).then((items) => {
-                    items !== undefined ? setUsuarios(usuarios.filter(item => item.UsuarioId !== value.usuarioId)) : setUsuarios([]);
-                    items !== undefined ? Toast({ show: true, title: 'Advertencia!', msj: `Usuario ha sido eliminado.`, color: 'red' }) : Toast({ show: false });
-                }),
-            ]).catch(error => {
-                new Error(error);
-            }));
+            const userDel = await delUsuariosService(value);
+            userDel !== undefined ? setUsuarios(usuarios.filter(item => item.UsuarioId !== value.usuarioId)) : setUsuarios([]);
+            userDel !== undefined ? Toast({ show: true, title: 'Advertencia!', msj: `Usuario ha sido eliminado.`, color: 'red' }) : Toast({ show: false });
         }
         Toast({ show: false });
         setOpenDelete(false);
@@ -63,13 +60,8 @@ const Configuracion = () => {
     }
     const okCambiarClave = async (values) => {
         if (values.usuarioId !== '') {
-            (Promise.all([
-                putUsuarios(values).then((items) => {
-                    items !== undefined ? Toast({ show: true, title: 'Advertencia!', msj: `El usuario ha sido actualizada la contraseña.`, color: 'red' }) : Toast({ show: false });
-                }),
-            ]).catch(error => {
-                new Error(error);
-            }));
+            const userPut = await putUsuariosService(values);
+            userPut !== undefined ? Toast({ show: true, title: 'Advertencia!', msj: `El usuario ha sido actualizada la contraseña.`, color: 'red' }) : Toast({ show: false });
         }
         Toast({ show: false });
         setOpenCambiarClave(false);
@@ -80,32 +72,18 @@ const Configuracion = () => {
     }
     const okEditar = async (values) => {
         if (values.UsuarioId !== '') {
-            (Promise.all([
-                putUsuarios(values).then((items) => {
-                    items !== undefined ? Toast({ show: true, title: 'Advertencia!', msj: `El usuario ha sido actualizado.`, color: 'red' }) : Toast({ show: false });
-                    getUsuarios().then((items) => {
-                        setUsuarios(items !== undefined ? items : []);
-                    });
-                }),
-            ]).catch(error => {
-                new Error(error);
-            }));
+            const userPut = await putUsuariosService(values);
+            userPut !== undefined ? Toast({ show: true, title: 'Advertencia!', msj: `El usuario ha sido actualizado.`, color: 'red' }) : Toast({ show: false });
+            getUsuarios();
         }
         Toast({ show: false });
         setOpenEditar(false);
     }
-    // Inicio Peticiones
+
     useEffect(() => {
-        (Promise.all([
-            getRoles().then((items) => {
-                setRoles(items !== undefined ? items : []);
-            }),
-            getUsuarios().then((items) => {
-                setUsuarios(items !== undefined ? items : []);
-            }),
-        ]).catch(error => {
-            new Error(error);
-        }));
+        getRoles();
+        getUsuarios();
+        return () => { setRoles([]); setUsuarios([]); }
     }, []);
 
     return (

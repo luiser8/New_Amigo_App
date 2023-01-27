@@ -1,14 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const ReporteDeudas = ({ 
-    getReporte, 
-    setLapso, 
-    lapsos, 
+const ReporteDeudas = ({
+    getReporte,
+    setLapso,
+    lapsos,
     lapso,
-    setPagada, 
-    pagada, 
-    btnEstablecer 
+    setPagada,
+    pagada,
+    btnEstablecer
 }) => {
     return (
         <div className="max-w-7xl mx-auto py-6">

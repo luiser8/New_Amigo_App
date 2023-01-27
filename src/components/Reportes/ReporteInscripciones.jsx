@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { RefreshIcon } from '@heroicons/react/solid';
 
-const ReporteInscripciones = ({ 
+const ReporteInscripciones = ({
     menus,
     menusPorCarreras,
     getMenus,
     getMenusPorCarreras,
-    getReporte, 
+    getReporte,
     getReporteCarreras,
     setIdPeriodo,
     setIdPlan,
@@ -16,9 +16,9 @@ const ReporteInscripciones = ({
     idCarrera,
     setDesde,
     setHasta,
-    lapsos, 
+    lapsos,
     lapso,
-    btnEstablecer 
+    btnEstablecer
 }) => {
     const [totalInsPlan, setTotalInsPlan] = useState(0);
     const [totalInsCarrera, setTotalInCarrera] = useState(0);

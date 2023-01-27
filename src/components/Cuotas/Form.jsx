@@ -23,7 +23,7 @@ const Form = ({
         if(value !== '' || value !== 0){
             setTasa(value);
             let valueCuota = dolar * value;
-            setCuota(valueCuota.toFixed(2)); 
+            setCuota(valueCuota.toFixed(2));
         }else{
             setTasa(0);setCuota(0);
         }

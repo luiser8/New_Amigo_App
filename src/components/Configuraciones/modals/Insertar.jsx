@@ -34,13 +34,13 @@ const Insertar = ({ openInsert, roles, usuarios, confirm }) => {
     }
 
     const okValid = () => {
-        return rolId !== '' 
-        && cedula !== 0 
-        && nombres !== '' 
-        && apellidos !== '' 
-        && usuario !== '' 
-        && contrasena !== '' 
-        && errorCedula === '' 
+        return rolId !== ''
+        && cedula !== 0
+        && nombres !== ''
+        && apellidos !== ''
+        && usuario !== ''
+        && contrasena !== ''
+        && errorCedula === ''
         && errorUsuario === ''
         ? false : true;
     }

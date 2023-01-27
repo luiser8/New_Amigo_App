@@ -1,17 +1,71 @@
-import { get, post, put, del } from '../helpers/Fetch';
+import { delUsuariosClient, getUsuariosClient, loginUsuarioClient, postUsuariosClient, putUsuariosClient } from "../clients/usuarioClient";
 
-export const loginUsuario = async (usuario, contrasena) => {
-    return await post('users/login', { "Usuario": usuario, "Contrasena":contrasena });
-} 
-export const getUsuarios = async () => {
-    return await get('users/get');
-} 
-export const postUsuarios = async (values) => {
-    return await post('users/add', values);
-} 
-export const putUsuarios = async (values) => {
-    return await put(`users/update?usuarioid=${values.UsuarioId}`, values);
+export const loginUsuarioService = async (usuario, contrasena) => {
+    let loginUsuario = [];
+    (Promise.all([
+        await loginUsuarioClient(usuario, contrasena).then((values) => {
+            if (values !== null) {
+                loginUsuario = [...loginUsuario, ...values !== undefined ? values : []];
+            }
+        }),
+    ]).catch(error => {
+        new Error(error);
+    }));
+    return loginUsuario;
 }
-export const delUsuarios = async (values) => {
-    return await del(`users/delete?usuarioId=${values}`);
-} 
+
+export const getUsuariosService = async () => {
+    let usuarios = [];
+    (Promise.all([
+        await getUsuariosClient().then((values) => {
+            if (values !== null) {
+                usuarios = [...usuarios, ...values !== undefined ? values : []];
+            }
+        }),
+    ]).catch(error => {
+        new Error(error);
+    }));
+    return usuarios;
+}
+
+export const postUsuariosService = async (values) => {
+    let usuario = {};
+    (Promise.all([
+        await postUsuariosClient(values).then((values) => {
+            if (values !== null) {
+                usuario = {...usuario, ...values !== undefined ? values : {}};
+            }
+        }),
+    ]).catch(error => {
+        new Error(error);
+    }));
+    return usuario;
+}
+
+export const putUsuariosService = async (values) => {
+    let usuario = {};
+    (Promise.all([
+        await putUsuariosClient(values).then((values) => {
+            if (values !== null) {
+                usuario = {...usuario, ...values !== undefined ? values : {}};
+            }
+        }),
+    ]).catch(error => {
+        new Error(error);
+    }));
+    return usuario;
+}
+
+export const delUsuariosService = async (values) => {
+    let usuario = {};
+    (Promise.all([
+        await delUsuariosClient(values).then((values) => {
+            if (values !== null) {
+                usuario = {...usuario, ...values !== undefined ? values : {}};
+            }
+        }),
+    ]).catch(error => {
+        new Error(error);
+    }));
+    return usuario;
+}

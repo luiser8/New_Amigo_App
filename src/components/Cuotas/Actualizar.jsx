@@ -3,8 +3,8 @@ import Moment from 'moment';
 import { Toast } from '../../helpers/Toast';
 import { Context } from '../../context/Context';
 import Loading from '../Layouts/Loading';
-import { getLapsos } from '../../services/lapsosService';
-import { postCuotas, putCuotaAll, getCuotasByLapso } from '../../services/cuotasService';
+import { getLapsosService } from '../../services/lapsosService';
+import { getCuotasByLapsoService, postCuotasService, putCuotaAllService } from '../../services/cuotasService';
 import Form from './Form';
 import CuotasTasas from './CuotasTasas';
 
@@ -25,6 +25,10 @@ const Actualizar = () => {
     const [tipoCuota, setTipoCuota] = useState(0);
     const [cuotaLength, setCuotaLength] = useState(undefined);
 
+    const getLapsos = async () => {
+        setLapsos(await getLapsosService());
+    }
+
     const activarEditCuota = async (value) => {
         value ? setEditCuota(true) : setEditCuota(false);
     }
@@ -32,53 +36,46 @@ const Actualizar = () => {
     const establecerCuota = async (value) => {
         value ? setEditCuota(true) : setEditCuota(false);
         let cuotaId = tipoCuota === '1' ? checkConfig().CuotaSAIAId : checkConfig().CuotaId;
-        if (cuotaId !== '')
-            (Promise.all([
-                postCuotas(cuotaId, dolar, tasa, tipoCuota, cuota, lapso, 0).then((items) => {
-                    items !== undefined ? Toast({ show: true, title: 'Información!', msj: 'Cuota nueva ha sido aplicada.', color: 'green' }) : Toast({ show: false });
-                    items !== undefined ? getCuotasByLapsos(fechaDesde) : getCuotasByLapsos('');
-                    items.map((_, item) => {
-                        if (tipoCuota === '2') {
-                            setConfig(2, {
-                                'Lapso': null,
-                                'DolarN': dolar,
-                                'DolarI': checkConfig().DolarI !== null ? checkConfig().DolarI : dolar,
-                                'CuotaId': items[item].CuotaId,
-                                'Cuota': cuota,
-                                'CuotaSAIAId': checkConfig().CuotaSAIAId !== null ? checkConfig().CuotaSAIAId : items[item].CuotaId,
-                                'CuotaSAIA': checkConfig().CuotaSAIA !== null ? checkConfig().CuotaSAIA : cuota,
-                            });
-                        } else if (tipoCuota === '1') {
-                            setConfig(2, {
-                                'Lapso': null,
-                                'DolarN': checkConfig().DolarN !== null ? checkConfig().DolarN : dolar,
-                                'DolarI': dolar,
-                                'CuotaId': checkConfig().CuotaId !== null ? checkConfig().CuotaId : items[item].CuotaId,
-                                'Cuota': checkConfig().Cuota !== null ? checkConfig().Cuota : cuota,
-                                'CuotaSAIAId': items[item].CuotaId,
-                                'CuotaSAIA': cuota,
-                            });
-                        }
+        if (cuotaId !== '') {
+            const postCuota = await postCuotasService(cuotaId, dolar, tasa, tipoCuota, cuota, lapso, 0);
+            postCuota !== undefined ? Toast({ show: true, title: 'Información!', msj: 'Cuota nueva ha sido aplicada.', color: 'green' }) : Toast({ show: false });
+            postCuota !== undefined ? getCuotasByLapsoService(fechaDesde) : getCuotasByLapsoService('');
+            postCuota.map((_, item) => {
+                if (tipoCuota === '2') {
+                    setConfig(2, {
+                        'Lapso': null,
+                        'DolarN': dolar,
+                        'DolarI': checkConfig().DolarI !== null ? checkConfig().DolarI : dolar,
+                        'CuotaId': postCuota[item].CuotaId,
+                        'Cuota': cuota,
+                        'CuotaSAIAId': checkConfig().CuotaSAIAId !== null ? checkConfig().CuotaSAIAId : postCuota[item].CuotaId,
+                        'CuotaSAIA': checkConfig().CuotaSAIA !== null ? checkConfig().CuotaSAIA : cuota,
                     });
-                }),
-            ]).catch(error => {
-                new Error(error);
-            }));
+                } else if (tipoCuota === '1') {
+                    setConfig(2, {
+                        'Lapso': null,
+                        'DolarN': checkConfig().DolarN !== null ? checkConfig().DolarN : dolar,
+                        'DolarI': dolar,
+                        'CuotaId': checkConfig().CuotaId !== null ? checkConfig().CuotaId : postCuota[item].CuotaId,
+                        'Cuota': checkConfig().Cuota !== null ? checkConfig().Cuota : cuota,
+                        'CuotaSAIAId': postCuota[item].CuotaId,
+                        'CuotaSAIA': cuota,
+                    });
+                }
+            });
+            getCuotasByLapsos();
+        }
     }
+
     const putCuotasAll = async () => {
-        //Guardar tasa en local
         let cuotaLocal = cuota === 0 ? (tipoCuota === '1' ? checkConfig().CuotaSAIA : checkConfig().Cuota) : cuota;
         setBtnEstablecer(true); setLoading(true);
         if (cuota !== '' && lapso !== '') {
-            (Promise.all([
-                putCuotaAll(cuotaLocal, lapso, tipoCuota).then((items) => {
-                    items !== undefined ? Toast({ show: true, title: 'Información!', msj: `Cuota nueva ha sido aplicado en las ${items} cuotas sin pagar`, color: 'yellow' }) : Toast({ show: false });
-                    setBtnEstablecer(false); setCuota(checkConfig().Cuota); setLoading(false);
-                }),
-            ]).catch(error => {
-                new Error(error);
-            }));
+            const putCuotaAll = await putCuotaAllService(cuotaLocal, lapso, tipoCuota);
+            console.log(putCuotaAll);
+            putCuotaAll !== undefined ? Toast({ show: true, title: 'Información!', msj: `Cuota nueva ha sido aplicado en las ${putCuotaAll} cuotas sin pagar`, color: 'yellow' }) : Toast({ show: false });
         }
+        setLoading(false); setBtnEstablecer(false); setCuota(checkConfig().Cuota);
     }
 
     const changeTasaAndCuota = (value) => {
@@ -90,26 +87,23 @@ const Actualizar = () => {
         }
     }
 
-    const getCuotasByLapsos = () => {
-        getCuotasByLapso(
-                lapsoTasa ? lapsoTasa : checkConfig().Lapso, 
-                fechaDesde ? Moment(fechaDesde).format('DD/MM/YYYY') : Moment(new Date() - 15 * 24 * 3600 * 1000).format('DD/MM/YYYY'), 
-                fechaHasta ? Moment(fechaHasta).format('DD/MM/YYYY') : Moment(new Date()).format('DD/MM/YYYY'))
-            .then((items) => {
-            setCuotas(items !== undefined ? items : []);
-            setCuotaLength(cuotas.filter((c) => c.Estado !== 0).length);
-        });
+    const getCuotasByLapsos = async () => {
+        const cuotasLapsos = await getCuotasByLapsoService(
+            lapsoTasa ? lapsoTasa : checkConfig().Lapso,
+            fechaDesde ? Moment(fechaDesde).format('DD/MM/YYYY') : Moment(new Date() - 15 * 24 * 3600 * 1000).format('DD/MM/YYYY'),
+            fechaHasta ? Moment(fechaHasta).format('DD/MM/YYYY') : Moment(new Date()).format('DD/MM/YYYY'));
+            setCuotas(cuotasLapsos);
+            setCuotaLength(cuotasLapsos.filter((c) => c.Estado !== 0).length);
     }
 
     useEffect(() => {
-        (Promise.all([
-            getLapsos().then((items) => {
-                setLapsos(items !== undefined ? items : []);
-            }),
-            getCuotasByLapsos(),
-        ]).catch(error => {
-            new Error(error);
-        }));
+        getLapsos();
+        getCuotasByLapsos();
+        return () => {
+            setLapsos([]);
+            setCuotas([]);
+            setCuotaLength(undefined);
+        }
     }, []);
 
     return (

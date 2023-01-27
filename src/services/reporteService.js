@@ -1,20 +1,29 @@
-import { get, blob } from '../helpers/Fetch';
+import { getReporteMenuCarrerasClient, getReporteMenuClient } from "../clients/reporteClient";
 
-export const getReporteDeudas = async (lapso, pagada) => {
-    return await blob(`reporte/deudas?lapso=${lapso}&pagada=${pagada}`);
+export const getReporteMenuService = async (idPeriodo, desde, hasta) => {
+    let reporteMenu = [];
+    (Promise.all([
+        await getReporteMenuClient(idPeriodo, desde, hasta).then((values) => {
+            if (values !== null) {
+                reporteMenu = [...reporteMenu, ...values !== undefined ? values : []];
+            }
+        }),
+    ]).catch(error => {
+        new Error(error);
+    }));
+    return reporteMenu;
 }
-export const getReportePagadas = async (lapso) => {
-    return await blob(`reporte/pagadas?lapso=${lapso}`);
-}
-export const getReporteMenu = async (idPeriodo, desde, hasta) => {
-    return await get(`reporte/menu?idperiodo=${idPeriodo}&desde=${desde}&hasta=${hasta}`);
-}
-export const getReporteMenuCarreras = async (idPeriodo, desde, hasta) => {
-    return await get(`reporte/menucarreras?idperiodo=${idPeriodo}&desde=${desde}&hasta=${hasta}`);
-}
-export const getReportePlanesDePago = async (idPeriodo, idPlan, desde, hasta) => {
-    return await blob(`reporte/planesDePago?idperiodo=${idPeriodo}&idplan=${idPlan}&desde=${desde}&hasta=${hasta}`);
-}
-export const getReportePorCarreras = async (idPeriodo, idCarrera, desde, hasta) => {
-    return await blob(`reporte/porcarreras?idperiodo=${idPeriodo}&idcarrera=${idCarrera}&desde=${desde}&hasta=${hasta}`);
+
+export const getReporteMenuCarrerasService = async (idPeriodo, desde, hasta) => {
+    let reporteMenuCarreras = [];
+    (Promise.all([
+        await getReporteMenuCarrerasClient(idPeriodo, desde, hasta).then((values) => {
+            if (values !== null) {
+                reporteMenuCarreras = [...reporteMenuCarreras, ...values !== undefined ? values : []];
+            }
+        }),
+    ]).catch(error => {
+        new Error(error);
+    }));
+    return reporteMenuCarreras;
 }

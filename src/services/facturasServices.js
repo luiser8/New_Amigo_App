@@ -1,5 +1,15 @@
-import { get } from '../helpers/Fetch';
+import { getFacturasClient } from '../clients/facturasClient';
 
-export const getFacturas = async (identificador, lapso) => {
-    return await get(`inscripcion/get?identificador=${identificador}&lapso=${lapso}`);
-} 
+export const getFacturasServices = async (identificador, lapso) => {
+    let facturas = [];
+    (Promise.all([
+        await getFacturasClient(identificador, lapso).then((values) => {
+            if (values !== null) {
+                facturas = [...facturas, ...values !== undefined ? values : []];
+            }
+        }),
+    ]).catch(error => {
+        new Error(error);
+    }));
+    return facturas;
+}

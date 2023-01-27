@@ -1,6 +1,6 @@
 import React, { useState, useContext, Fragment } from 'react';
 import { Context } from '../../context/Context';
-import { loginUsuario } from '../../services/usuarioService';
+import { loginUsuarioService } from '../../services/usuarioService';
 
 const Login = () => {
     const { login } = useContext(Context);
@@ -15,29 +15,24 @@ const Login = () => {
     const handleLogin = async (event) => {
         setLoadingBtn(true); setLoadingBtnMsj('Entrando... Espere un momento.');
         event.preventDefault();
-        (Promise.all([
-            loginUsuario(usuario, contrasena).then((items) => {
-                if (items !== undefined) {
-                    if (items.length !== 0 && items[0].Bloqueado === 0) {
-                        login(0, {
-                            'UsuarioId': items[0].UsuarioId !== undefined ? items[0].UsuarioId : '',
-                            'Nombres': items[0].Nombres !== undefined ? items[0].Nombres : '',
-                            'Apellidos': items[0].Apellidos !== undefined ? items[0].Apellidos : '',
-                            'Rol': items[0].Rol !== undefined ? items[0].Rol : '',
-                            'NombreRol': items[0].NombreRol !== undefined ? items[0].NombreRol : ''
-                        });
-                    } else if(items.length === 0) {
-                        setError(true); setErrorMsjTitle('Error de sesión'); setErrorMsj('Ocurrio un problema intentando iniciar la sesión. Usuario / Contraseña erronea, intenta de nuevo');
-                    } else if (items[0].Bloqueado === 1) {
-                        setError(true); setErrorMsjTitle('Error de sesión'); setErrorMsj('Ocurrio un problema intentando iniciar la sesión. Usuario bloqueado temporalmente');
-                    }
-                } else {
-                    setError(true); setErrorMsjTitle('Error de red'); setErrorMsj('Ocurrio un error en la comunicación');
-                }
-            }),
-        ]).catch(error => {
-            new Error(error);
-        }));
+        const loginHandle = await loginUsuarioService(usuario, contrasena);
+        if (loginHandle !== undefined || loginHandle.length !== 0) {
+            if (loginHandle.length !== 0 && loginHandle[0].Bloqueado === 0) {
+                login(0, {
+                    'UsuarioId': loginHandle[0].UsuarioId !== undefined ? loginHandle[0].UsuarioId : '',
+                    'Nombres': loginHandle[0].Nombres !== undefined ? loginHandle[0].Nombres : '',
+                    'Apellidos': loginHandle[0].Apellidos !== undefined ? loginHandle[0].Apellidos : '',
+                    'Rol': loginHandle[0].Rol !== undefined ? loginHandle[0].Rol : '',
+                    'NombreRol': loginHandle[0].NombreRol !== undefined ? loginHandle[0].NombreRol : ''
+                });
+            } else if(loginHandle.length === 0) {
+                setError(true); setErrorMsjTitle('Error de sesión'); setErrorMsj('Ocurrió un problema intentando iniciar la sesión. Usuario / Contraseña erronea, intenta de nuevo');
+            } else if (loginHandle[0].Bloqueado === 1) {
+                setError(true); setErrorMsjTitle('Error de sesión'); setErrorMsj('Ocurrió un problema intentando iniciar la sesión. Usuario bloqueado temporalmente');
+            }
+        } else {
+            setError(true); setErrorMsjTitle('Error de red'); setErrorMsj('Ocurrió un error en la comunicación');
+        }
         setLoadingBtn(false); setLoadingBtnMsj('Iniciar sesión');
     }
 

@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Router, Redirect } from '@reach/router';
+import { Navigate, useRoutes } from 'react-router-dom';
 import { Context } from '../context/Context';
 import Login from '../components/User/Login';
 import Error from '../components/Layouts/Error';
@@ -9,44 +9,32 @@ import Insertar from '../components/Cuotas/Insertar';
 import Configuracion from '../components/Configuraciones/Configuracion';
 import Home from '../components/Home/Home';
 
-const Routes = () => {
+export default function Routes() {
     const { checkUser } = useContext(Context);
-
-    return (
-        <Router>
-        {(checkUser().UsuarioId) !== null ? 
-            <Home path="/" user={checkUser().UsuarioId}></Home>
-            :
-            <Login path="/" />
-        }
-        {(checkUser().UsuarioId) !== null && (checkUser().Rol) === '1' || (checkUser().Rol) === '2' || checkUser().Rol === '3' ? 
-            <Actualizar path="/actualizar" user={checkUser().UsuarioId}></Actualizar>
-            :
-            <Redirect from="/actualizar" to="/"/>
-        }
-        {(checkUser().UsuarioId) !== null && (checkUser().Rol) === '1' || (checkUser().Rol) === '2' ? 
-            <Reportes path="/reportes/deudas" type={1} user={checkUser().UsuarioId}></Reportes>
-            :
-            <Redirect from="/reportes/deudas" to="/"/>
-        }
-        {(checkUser().UsuarioId) !== null && (checkUser().Rol) === '1' || (checkUser().Rol) === '2' ? 
-            <Reportes path="/reportes/inscripciones" type={2} user={checkUser().UsuarioId}></Reportes>
-            :
-            <Redirect from="/reportes/inscripciones" to="/"/>
-        }
-        {(checkUser().UsuarioId) !== null && (checkUser().Rol) === '1' || (checkUser().Rol) === '2' || (checkUser().Rol) === '3' ? 
-            <Insertar path="/insertar" user={checkUser().UsuarioId}></Insertar>
-            :
-            <Redirect from="/insertar" to="/"/>
-        }
-        {(checkUser().UsuarioId) !== null && (checkUser().Rol) === '1' || (checkUser().Rol) === '2' ? 
-            <Configuracion path="/configuracion" user={checkUser().UsuarioId}></Configuracion>
-            :
-            <Redirect from="/configuracion" to="/"/>
-        }
-            <Error default/>
-    </Router>
-    );
-};
-
-export default Routes;
+    return useRoutes([
+        {
+            path: '/', element: checkUser().UsuarioId !== null ? <Home user={checkUser().UsuarioId}/> : <Login />,
+        },
+        {
+            path: '/actualizar', element: checkUser().UsuarioId !== null ? <Actualizar user={checkUser().UsuarioId}/> : <Login />,
+        },
+        {
+            path: '/reportes/deudas', element: checkUser().UsuarioId !== null ? <Reportes user={checkUser().UsuarioId } type={1}/> : <Login />,
+        },
+        {
+            path: '/reportes/inscripciones', element: checkUser().UsuarioId !== null ? <Reportes user={checkUser().UsuarioId } type={2}/> : <Login />,
+        },
+        {
+            path: '/insertar', element: checkUser().UsuarioId !== null ? <Insertar user={checkUser().UsuarioId }/> : <Login />,
+        },
+        {
+            path: '/configuracion', element: checkUser().UsuarioId !== null ? <Configuracion user={checkUser().UsuarioId }/> : <Login />,
+        },
+        {
+            path: '/404', element: <Error />,
+        },
+        {
+            path: '*', element: <Navigate to="/404" replace />
+        },
+    ]);
+}

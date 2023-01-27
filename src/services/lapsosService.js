@@ -1,5 +1,15 @@
-import { get } from '../helpers/Fetch';
+import { getLapsosClient } from "../clients/lapsosClient";
 
-export const getLapsos = async () => {
-    return await get('lapsos/all');
-} 
+export const getLapsosService = async () => {
+    let lapsos = [];
+    (Promise.all([
+        await getLapsosClient().then((values) => {
+            if (values !== null) {
+                lapsos = [...lapsos, ...values !== undefined ? values : []];
+            }
+        }),
+    ]).catch(error => {
+        new Error(error);
+    }));
+    return lapsos;
+}

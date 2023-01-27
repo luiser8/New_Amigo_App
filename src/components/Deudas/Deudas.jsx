@@ -8,13 +8,13 @@ import InsertarCuota from './modals/InsertarCuota';
 import Facturas from '../Facturas/Facturas';
 import ModificarInscripcion from './modals/ModificarInscripcion';
 import ModificarTerceros from './modals/ModificarTerceros';
-import { getLapsos } from '../../services/lapsosService';
-import { getAranceles } from '../../services/arancelesService';
-import { getCuotas } from '../../services/cuotasService';
-import { getFacturas } from '../../services/facturasServices';
-import { delInscripcion, putInscripcion } from '../../services/inscripcionService';
-import { getAlumnos, putTerceros } from '../../services/alumnosService';
-import { checkDeuda, postDeuda, putDeuda, delDeuda } from '../../services/deudasServices';
+import { getLapsosService } from '../../services/lapsosService';
+import { getArancelesService } from '../../services/arancelesService';
+import { getCuotasService } from '../../services/cuotasService';
+import { getFacturasServices } from '../../services/facturasServices';
+import { delInscripcionService, putInscripcionService } from '../../services/inscripcionService';
+import { getAlumnosService, putTercerosService } from '../../services/alumnosService';
+import { putDeudaService, postDeudaService, delDeudaService, checkDeudaService } from '../../services/deudasServices';
 import Alumnos from '../Alumnos/Alumnos';
 import DatosEstudiantes from '../Alumnos/DatosEstudiantes';
 import PanelEdicion from './PanelEdicion';
@@ -37,10 +37,10 @@ const Deudas = () => {
     const [emails, setEmails] = useState('');
     const [tipoingreso, setTipoingreso] = useState('');
     const [plandepago, setPlandepago] = useState('');
-    const [lapso, setLapso] = useState(checkConfig().Lapso ? checkConfig().Lapso : '');
+    const [lapso, setLapso] = useState(checkConfig().Lapso !== '' ? checkConfig().Lapso : '');
     const [monto, setMonto] = useState('');
     const [fullNombre, setFullNombre] = useState('');
-    const [sexo, setSexo] = useState('');
+    const [sexo, setSexo] = useState(0);
     const [estAca, setEstAca] = useState('');
     const [foto, setFoto] = useState('');
     const [carrera, setCarrera] = useState('');
@@ -57,7 +57,76 @@ const Deudas = () => {
     const [id_arancel, setId_arancel] = useState('');
     const [arancel, setArancel] = useState('');
 
-    /* Inicio Modales*/
+    const getAlumnos = async (id) => {
+        const alumno = await getAlumnosService(id);
+        setAlumno(alumno);
+        if (alumno !== undefined) {
+            alumno.map((item) => {
+                if (item !== []) {
+                    setFullNombre(item.Fullnombre); setSexo(item.Sexo); setEstAca(item.EstAca); setFoto(item.Foto); setCarrera(item.codcarrera);
+                } else {
+                    setFullNombre(''); setSexo(''); setEstAca(''); setFoto(''); setCarrera('');
+                }
+            });
+        } else {
+            setFullNombre(''); setSexo(''); setEstAca(''); setFoto(''); setCarrera('');
+        }
+    }
+
+    const getAranceles = async (lapso, tipo) => {
+        setAranceles(await getArancelesService(lapso, tipo));
+    }
+
+    const getLapsos = async () => {
+        const lapsosArray = await getLapsosService();
+        setLapsos(lapsosArray);
+        if (lapso === null || lapso === '') {
+            establecerLapso(lapsosArray[0].Lapso);
+        }
+    }
+
+    const getFacturas = async (identificador, lapso) => {
+        const facturasData = await getFacturasServices(identificador, lapso);
+        setFacturas(facturasData);
+        if (facturasData !== undefined) {
+            facturasData.forEach((item) => {
+                setId_inscripcion(item.Id_Inscripcion);
+                setId_carrera(item.Id_Carrera);
+                setId_terceros(item.Id_Terceros);
+                setTipoingreso(item.TipoIngreso);
+                setPlandepago(item.PlanDePago);
+                setId_plan(item.Id_Plan);
+                setId_tipoIngreso(item.Id_TipoIngreso);
+                tipoDeCuota(item.PlanDePago.substring(0, 7), 1);
+                setTelefonos(item.Telefonos);
+                setEmails(item.Emails);
+            });
+        }
+    }
+
+    const getCuotas = async (tipo, estado) => {
+        return await getCuotasService(tipo, estado, setConfig);
+    }
+
+    const getDeudasAlumno = async (lapso, identificador) => {
+        const deudasAlumnoGet = await checkDeudaService(lapso, identificador);
+        setDeudas(deudasAlumnoGet);
+        deudasAlumnoGet === undefined ? Toast({ show: true, title: 'Error!', msj: 'Ocurrio un problema con la comunicacion.', color: 'red' }) : Toast({ show: false });
+        if (deudasAlumnoGet !== undefined) {
+            deudasAlumnoGet.map((item) => {
+                setId_inscripcion(item.Id_Inscripcion);
+                if (item.Pagada === 0) {
+                    setCuotaVencida(Moment(item.FechaVencimiento).isBefore(Date.now()));
+                }
+            });
+            if (deudasAlumnoGet.length === 0) {
+                Toast({ show: true, title: 'Advertencia!', msj: 'No se consigueron registros de duedas.', color: 'red' });
+            } else {
+                Toast({ show: false });
+            }
+        }
+    }
+
     const activeConfirmacion = async (...params) => {
         setOpenConfirm(params[0].open);
         if (params[0].pagada !== '') {
@@ -68,18 +137,11 @@ const Deudas = () => {
     }
 
     const okEliminar = async () => {
+        getFacturas(identificador, checkConfig().Lapso);
         if (identificador !== '' && id_inscripcion !== '' && id_arancel !== '') {
-            (Promise.all([
-                delDeuda({ 'pagada': pagada, 'id_factura': id_factura !== undefined ? id_factura : 0, 'id_inscripcion': id_inscripcion, 'id_arancel': id_arancel }).then((items) => {
-                    items !== undefined ? setDeudas(deudas.filter(item => item.Id_Arancel !== id_arancel)) : setDeudas([]);
-                    items !== undefined ? Toast({ show: true, title: 'Advertencia!', msj: `Cuota ${pagada === 0 ? 'no pagada' : 'pagada'} ha sido eliminada.`, color: 'red' }) : Toast({ show: false });
-                }),
-                getFacturas(identificador, checkConfig().Lapso).then((items) => {
-                    setFacturas(items !== undefined ? items : []);
-                }),
-            ]).catch(error => {
-                new Error(error);
-            }));
+            const delDeuda = await delDeudaService({ 'pagada': pagada, 'id_factura': id_factura !== undefined ? id_factura : 0, 'id_inscripcion': id_inscripcion, 'id_arancel': id_arancel });
+            delDeuda !== undefined ? setDeudas(deudas.filter(item => item.Id_Arancel !== id_arancel)) : setDeudas([]);
+            delDeuda !== undefined ? Toast({ show: true, title: 'Advertencia!', msj: `Cuota ${pagada === 0 ? 'no pagada' : 'pagada'} ha sido eliminada.`, color: 'red' }) : Toast({ show: false });
         }
         Toast({ show: false });
         setOpenConfirm(false);
@@ -88,18 +150,15 @@ const Deudas = () => {
     const activeInsertar = async (open) => {
         setOpenInsertar(open);
     }
+
     const okInsertar = async (value) => {
         setOpenInsertar(false);
-        if (value.Id_Inscripcion !== '')
-            (Promise.all([
-                postDeuda(value).then((items) => {
-                    items !== undefined ? Toast({ show: true, title: 'Información!', msj: 'Nueva cuota ha sido aplicado.', color: 'green' }) : Toast({ show: false });
-                    check();
-                    Toast({ show: false });
-                }),
-            ]).catch(error => {
-                new Error(error);
-            }));
+        if (value.Id_Inscripcion !== '') {
+            const postDeuda = await postDeudaService(value);
+            postDeuda !== undefined ? Toast({ show: true, title: 'Información!', msj: 'Nueva cuota ha sido aplicado.', color: 'green' }) : Toast({ show: false });
+        }
+        checkDeudaAlumno();
+        Toast({ show: false });
     }
 
     const activeModificacion = async (open, id, arancel) => {
@@ -110,63 +169,52 @@ const Deudas = () => {
             setId_cuenta(''); setArancel('');
         }
     }
+
     const activeModificacionInsc = async (open, id, plan) => {
         setOpenModificarInsc(open);
         if (id !== '') {
             setId_tipoIngreso(id); setId_plan(plan);
         }
     }
+
     const activeModificacionTerceros = async (open) => {
         setOpenModificarTerceros(open);
     }
+
     const okModificarTerceros = async (value) => {
-        (Promise.all([
-            putTerceros(id_terceros, value.Identificador, value.Telefonos, value.Emails).then((items) => {
-                items !== undefined ? setIdentificador(value.Identificador) : setIdentificador(value.Identificador);
-                items !== undefined ? setTelefonos(value.Telefonos) : setTelefonos(value.Telefonos);
-                items !== undefined ? setEmails(value.Emails) : setEmails(value.Emails);
-                items !== undefined ? Toast({ show: true, title: 'Información!', msj: 'Datos del Estudiante han sido modificados.', color: 'yellow' }) : Toast({ show: false });
-            }),
-        ]).catch(error => {
-            new Error(error);
-        }));
-        setOpenModificarTerceros(false);
+        if (value) {
+            const terceroPut = await putTercerosService(id_terceros, value.Identificador, value.Telefonos, value.Emails);
+            terceroPut !== undefined ? setIdentificador(value.Identificador) : setIdentificador(value.Identificador);
+            terceroPut !== undefined ? setTelefonos(value.Telefonos) : setTelefonos(value.Telefonos);
+            terceroPut !== undefined ? setEmails(value.Emails) : setEmails(value.Emails);
+            terceroPut !== undefined ? Toast({ show: true, title: 'Información!', msj: 'Datos del Estudiante han sido modificados.', color: 'yellow' }) : Toast({ show: false });
+            setOpenModificarTerceros(false);
+        }
     }
 
     const okModificar = async () => {
-        if (id_cuenta !== '' && monto !== '')
-            (Promise.all([
-                putDeuda(id_cuenta, monto).then((items) => {
-                    check();
-                    items !== undefined ? Toast({ show: true, title: 'Información!', msj: 'Monto nuevo ha sido aplicado.', color: 'yellow' }) : Toast({ show: false });
-                }),
-            ]).catch(error => {
-                new Error(error);
-            }));
+        if (id_cuenta !== '' && monto !== '') {
+            const putDeuda = await putDeudaService(id_cuenta, monto);
+            putDeuda !== undefined ? Toast({ show: true, title: 'Información!', msj: 'Monto nuevo ha sido aplicado.', color: 'yellow' }) : Toast({ show: false });
+        }
+        checkDeudaAlumno();
         setOpenModificar(false);
     }
+
     const okModificarInsc = async (value) => {
-        (Promise.all([
-            putInscripcion(id_inscripcion, value.Id_TipoIngreso, value.Id_Plan).then((items) => {
-                check();
-                items !== undefined ? Toast({ show: true, title: 'Información!', msj: 'Se ha actualizado tipo/plan de inscripción.', color: 'yellow' }) : Toast({ show: false });
-            }),
-        ]).catch(error => {
-            new Error(error);
-        }));
+        const putInscripcion = await putInscripcionService(id_inscripcion, value.Id_TipoIngreso, value.Id_Plan);
+        putInscripcion !== undefined ? Toast({ show: true, title: 'Información!', msj: 'Se ha actualizado tipo/plan de inscripción.', color: 'yellow' }) : Toast({ show: false });
+        checkDeudaAlumno();
         setOpenModificarInsc(false);
     }
+
     const okModificarInscDelete = async (value) => {
-        (Promise.all([
-            delInscripcion(value).then((items) => {
-                check();
-                items !== undefined ? Toast({ show: true, title: 'Información!', msj: 'Se ha eliminado una inscripción.', color: 'yellow' }) : Toast({ show: false });
-            }),
-        ]).catch(error => {
-            new Error(error);
-        }));
+        const deleteIns = await delInscripcionService(value);
+        deleteIns !== undefined ? Toast({ show: true, title: 'Información!', msj: 'Se ha eliminado una inscripción.', color: 'yellow' }) : Toast({ show: false });
+        checkDeudaAlumno();
         setOpenModificarInsc(false);
     }
+
     const changeMonto = async (value) => {
         if (value !== '') {
             setMonto(value);
@@ -174,13 +222,11 @@ const Deudas = () => {
             setMonto('');
         }
     }
-    /* Fin Modales*/
+
     const establecerLapso = async (lapso) => {
         if (lapso !== '') {
-            getAranceles(lapso, 1).then((items) => {
-                setAranceles(items !== undefined ? items : []);
-            });
-            setLapso(lapso); 
+            getAranceles(lapso, 1);
+            setLapso(lapso);
             setConfig(1, {
                 'Lapso': lapso,
                 'DolarN': checkConfig().DolarN,
@@ -192,108 +238,43 @@ const Deudas = () => {
             });
         } else {
             if (checkConfig().Lapso !== lapso) {
-                getAranceles(lapso, 1).then((items) => {
-                    setAranceles(items !== undefined ? items : []);
-                });
+                getAranceles(lapso, 1);
                 setLapso(lapso);
             } else {
-                getAranceles(checkConfig().Lapso, 1).then((items) => {
-                    setAranceles(items !== undefined ? items : []);
-                });
+                getAranceles(checkConfig().Lapso, 1);
                 setLapso(checkConfig().Lapso);
             }
         }
     }
-    const check = async () => {
-        (Promise.all([
-            checkDeuda(checkConfig().Lapso, identificador).then((items) => {
-                setDeudas(items !== undefined ? items : []);
-                items === undefined ? Toast({ show: true, title: 'Error!', msj: 'Ocurrio un problema con la comunicacion.', color: 'red' }) : Toast({ show: false });
-                if (items !== undefined) {
-                    items.map((item) => {
-                        setId_inscripcion(item.Id_Inscripcion);
-                        if (item.Pagada === 0) {
-                            setCuotaVencida(Moment(item.FechaVencimiento).isBefore(Date.now()));
-                        }
-                    });
-                    if (items.length === 0) {
-                        Toast({ show: true, title: 'Advertencia!', msj: 'No se consigueron registros de duedas.', color: 'red' });
-                    } else {
-                        Toast({ show: false });
-                    }
-                }
-            }),
-            getAranceles(checkConfig().Lapso, 1).then((items) => {
-                setAranceles(items !== undefined ? items : []);
-            }),
-            getFacturas(identificador, checkConfig().Lapso).then((items) => {
-                setFacturas(items !== undefined ? items : []);
-                if (items !== undefined) {
-                    items.map((item) => {
-                        setId_inscripcion(item.Id_Inscripcion);
-                        setId_carrera(item.Id_Carrera);
-                        setId_terceros(item.Id_Terceros);
-                        setTipoingreso(item.TipoIngreso);
-                        setPlandepago(item.PlanDePago);
-                        setId_plan(item.Id_Plan);
-                        setId_tipoIngreso(item.Id_TipoIngreso);
-                        tipoDeCuota(item.PlanDePago.substring(0, 7), 1);
-                        setTelefonos(item.Telefonos);
-                        setEmails(item.Emails);
-                    });
-                }
-            }),
-            getAlumnos(identificador).then((items) => {
-                setAlumno(items !== undefined ? items : []);
-                if (items !== undefined) {
-                    items.map((item) => {
-                        if (item !== []) {
-                            setFullNombre(item.Fullnombre); setSexo(item.Sexo); setEstAca(item.EstAca); setFoto(item.Foto); setCarrera(item.codcarrera);
-                        } else {
-                            setFullNombre(''); setSexo(''); setEstAca(''); setFoto(''); setCarrera('');
-                        }
-                    });
-                } else {
-                    setFullNombre(''); setSexo(''); setEstAca(''); setFoto(''); setCarrera('');
-                }
-            }),
-        ]).catch(error => {
-            new Error(error);
-        }));
+
+    const checkDeudaAlumno = async () => {
+        getAlumnos(identificador);
+        getAranceles(checkConfig().Lapso, 1);
+        getFacturas(identificador, checkConfig().Lapso);
+        getDeudasAlumno(checkConfig().Lapso, identificador);
     }
+
     const tipoDeCuota = async (tipo, estado) => {
-        getCuotas(tipo === 'REGULAR' ? 1 : 2, estado).then((items) => {
+        const newTipo = tipo === 'REGULAR' ? 1 : 2;
+        await getCuotas(newTipo, estado).then((items) => {
             if (checkConfig().Cuota !== items[0].Monto) {
-                setCuota(items[0].Monto);
-            } else {
-                setCuota(items[0].Monto !== undefined ? items[0].Monto : checkConfig().Cuota);
-            }
-        });
-    }
-    /* Fin Peticiones*/
-    useEffect(() => {
-        (Promise.all([
-            getLapsos().then((items) => {
-                setLapsos(items !== undefined ? items : []);
-            }),
-            getCuotas(0, 1).then((items) => {
-                if (items !== undefined) {
-                    items.map((_, item) => {
-                        setConfig(2, {
-                            'Lapso': null,
-                            'DolarN': items.filter((tipo) => tipo.Tipo === 2)[item].Dolar,
-                            'DolarI': items.filter((tipo) => tipo.Tipo === 1)[item].Dolar,
-                            'CuotaId': items.filter((tipo) => tipo.Tipo === 2)[item].CuotaId,
-                            'Cuota': items.filter((tipo) => tipo.Tipo === 2)[item].Monto,
-                            'CuotaSAIAId': items.filter((tipo) => tipo.Tipo === 1)[item].CuotaId,
-                            'CuotaSAIA': items.filter((tipo) => tipo.Tipo === 1)[item].Monto,
-                        });
-                    });
+                    setCuota(items[0].Monto);
+                } else {
+                    setCuota(items[0].Monto !== undefined ? items[0].Monto : checkConfig().Cuota);
                 }
-            })
-        ]).catch(error => {
-            new Error(error);
-        }));
+            });
+    }
+
+    useEffect(() => {
+        let callCuotas = true;
+        getLapsos();
+        if (callCuotas) {
+            getCuotas(0, 1);
+        }
+        return () => {
+            setLapsos([]);
+            callCuotas = false;
+        }
     }, []);
 
     return (
@@ -321,7 +302,7 @@ const Deudas = () => {
                         establecerLapso={establecerLapso}
                         setIdentificador={setIdentificador}
                         identificador={identificador}
-                        check={check}
+                        check={checkDeudaAlumno}
                     />
                     {checkUser().Rol !== '4' ?
                     <PanelEdicion

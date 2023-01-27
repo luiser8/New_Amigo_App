@@ -1,8 +1,29 @@
-import { get } from '../helpers/Fetch';
+import { getArancelesClient, getArancelesSAIAClient } from "../clients/arancelesClient";
 
-export const getAranceles = async (lapso, tipo) => {
-    return await get(`arancel/get?lapso=${lapso}&tipoArancel=${tipo}`);
-} 
-export const getArancelesSAIA = async (lapso, tipo) => {
-    return await get(`arancel/get?lapso=${lapso}&tipoArancel=${tipo}`);
-} 
+export const getArancelesService = async (lapso, tipo) => {
+    let aranceles = [];
+    (Promise.all([
+        await getArancelesClient(lapso, tipo).then((values) => {
+            if (values !== null) {
+                aranceles = [...aranceles, ...values !== undefined ? values : []];
+            }
+        }),
+    ]).catch(error => {
+        new Error(error);
+    }));
+    return aranceles;
+}
+
+export const getArancelesSAIAService = async (lapso, tipo) => {
+    let aranceles = [];
+    (Promise.all([
+        await getArancelesSAIAClient(lapso, tipo).then((values) => {
+            if (values !== null) {
+                aranceles = [...aranceles, ...values !== undefined ? values : []];
+            }
+        }),
+    ]).catch(error => {
+        new Error(error);
+    }));
+    return aranceles;
+}

@@ -62,7 +62,7 @@ const Alumnos = ({alumno, deudas, foto, sexo, fullNombre, carrera, estAca}) => {
 
 Alumnos.propTypes = {
     foto : PropTypes.string,
-    sexo : PropTypes.string,
+    sexo : PropTypes.number,
     fullNombre : PropTypes.string,
     carrera : PropTypes.string,
     estAca : PropTypes.string,

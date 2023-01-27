@@ -2,13 +2,13 @@ import React, { useState, useEffect, useContext } from "react";
 import { Toast } from "../../helpers/Toast";
 import { Context } from "../../context/Context";
 import Loading from "../Layouts/Loading";
-import { getLapsos } from "../../services/lapsosService";
+import { getLapsosService } from "../../services/lapsosService";
 import {
-    getAranceles,
-    getArancelesSAIA,
+    getArancelesSAIAService,
+    getArancelesService,
 } from "../../services/arancelesService";
-import { getPlanes, getPlanesSAIA } from "../../services/planesService";
-import { postCuotaAll, postCuotaAllSAIA } from "../../services/cuotasService";
+import { getPlanesSAIAService, getPlanesService } from "../../services/planesService";
+import { postCuotaAllService } from "../../services/cuotasService";
 import Cuotas from "./Cuotas";
 import CuotasSAIA from "./CuotasSAIA";
 
@@ -31,6 +31,27 @@ const Insertar = () => {
     const [loading, setLoading] = useState(false);
     const [tipoCuota, setTipoCuota] = useState(0);
 
+    const getLapsos = async () => {
+        setLapsos(await getLapsosService());
+    }
+
+    const getAranceles = async (opcion, lapso, tipo) => {
+        if (opcion === "normal") {
+            setAranceles(await getArancelesService(lapso, tipo));
+        } else {
+            setArancelesSAIA(await getArancelesSAIAService(lapso, tipo));
+        }
+
+    }
+
+    const getPlanes = async (opcion, lapso) => {
+        if (opcion === "normal") {
+            setPlanes(await getPlanesService(lapso));
+        } else {
+            setPlanesSAIA(await getPlanesSAIAService(lapso));
+        }
+    }
+
     /* Inicio Peticiones*/
     const postCuota = async (ev) => {
         ev.preventDefault();
@@ -42,29 +63,26 @@ const Insertar = () => {
             Id_Arancel: id_arancel,
             FechaVencimiento: fechaVencimiento,
         };
+
         for (const key of Object.keys(planesCheck)) {
             data[`Plan${key}`] = Number.parseInt(planesCheck[key].toString());
         }
-        Promise.all([
-            postCuotaAll(data).then((items) => {
-                items !== undefined
-                    ? Toast({
-                        show: true,
-                        title: "Información!",
-                        msj: `Cuota nueva ha sido aplicado a los estudiantes inscritos`,
-                        color: "green",
-                    })
-                    : Toast({ show: false });
-                setBtnEstablecer(false);
-                setLoading(false);
-                Toast({ show: false });
-            }),
-            getAranceles(checkConfig().Lapso),
-            getPlanes(checkConfig().Lapso),
-        ]).catch((error) => {
-            new Error(error);
-        });
+
+        const postCuotaAll = await postCuotaAllService(data);
+        postCuotaAll !== undefined
+            ? Toast({
+                show: true,
+                title: "Información!",
+                msj: `Cuota nueva ha sido aplicado a los estudiantes inscritos`,
+                color: "green",
+            }) : Toast({ show: false });
+        setBtnEstablecer(false);
+        setLoading(false);
+        Toast({ show: false });
+        getAranceles("normal",checkConfig().Lapso);
+        getPlanes("normal",checkConfig().Lapso);
     };
+
     const postCuotaSAIA = async (ev) => {
         ev.preventDefault();
         setBtnEstablecer(true);
@@ -75,29 +93,26 @@ const Insertar = () => {
             Id_Arancel: id_arancelSAIA,
             FechaVencimiento: fechaVencimientoSAIA,
         };
+
         for (const key of Object.keys(planesCheck)) {
             data[`Plan${key}`] = Number.parseInt(planesCheck[key].toString());
         }
-        Promise.all([
-            postCuotaAllSAIA(data).then((items) => {
-                items !== undefined
-                    ? Toast({
-                        show: true,
-                        title: "Información!",
-                        msj: `Cuota nueva ha sido aplicado a los estudiantes de SAIA Internacional inscritos`,
-                        color: "green",
-                    })
-                    : Toast({ show: false });
-                setBtnEstablecer(false);
-                setLoading(false);
-                Toast({ show: false });
-            }),
-            getArancelesSAIA(checkConfig().Lapso),
-            getPlanesSAIA(checkConfig().Lapso),
-        ]).catch((error) => {
-            new Error(error);
-        });
+
+        const postCuotaAllSAIA = await postCuotaAllSAIA(data);
+        postCuotaAllSAIA !== undefined
+            ? Toast({
+                show: true,
+                title: "Información!",
+                msj: `Cuota nueva ha sido aplicado a los estudiantes de SAIA Internacional inscritos`,
+                color: "green",
+            }) : Toast({ show: false });
+        setBtnEstablecer(false);
+        setLoading(false);
+        Toast({ show: false });
+        getAranceles("saia", checkConfig().Lapso);
+        getPlanes("saia", checkConfig().Lapso);
     };
+
     const changeArancelFecha = async (value) => {
         let fecha = aranceles.find((item) => item.Id_Arancel === value);
         value !== 0 ? setId_arancel(Number.parseInt(value)) : setId_arancel(0);
@@ -107,6 +122,7 @@ const Insertar = () => {
             setFechaVencimiento("");
         }
     };
+
     const changeArancelFechaSAIA = async (value) => {
         let fecha = arancelesSAIA.find((item) => item.Id_Arancel === value);
         value !== 0
@@ -118,32 +134,26 @@ const Insertar = () => {
             setFechaVencimientoSAIA("");
         }
     };
+
     const changeMonto = async (checked, value) => {
         checked
             ? setPlanesCheck((planesCheck) => [...planesCheck, value])
             : setPlanesCheck([...planesCheck.filter((item) => item !== value)]);
     };
-    /* Fin Peticiones*/
+
     useEffect(() => {
-        Promise.all([
-            getLapsos().then((items) => {
-                setLapsos(items !== undefined ? items : []);
-            }),
-            getAranceles(checkConfig().Lapso, 2).then((items) => {
-                setAranceles(items !== undefined ? items : []);
-            }),
-            getArancelesSAIA(checkConfig().Lapso, 3).then((items) => {
-                setArancelesSAIA(items !== undefined ? items : []);
-            }),
-            getPlanes(checkConfig().Lapso).then((items) => {
-                setPlanes(items !== undefined ? items : []);
-            }),
-            getPlanesSAIA(checkConfig().Lapso).then((items) => {
-                setPlanesSAIA(items !== undefined ? items : []);
-            }),
-        ]).catch((error) => {
-            new Error(error);
-        });
+        getLapsos();
+        getAranceles("normal", checkConfig().Lapso, 2);
+        getAranceles("saia", checkConfig().Lapso, 3);
+        getPlanes("normal", checkConfig().Lapso);
+        getPlanes("saia", checkConfig().Lapso);
+        return () => {
+            setLapsos([]);
+            setAranceles([]);
+            setArancelesSAIA([])
+            setPlanes([]);
+            setPlanesSAIA([]);
+        }
     }, []);
 
     return (

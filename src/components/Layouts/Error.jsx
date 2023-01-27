@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from "@reach/router";
+import { NavLink } from 'react-router-dom';
 
 const Error = () => {
 
@@ -10,7 +10,7 @@ const Error = () => {
                 <h1 className="text-9xl font-bold text-gray-400">404</h1>
                 </div>
             </header>
-            <Link to="/" className="mt-6 bg-blue-500 hover:bg-blue-700 text-white font-light py-4 px-6 rounded-full inline-block uppercase shadow-2xl">Regresar</Link>
+            <NavLink to="/" className="mt-6 bg-blue-500 hover:bg-blue-700 text-white font-light py-4 px-6 rounded-full inline-block uppercase shadow-2xl">Regresar</NavLink>
         </div>
     );
 }

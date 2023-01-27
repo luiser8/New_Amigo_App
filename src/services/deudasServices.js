@@ -1,14 +1,57 @@
-import { post, put, del } from '../helpers/Fetch';
+import { checkDeudaClient, delDeudaClient, postDeudaClient, putDeudaClient } from "../clients/deudasClient";
 
-export const checkDeuda = async (lapso, identificador) => {
-    return await post('deudas/check', { "Lapso": lapso, "Identificador": identificador });
-} 
-export const postDeuda = async (data) => {
-    return await post('deudas/insert', data);
-} 
-export const putDeuda = async (id, monto) => {
-    return await put(`deudas/update?id_cuenta=${id}`, { 'Monto': monto })
+export const checkDeudaService = async (lapso, identificador) => {
+    let deudas = [];
+    (Promise.all([
+        await checkDeudaClient(lapso, identificador).then((values) => {
+            if (values !== null) {
+                deudas = [...deudas, ...values !== undefined ? values : []];
+            }
+        }),
+    ]).catch(error => {
+        new Error(error);
+    }));
+    return deudas;
 }
-export const delDeuda = async (...params) => {
-    return await del(`deudas/delete?pagada=${params[0].pagada}&id_factura=${params[0].id_factura}&id_inscripcion=${params[0].id_inscripcion}&id_arancel=${params[0].id_arancel}`)
-}  
+
+export const postDeudaService = async (data) => {
+    let postDeudas = [];
+    (Promise.all([
+        await postDeudaClient(data).then((values) => {
+            if (values !== null) {
+                postDeudas = [...postDeudas, ...values !== undefined ? values : []];
+            }
+        }),
+    ]).catch(error => {
+        new Error(error);
+    }));
+    return postDeudas;
+}
+
+export const putDeudaService = async (id, monto) => {
+    let putDeudas = [];
+    (Promise.all([
+        await putDeudaClient(id, monto).then((values) => {
+            if (values !== null) {
+                putDeudas = [...putDeudas, ...values !== undefined ? values : []];
+            }
+        }),
+    ]).catch(error => {
+        new Error(error);
+    }));
+    return putDeudas;
+}
+
+export const delDeudaService = async (...params) => {
+    let delDeudas = [];
+    (Promise.all([
+        await delDeudaClient(params).then((values) => {
+            if (values !== null) {
+                delDeudas = [...delDeudas, ...values !== undefined ? values : []];
+            }
+        }),
+    ]).catch(error => {
+        new Error(error);
+    }));
+    return delDeudas;
+}

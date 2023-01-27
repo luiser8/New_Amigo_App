@@ -1,8 +1,29 @@
-import { del, put } from '../helpers/Fetch';
+import { delInscripcionClient, putInscripcionClient } from '../clients/inscripcionClient';
 
-export const putInscripcion = async (id_inscripcion, id_tipoIngreso, id_plan) => {
-    return await put(`inscripcion/update?id_inscripcion=${id_inscripcion}`, { 'Id_Plan': id_plan, 'Id_TipoIngreso': id_tipoIngreso });
+export const putInscripcionService = async (id_inscripcion, id_tipoIngreso, id_plan) => {
+    let putInscripcion = [];
+    (Promise.all([
+        await putInscripcionClient(id_inscripcion, id_tipoIngreso, id_plan).then((values) => {
+            if (values !== null) {
+                putInscripcion = [...putInscripcion, ...values !== undefined ? values : []];
+            }
+        }),
+    ]).catch(error => {
+        new Error(error);
+    }));
+    return putInscripcion;
 }
-export const delInscripcion = async (id_inscripcion) => {
-    return await del(`inscripcion/delete?id_inscripcion=${id_inscripcion}`);
-}  
+
+export const delInscripcionService = async (id_inscripcion) => {
+    let putInscripcion = [];
+    (Promise.all([
+        await delInscripcionClient(id_inscripcion).then((values) => {
+            if (values !== null) {
+                putInscripcion = [...putInscripcion, ...values !== undefined ? values : []];
+            }
+        }),
+    ]).catch(error => {
+        new Error(error);
+    }));
+    return putInscripcion;
+}
