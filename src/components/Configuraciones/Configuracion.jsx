@@ -4,7 +4,7 @@ import { Context } from '../../context/Context';
 import Insertar from './modals/Insertar';
 import Eliminar from './modals/Eliminar';
 import { getRolesService } from '../../services/rolesService';
-import { delUsuariosService, postUsuariosService, putUsuariosService } from '../../services/usuarioService';
+import { delUsuariosService, getUsuariosService, postUsuariosService, putUsuariosService } from '../../services/usuarioService';
 import UsuariosDetalle from '../User/UsuariosDetalle';
 import CambiarClave from './modals/CambiarClave';
 import Editar from './modals/Editar';
@@ -25,7 +25,7 @@ const Configuracion = () => {
     }
 
     const getUsuarios = async () => {
-        setUsuarios(await getRolesService());
+        setUsuarios(await getUsuariosService());
     }
 
     //Modals Insertar

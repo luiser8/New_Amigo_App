@@ -103,8 +103,8 @@ const Cuotas = ({
                                     onChange={async (event) => setLapso(event.target.value)}
                                 >
                                     <option>Selecciona lapso</option>
-                                    {Object.keys(lapsos).map((key, item) => (
-                                        <option key={key} selected={true} >{lapsos[item].Lapso}</option>
+                                    {Object.keys(lapsos).map((_, item) => (
+                                        <option key={lapsos[item].Id_Periodo} value={lapsos[item].Lapso} selected={true} >{lapsos[item].Lapso}</option>
                                     ))}
                                 </select>
                             </div>

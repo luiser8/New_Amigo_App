@@ -8,7 +8,7 @@ import {
     getArancelesService,
 } from "../../services/arancelesService";
 import { getPlanesSAIAService, getPlanesService } from "../../services/planesService";
-import { postCuotaAllService } from "../../services/cuotasService";
+import { postCuotaAllSAIAService, postCuotaAllService } from "../../services/cuotasService";
 import Cuotas from "./Cuotas";
 import CuotasSAIA from "./CuotasSAIA";
 
@@ -20,6 +20,7 @@ const Insertar = () => {
     const [arancelesSAIA, setArancelesSAIA] = useState([]);
     const [planesSAIA, setPlanesSAIA] = useState([]);
     const [planesCheck, setPlanesCheck] = useState([]);
+    const [id_periodo, setId_periodo] = useState(0);
     const [lapso, setLapso] = useState(checkConfig().Lapso);
     const [cuota, setCuota] = useState(checkConfig().Cuota);
     const [cuotaSAIA, setCuotaSAIA] = useState(checkConfig().CuotaSAIA);
@@ -41,7 +42,6 @@ const Insertar = () => {
         } else {
             setArancelesSAIA(await getArancelesSAIAService(lapso, tipo));
         }
-
     }
 
     const getPlanes = async (opcion, lapso) => {
@@ -58,6 +58,7 @@ const Insertar = () => {
         setBtnEstablecer(true);
         setLoading(true);
         let data = {
+            Id_Periodo: id_periodo,
             Lapso: lapso,
             Monto: cuota,
             Id_Arancel: id_arancel,
@@ -79,7 +80,7 @@ const Insertar = () => {
         setBtnEstablecer(false);
         setLoading(false);
         Toast({ show: false });
-        getAranceles("normal",checkConfig().Lapso);
+        getAranceles("normal",checkConfig().Lapso, 2);
         getPlanes("normal",checkConfig().Lapso);
     };
 
@@ -98,7 +99,7 @@ const Insertar = () => {
             data[`Plan${key}`] = Number.parseInt(planesCheck[key].toString());
         }
 
-        const postCuotaAllSAIA = await postCuotaAllSAIA(data);
+        const postCuotaAllSAIA = await postCuotaAllSAIAService(data);
         postCuotaAllSAIA !== undefined
             ? Toast({
                 show: true,
@@ -109,7 +110,7 @@ const Insertar = () => {
         setBtnEstablecer(false);
         setLoading(false);
         Toast({ show: false });
-        getAranceles("saia", checkConfig().Lapso);
+        getAranceles("saia", checkConfig().Lapso, 3);
         getPlanes("saia", checkConfig().Lapso);
     };
 
@@ -141,12 +142,24 @@ const Insertar = () => {
             : setPlanesCheck([...planesCheck.filter((item) => item !== value)]);
     };
 
+    const changeLapso = (newLapso) => {
+        if (newLapso !== 0) {
+            const lapsoFilter = lapsos.filter((item) => item.Lapso === newLapso)[0];
+            setId_periodo(Number(lapsoFilter.Id_Periodo));
+            setLapso(newLapso);
+            getAranceles("normal", newLapso, 2);
+            getAranceles("saia", newLapso, 3);
+            getPlanes("normal", newLapso);
+            getPlanes("saia", newLapso);
+        }
+    }
+
     useEffect(() => {
         getLapsos();
-        getAranceles("normal", checkConfig().Lapso, 2);
-        getAranceles("saia", checkConfig().Lapso, 3);
-        getPlanes("normal", checkConfig().Lapso);
-        getPlanes("saia", checkConfig().Lapso);
+        getAranceles("normal", checkConfig().Lapso !== null ? checkConfig().Lapso : lapso , 2);
+        getAranceles("saia", checkConfig().Lapso !== null ? checkConfig().Lapso : lapso , 3);
+        getPlanes("normal", checkConfig().Lapso !== null ? checkConfig().Lapso : lapso );
+        getPlanes("saia", checkConfig().Lapso !== null ? checkConfig().Lapso : lapso );
         return () => {
             setLapsos([]);
             setAranceles([]);
@@ -212,7 +225,7 @@ const Insertar = () => {
                                                 postCuotaSAIA={postCuotaSAIA}
                                                 changeMonto={changeMonto}
                                                 setCuotaSAIA={setCuotaSAIA}
-                                                setLapso={setLapso}
+                                                setLapso={changeLapso}
                                                 changeArancelFechaSAIA={changeArancelFechaSAIA}
                                                 planesCheck={planesCheck}
                                                 cuotaSAIA={cuotaSAIA}
@@ -230,7 +243,7 @@ const Insertar = () => {
                                                 postCuota={postCuota}
                                                 changeMonto={changeMonto}
                                                 setCuota={setCuota}
-                                                setLapso={setLapso}
+                                                setLapso={changeLapso}
                                                 changeArancelFecha={changeArancelFecha}
                                                 planesCheck={planesCheck}
                                                 cuota={cuota}
