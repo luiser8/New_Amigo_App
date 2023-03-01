@@ -20,7 +20,6 @@ const Actualizar = () => {
     const [tasa, setTasa] = useState(0);
     const [fechaDesde, setFechaDesde] = useState("");
     const [fechaHasta, setFechaHasta] = useState("");
-    const [btnEstablecer, setBtnEstablecer] = useState(checkConfig().Lapso ? false : true);
     const [loading, setLoading] = useState(false);
     const [tipoCuota, setTipoCuota] = useState(0);
     const [cuotaLength, setCuotaLength] = useState(undefined);
@@ -69,13 +68,12 @@ const Actualizar = () => {
 
     const putCuotasAll = async () => {
         let cuotaLocal = cuota === 0 ? (tipoCuota === '1' ? checkConfig().CuotaSAIA : checkConfig().Cuota) : cuota;
-        setBtnEstablecer(true); setLoading(true);
+        setLoading(true);
         if (cuota !== '' && lapso !== '') {
             const putCuotaAll = await putCuotaAllService(cuotaLocal, lapso, tipoCuota);
-            console.log(putCuotaAll);
             putCuotaAll !== undefined ? Toast({ show: true, title: 'Información!', msj: `Cuota nueva ha sido aplicado en las ${putCuotaAll} cuotas sin pagar`, color: 'yellow' }) : Toast({ show: false });
         }
-        setLoading(false); setBtnEstablecer(false); setCuota(checkConfig().Cuota);
+        setLoading(false); setCuota(checkConfig().Cuota);
     }
 
     const changeTasaAndCuota = (value) => {
@@ -139,7 +137,7 @@ const Actualizar = () => {
                                                     value={tipoCuota}
                                                     onChange={async (event) => changeTasaAndCuota(event.target.value)}
                                                 >
-                                                    <option value={0} selected>Selecciona cuota a actualizar</option>
+                                                    <option value={0}>Selecciona cuota a actualizar</option>
                                                     <option value={1}>Cuota Internacional</option>
                                                     <option value={2}>Cuota Nacional</option>
                                                 </select>

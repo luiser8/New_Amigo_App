@@ -28,15 +28,11 @@ const Deudas = () => {
     const [facturas, setFacturas] = useState([]);
     const [aranceles, setAranceles] = useState([]);
     const [id_inscripcion, setId_inscripcion] = useState('');
-    const [id_plan, setId_plan] = useState(0);
-    const [id_tipoIngreso, setId_tipoIngreso] = useState(0);
-    const [id_carrera, setId_carrera] = useState('');
     const [id_terceros, setId_terceros] = useState('');
     const [identificador, setIdentificador] = useState('');
     const [telefonos, setTelefonos] = useState('');
     const [emails, setEmails] = useState('');
     const [tipoingreso, setTipoingreso] = useState('');
-    const [plandepago, setPlandepago] = useState('');
     const [lapso, setLapso] = useState(checkConfig().Lapso !== '' ? checkConfig().Lapso : '');
     const [monto, setMonto] = useState('');
     const [fullNombre, setFullNombre] = useState('');
@@ -91,12 +87,8 @@ const Deudas = () => {
         if (facturasData !== undefined) {
             facturasData.forEach((item) => {
                 setId_inscripcion(item.Id_Inscripcion);
-                setId_carrera(item.Id_Carrera);
                 setId_terceros(item.Id_Terceros);
                 setTipoingreso(item.TipoIngreso);
-                setPlandepago(item.PlanDePago);
-                setId_plan(item.Id_Plan);
-                setId_tipoIngreso(item.Id_TipoIngreso);
                 tipoDeCuota(item.PlanDePago.substring(0, 7), 1);
                 setTelefonos(item.Telefonos);
                 setEmails(item.Emails);
@@ -104,8 +96,24 @@ const Deudas = () => {
         }
     }
 
+    const setCurrentCuotas = async (items) => {
+        return items.forEach((_, item) => {
+            setConfig(2, {
+                'Lapso': null,
+                'DolarN': items.filter((tipo) => tipo.Tipo === 2)[item].Dolar,
+                'DolarI': items.filter((tipo) => tipo.Tipo === 1)[item].Dolar,
+                'CuotaId': items.filter((tipo) => tipo.Tipo === 2)[item].CuotaId,
+                'Cuota': items.filter((tipo) => tipo.Tipo === 2)[item].Monto,
+                'CuotaSAIAId': items.filter((tipo) => tipo.Tipo === 1)[item].CuotaId,
+                'CuotaSAIA': items.filter((tipo) => tipo.Tipo === 1)[item].Monto,
+            });
+        });
+    };
+
     const getCuotas = async (tipo, estado) => {
-        return await getCuotasService(tipo, estado, setConfig);
+        return await getCuotasService(tipo, estado, setConfig).then(async (x) => {
+            await setCurrentCuotas(x);
+        });
     }
 
     const getDeudasAlumno = async (lapso, identificador) => {
@@ -172,9 +180,6 @@ const Deudas = () => {
 
     const activeModificacionInsc = async (open, id, plan) => {
         setOpenModificarInsc(open);
-        if (id !== '') {
-            setId_tipoIngreso(id); setId_plan(plan);
-        }
     }
 
     const activeModificacionTerceros = async (open) => {

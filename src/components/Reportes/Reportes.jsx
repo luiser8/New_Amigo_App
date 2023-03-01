@@ -18,7 +18,6 @@ const Reportes = (props) => {
     const [menusPorCarrera, setMenusPorCarrera] = useState([]);
     const { checkConfig } = useContext(Context);
     const [lapso, setLapso] = useState(checkConfig().Lapso);
-    const [idPeriodo, setIdPeriodo] = useState(0);
     const [idCarrera, setIdCarrera] = useState(0);
     const [idPlan, setIdPlan] = useState(0);
     const [desde, setDesde] = useState("");
@@ -29,6 +28,9 @@ const Reportes = (props) => {
 
     const getLapsos = async () => {
         setLapsos(await getLapsosService());
+    }
+    const getPeriodoId = () => {
+        return lapsos.filter(x => x.Lapso === lapso)[0].Id_Periodo;
     }
 
     const getReporte = async (ev) => {
@@ -59,7 +61,7 @@ const Reportes = (props) => {
     const getReporteMenus = async (ev) => {
         ev.preventDefault(); setBtnEstablecer(true);
         const reporteMenu = await getReporteMenuService(
-            idPeriodo ? idPeriodo : [...lapsos].shift().Id_Periodo,
+            getPeriodoId(),
             desde ? Moment(desde).format('DD-MM-YYYY') : Moment(new Date() - 15 * 24 * 3600 * 1000).format('DD-MM-YYYY'),
             hasta ? Moment(hasta).format('DD-MM-YYYY') : Moment(new Date()).format('DD-MM-YYYY'))
         setMenus(reporteMenu);
@@ -69,7 +71,7 @@ const Reportes = (props) => {
     const getReporteMenusPorCarrera = async (ev) => {
         ev.preventDefault(); setBtnEstablecer(true);
         const reporteMenus = await getReporteMenuCarrerasService(
-            idPeriodo ? idPeriodo : [...lapsos].shift().Id_Periodo,
+            getPeriodoId(),
             desde ? Moment(desde).format('DD-MM-YYYY') : Moment(new Date() - 15 * 24 * 3600 * 1000).format('DD-MM-YYYY'),
             hasta ? Moment(hasta).format('DD-MM-YYYY') : Moment(new Date()).format('DD-MM-YYYY'))
         setMenusPorCarrera(reporteMenus);
@@ -79,7 +81,7 @@ const Reportes = (props) => {
     const getReportePlanDePago = async (ev) => {
         ev.preventDefault(); setBtnEstablecer(true); setLoading(true);
         (Promise.all([
-            getReportePlanesDePagoClient(idPeriodo ? idPeriodo : [...lapsos].shift().Id_Periodo,
+            getReportePlanesDePagoClient(getPeriodoId(),
                 idPlan ? idPlan : [...menus].shift().IdPlan,
                 desde ? Moment(desde).format('DD-MM-YYYY') : Moment(new Date() - 15 * 24 * 3600 * 1000).format('DD-MM-YYYY'),
                 hasta ? Moment(hasta).format('DD-MM-YYYY') : Moment(new Date()).format('DD-MM-YYYY'))
@@ -96,7 +98,7 @@ const Reportes = (props) => {
     const getReporteCarreras = async (ev) => {
         ev.preventDefault(); setBtnEstablecer(true); setLoading(true);
         (Promise.all([
-            getReportePorCarrerasClient(idPeriodo ? idPeriodo : [...lapsos].shift().Id_Periodo,
+            getReportePorCarrerasClient(getPeriodoId(),
                 idCarrera ? idCarrera : [...menusPorCarrera].shift().IdCarrera,
                 desde ? Moment(desde).format('DD-MM-YYYY') : Moment(new Date() - 15 * 24 * 3600 * 1000).format('DD-MM-YYYY'),
                 hasta ? Moment(hasta).format('DD-MM-YYYY') : Moment(new Date()).format('DD-MM-YYYY'))
@@ -158,7 +160,6 @@ const Reportes = (props) => {
                     getMenusPorCarreras={getReporteMenusPorCarrera}
                     getReporte={getReportePlanDePago}
                     getReporteCarreras={getReporteCarreras}
-                    setIdPeriodo={setIdPeriodo}
                     setIdPlan={setIdPlan}
                     idPlan={idPlan}
                     setIdCarrera={setIdCarrera}

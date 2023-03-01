@@ -26,7 +26,6 @@ export const ContextProvider = ({ children }) => {
     const setConfig = (set, config) => {
         setLocalStorage(set, 'config', config); setDataConfig(config);
     }
-
     return (
         <Context.Provider value={{
             dataUser, setDataUser,

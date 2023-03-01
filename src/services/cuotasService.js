@@ -1,23 +1,17 @@
 import { getCuotasByLapsoClient, getCuotasClient, postCuotaAllClient, postCuotasClient, putCuotasAllClient, putCuotasClient } from "../clients/cuotasClient";
 
-export const getCuotasService = async (tipo, estado, setConfig) => {
-    return (Promise.all([
-        await getCuotasClient(tipo, estado).then((items) => {
-            items.forEach((_, item) => {
-                setConfig(2, {
-                    'Lapso': null,
-                    'DolarN': items.filter((tipo) => tipo.Tipo === 2)[item].Dolar,
-                    'DolarI': items.filter((tipo) => tipo.Tipo === 1)[item].Dolar,
-                    'CuotaId': items.filter((tipo) => tipo.Tipo === 2)[item].CuotaId,
-                    'Cuota': items.filter((tipo) => tipo.Tipo === 2)[item].Monto,
-                    'CuotaSAIAId': items.filter((tipo) => tipo.Tipo === 1)[item].CuotaId,
-                    'CuotaSAIA': items.filter((tipo) => tipo.Tipo === 1)[item].Monto,
-                });
-            });
+export const getCuotasService = async (tipo, estado) => {
+    let cuotas = [];
+    (Promise.all([
+        await getCuotasClient(tipo, estado).then((values) => {
+            if (values !== null) {
+                cuotas = [...cuotas, ...values !== undefined ? values : []];
+            }
         }),
     ]).catch(error => {
         new Error(error);
     }));
+    return cuotas;
 }
 
 export const getCuotasByLapsoService = async (lapso, fechaDesde, fechaHasta) => {

@@ -108,7 +108,7 @@ const Form = ({
                             >
                                 <option>Selecciona lapso</option>
                                 {Object.keys(lapsos).map((key, item) => (
-                                    <option key={key} selected={true} >{lapsos[item].Lapso}</option>
+                                    <option key={key}>{lapsos[item].Lapso}</option>
                                 ))}
                             </select>
                         </div>
@@ -116,7 +116,7 @@ const Form = ({
                             <button
                                 type="button"
                                 disabled={tasa !== '' && tasa != '0' && cuota !== '' && cuota != '0' ? false : true}
-                                onClick={async () => establecerCuota()}
+                                onClick={async () => establecerCuota(true)}
                                 className={`inline-flex justify-center py-2 px-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${tasa !== '' && tasa != '0' && cuota !== '' && cuota != '0' ? 'bg-indigo-600 hover:bg-indigo-700' : 'bg-indigo-200 hover:bg-indigo-200'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
                             >
                                 Guardar
@@ -125,9 +125,8 @@ const Form = ({
                         <div className="col-span-3 pt-5">
                             <button
                                 type="button"
-                                disabled={editCuota === true || checkCuotas === 0 ? true : false}
                                 onClick={async () => putCuotasAll()}
-                                className={`inline-flex justify-center py-2 px-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${editCuota === true || checkCuotas === 0 ? 'bg-indigo-200 hover:bg-indigo-200' : 'bg-indigo-600 hover:bg-indigo-700'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
+                                className={`inline-flex justify-center py-2 px-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
                             >
                                 Actualizar cuota {tipo == '1' ? 'Internacionales' : 'Nacionales'}
                             </button>

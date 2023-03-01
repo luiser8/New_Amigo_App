@@ -34,11 +34,11 @@ const CuotasTasas = (
                                                                     id="lapso"
                                                                     name="lapso"
                                                                     className="mt-0 block w-full py-2 px-1 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base"
-                                                                    defaultValue={lapsoTasa}
+                                                                    value={lapsoTasa}
                                                                     onChange={async (event) => setLapsoTasa(event.target.value)}
                                                                 >
                                                                     {Object.keys(lapsos).map((key, item) => (
-                                                                        <option key={key} selected={true}>{lapsos[item].Lapso}</option>
+                                                                        <option key={key}>{lapsos[item].Lapso}</option>
                                                                     ))}
                                                                 </select>
                                                             </div>

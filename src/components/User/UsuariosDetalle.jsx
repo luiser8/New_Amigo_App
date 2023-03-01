@@ -84,19 +84,17 @@ const UsuariosDetalle = ({ usuarios, activeInsertar, activeDelete, activeCambiar
                                         </thead>
                                         <tbody className="bg-white divide-y divide-gray-200">
                                             {Object.keys(usuarios).map((_, item) => (
-                                                <tr key={usuarios[item].UsuarioId} className={`hover:bg-gray-50 ${usuarios[item].Bloqueado === 0 ? 'bg-green-100' : 'bg-red-100'}`}>
-
+                                                <tr key={usuarios[item].UsuarioId} >
                                                     <td className={`px-6 py-4 whitespace-nowrap `}>
                                                         <div className="text-sm font-semibold text-gray-900">
                                                             {usuarios[item].Rol} - {usuarios[item].NombreRol}
                                                         </div>
                                                     </td>
-
                                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{usuarios[item].Cedula}</td>
                                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{usuarios[item].Nombres}</td>
                                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{usuarios[item].Apellidos}</td>
                                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{usuarios[item].Usuario}</td>
-                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{`${usuarios[item].Bloqueado === 0 ? 'No' : 'Si'}`}</td>
+                                                    <td className={`px-6 py-4 whitespace-nowrap text-sm text-gray-500 ${usuarios[item].Bloqueado === 0 ? 'bg-green-100' : 'bg-red-100'}`}>{`${usuarios[item].Bloqueado === 0 ? 'No' : 'Si'}`}</td>
                                                     <td className="px-6 py-4 whitespace-nowrap">
                                                         <div className="text-sm text-gray-900">{Moment(usuarios[item].FechaCreacion).format('DD-MM-YYYY')}</div>
                                                     </td>

@@ -42,7 +42,7 @@ const ReporteDeudas = ({
                                                             >
                                                                 <option>Selecciona lapso</option>
                                                                 {Object.keys(lapsos).map((key, item) => (
-                                                                    <option key={key} selected={true} >{lapsos[item].Lapso}</option>
+                                                                    <option key={key}>{lapsos[item].Lapso}</option>
                                                                 ))}
                                                             </select>
                                                         </div>
@@ -57,7 +57,7 @@ const ReporteDeudas = ({
                                                                 value={pagada}
                                                                 onChange={async (event) => setPagada(Number(event.target.value))}
                                                             >
-                                                                <option value={0} selected>Deudas sin pagar</option>
+                                                                <option value={0}>Deudas sin pagar</option>
                                                                 <option value={1}>Deudas pagadas</option>
                                                             </select>
                                                         </div>

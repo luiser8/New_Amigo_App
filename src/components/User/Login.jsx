@@ -10,7 +10,7 @@ const Login = () => {
     const [errorMsjTitle, setErrorMsjTitle] = useState('');
     const [errorMsj, setErrorMsj] = useState('');
     const [loadingBtn, setLoadingBtn] = useState(false);
-    const [loadingBtnMsj, setLoadingBtnMsj] = useState('Iniciar sesión');
+    const [loadingBtnMsj, setLoadingBtnMsj] = useState('Entrar');
 
     const handleLogin = async (event) => {
         setLoadingBtn(true); setLoadingBtnMsj('Entrando... Espere un momento.');
@@ -33,7 +33,7 @@ const Login = () => {
         } else {
             setError(true); setErrorMsjTitle('Error de red'); setErrorMsj('Ocurrió un error en la comunicación');
         }
-        setLoadingBtn(false); setLoadingBtnMsj('Iniciar sesión');
+        setLoadingBtn(false); setLoadingBtnMsj('Entrar');
     }
 
     return (

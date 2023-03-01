@@ -3,9 +3,9 @@ import './Loading.css';
 
 const Loading = () => {
     return (
-        <div class="backdrop-dad">
-            <div class="backdrop-child">
-                <div class="loader"></div>
+        <div className="backdrop-dad">
+            <div className="backdrop-child">
+                <div className="loader"></div>
             </div>
         </div>
     )

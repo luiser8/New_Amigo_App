@@ -59,7 +59,7 @@ const Storage = () => {
     }
 
     return {
-        getLocalStorage, setLocalStorage
+        getLocalStorage, setLocalStorage,
     }
 }
 

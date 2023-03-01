@@ -28,7 +28,6 @@ const Insertar = () => {
     const [id_arancelSAIA, setId_arancelSAIA] = useState(0);
     const [fechaVencimiento, setFechaVencimiento] = useState("");
     const [fechaVencimientoSAIA, setFechaVencimientoSAIA] = useState("");
-    const [btnEstablecer, setBtnEstablecer] = useState(true);
     const [loading, setLoading] = useState(false);
     const [tipoCuota, setTipoCuota] = useState(0);
 
@@ -55,10 +54,9 @@ const Insertar = () => {
     /* Inicio Peticiones*/
     const postCuota = async (ev) => {
         ev.preventDefault();
-        setBtnEstablecer(true);
         setLoading(true);
         let data = {
-            Id_Periodo: id_periodo,
+            Id_Periodo: id_periodo === undefined || id_periodo === 0 ? lapsos.filter(x => x.Lapso === lapso)[0].Id_Periodo : id_periodo,
             Lapso: lapso,
             Monto: cuota,
             Id_Arancel: id_arancel,
@@ -68,7 +66,6 @@ const Insertar = () => {
         for (const key of Object.keys(planesCheck)) {
             data[`Plan${key}`] = Number.parseInt(planesCheck[key].toString());
         }
-
         const postCuotaAll = await postCuotaAllService(data);
         postCuotaAll !== undefined
             ? Toast({
@@ -77,7 +74,6 @@ const Insertar = () => {
                 msj: `Cuota nueva ha sido aplicado a los estudiantes inscritos`,
                 color: "green",
             }) : Toast({ show: false });
-        setBtnEstablecer(false);
         setLoading(false);
         Toast({ show: false });
         getAranceles("normal",checkConfig().Lapso, 2);
@@ -86,7 +82,6 @@ const Insertar = () => {
 
     const postCuotaSAIA = async (ev) => {
         ev.preventDefault();
-        setBtnEstablecer(true);
         setLoading(true);
         let data = {
             Lapso: lapso,
@@ -107,7 +102,6 @@ const Insertar = () => {
                 msj: `Cuota nueva ha sido aplicado a los estudiantes de SAIA Internacional inscritos`,
                 color: "green",
             }) : Toast({ show: false });
-        setBtnEstablecer(false);
         setLoading(false);
         Toast({ show: false });
         getAranceles("saia", checkConfig().Lapso, 3);
@@ -209,7 +203,7 @@ const Insertar = () => {
                                                     setTipoCuota(Number(event.target.value))
                                                 }
                                             >
-                                                <option value={0} selected>
+                                                <option value={0}>
                                                     Selecciona cuota a insertar
                                                 </option>
                                                 <option value={1}>Cuota Internacional</option>

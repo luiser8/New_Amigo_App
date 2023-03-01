@@ -33,7 +33,7 @@ const DatosEstudiantes = ({ lapsos, lapso, establecerLapso, setIdentificador, id
                         >
                             <option>Selecciona lapso</option>
                             {Object.keys(lapsos).map((key, item) => (
-                                <option key={key} selected={true} >{lapsos[item].Lapso}</option>
+                                <option key={key}>{lapsos[item].Lapso}</option>
                             ))}
                         </select>
                     </div>

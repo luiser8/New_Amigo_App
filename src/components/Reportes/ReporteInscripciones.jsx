@@ -9,13 +9,13 @@ const ReporteInscripciones = ({
     getMenusPorCarreras,
     getReporte,
     getReporteCarreras,
-    setIdPeriodo,
     setIdPlan,
     idPlan,
     setIdCarrera,
     idCarrera,
     setDesde,
     setHasta,
+    setLapso,
     lapsos,
     lapso,
     btnEstablecer
@@ -62,18 +62,18 @@ const ReporteInscripciones = ({
                                                     <div className="grid grid-cols-8 gap-6">
                                                         <div className="col-span-10 sm:col-span-3">
                                                             <label htmlFor="country" className="block text-sm font-medium text-gray-700">
-                                                                Período / Lapso
+                                                                Lapso
                                                             </label>
                                                             <select
                                                                 id="lapso"
                                                                 name="lapso"
                                                                 className="mt-0 block w-full py-2 px-1 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base"
-                                                                defaultValue={lapso}
-                                                                onChange={async (event) => setIdPeriodo(event.target.value.substring(0, 2))}
+                                                                value={lapso}
+                                                                onChange={async (event) => setLapso(event.target.value)}
                                                             >
                                                                 <option>Selecciona lapso</option>
                                                                 {Object.keys(lapsos).map((key, item) => (
-                                                                    <option key={key} selected={true}>{lapsos[item].Id_Periodo} - {lapsos[item].Lapso}</option>
+                                                                    <option key={key}>{lapsos[item].Lapso}</option>
                                                                 ))}
                                                             </select>
                                                         </div>
@@ -205,7 +205,6 @@ ReporteInscripciones.propTypes = {
     getReporte: PropTypes.func,
     getMenusPorCarreras: PropTypes.func,
     getReporteCarreras: PropTypes.func,
-    setIdPeriodo: PropTypes.func,
     setIdPlan: PropTypes.func,
     idPlan: PropTypes.number,
     setIdCarrera: PropTypes.func,
