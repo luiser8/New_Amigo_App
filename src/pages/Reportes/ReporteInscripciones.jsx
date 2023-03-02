@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { RefreshIcon } from '@heroicons/react/solid';
+import LapsosSelect from '../../components/selects/LapsosSelect';
 
 const ReporteInscripciones = ({
     menus,
@@ -60,23 +61,9 @@ const ReporteInscripciones = ({
                                             <div className="shadow overflow-hidden sm:rounded-md">
                                                 <div className="px-4 py-5 bg-white sm:p-6">
                                                     <div className="grid grid-cols-8 gap-6">
-                                                        <div className="col-span-10 sm:col-span-3">
-                                                            <label htmlFor="country" className="block text-sm font-medium text-gray-700">
-                                                                Lapso
-                                                            </label>
-                                                            <select
-                                                                id="lapso"
-                                                                name="lapso"
-                                                                className="mt-0 block w-full py-2 px-1 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base"
-                                                                value={lapso}
-                                                                onChange={async (event) => setLapso(event.target.value)}
-                                                            >
-                                                                <option>Selecciona lapso</option>
-                                                                {Object.keys(lapsos).map((key, item) => (
-                                                                    <option key={key}>{lapsos[item].Lapso}</option>
-                                                                ))}
-                                                            </select>
-                                                        </div>
+                                                    <div className="col-span-10 sm:col-span-3">
+                                                        <LapsosSelect lapsos={lapsos} lapso={lapso} setLapso={setLapso} />
+                                                    </div>
                                                         <div className="col-span-10 sm:col-span-2">
                                                             <label htmlFor="desde" className="block text-sm font-medium text-gray-700">
                                                                 Desde

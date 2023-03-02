@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Toast } from "../../helpers/Toast";
 import { Context } from "../../context/Context";
-import Loading from "../Layouts/Loading";
+import Loading from '../../components/Layouts/Loading';
 import { getLapsosService } from "../../services/lapsosService";
 import {
     getArancelesSAIAService,

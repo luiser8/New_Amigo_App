@@ -1,6 +1,7 @@
 import React from 'react';
 import Moment from 'moment';
 import PropTypes from 'prop-types';
+import LapsosSelect from '../../components/selects/LapsosSelect';
 
 const CuotasTasas = (
     {
@@ -27,20 +28,7 @@ const CuotasTasas = (
                                                     <div className="px-4 py-2 bg-white sm:p-6">
                                                         <div className="grid grid-cols-8 gap-6">
                                                             <div className="col-span-2 sm:col-span-1">
-                                                                <label htmlFor="country" className="block text-sm font-medium text-gray-700">
-                                                                    Lapso
-                                                                </label>
-                                                                <select
-                                                                    id="lapso"
-                                                                    name="lapso"
-                                                                    className="mt-0 block w-full py-2 px-1 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base"
-                                                                    value={lapsoTasa}
-                                                                    onChange={async (event) => setLapsoTasa(event.target.value)}
-                                                                >
-                                                                    {Object.keys(lapsos).map((key, item) => (
-                                                                        <option key={key}>{lapsos[item].Lapso}</option>
-                                                                    ))}
-                                                                </select>
+                                                                <LapsosSelect lapsos={lapsos} lapso={lapsoTasa} setLapso={setLapsoTasa}/>
                                                             </div>
                                                             <div className="col-span-2 sm:col-span-1">
                                                                 <label htmlFor="desde" className="block text-sm font-medium text-gray-700">

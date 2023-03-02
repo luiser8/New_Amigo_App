@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import LapsosSelect from '../../components/selects/LapsosSelect';
 
 const DatosEstudiantes = ({ lapsos, lapso, establecerLapso, setIdentificador, identificador, check }) => {
     return (
@@ -21,21 +22,7 @@ const DatosEstudiantes = ({ lapsos, lapso, establecerLapso, setIdentificador, id
                         onKeyPress={async (ev) => ev.charCode === 13 ? check() : null}
                     />
                     <div className="absolute inset-y-0 right-0 flex items-center">
-                        <label htmlFor="lapso" className="sr-only">
-                            Lapso
-                        </label>
-                        <select
-                            id="lapso"
-                            name="lapso"
-                            className="mt-0 block w-full py-3 px-1 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base"
-                            value={lapso}
-                            onChange={async (event) => establecerLapso(event.target.value)}
-                        >
-                            <option>Selecciona lapso</option>
-                            {Object.keys(lapsos).map((key, item) => (
-                                <option key={key}>{lapsos[item].Lapso}</option>
-                            ))}
-                        </select>
+                        <LapsosSelect lapsos={lapsos} lapso={lapso} setLapso={establecerLapso} labelStyle={"sr-only"} selectStyle={"mt-0 block w-full py-3 px-1 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base"}/>
                     </div>
                 </div>
             </div>

@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import Moment from 'moment';
 import { Toast } from '../../helpers/Toast';
 import { Context } from '../../context/Context';
-import Loading from '../Layouts/Loading';
+import Loading from '../../components/Layouts/Loading';
 import { getLapsosService } from '../../services/lapsosService';
 import {
     getReporteMenuCarrerasService,

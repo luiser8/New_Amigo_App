@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Moment from 'moment';
+import LapsosSelect from '../../components/selects/LapsosSelect';
+import ArancelesSelect from '../../components/selects/ArancelesSelect';
 
 const Cuotas = ({
         planes,
@@ -90,37 +92,11 @@ const Cuotas = ({
                                     className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-gray-100 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                 />
                             </div>
-
                             <div className="col-span-8 sm:col-span-3">
-                                <label htmlFor="country" className="block text-sm font-medium text-gray-700">
-                                    Lapso
-                                </label>
-                                <select
-                                    id="lapso"
-                                    name="lapso"
-                                    className="mt-0 block w-full py-2 px-1 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base"
-                                    value={lapso}
-                                    onChange={async (event) => setLapso(event.target.value)}
-                                >
-                                    <option>Selecciona lapso</option>
-                                    {Object.keys(lapsos).map((_, item) => (
-                                        <option key={lapsos[item].Id_Periodo} value={lapsos[item].Lapso}>{lapsos[item].Lapso}</option>
-                                    ))}
-                                </select>
+                               <LapsosSelect lapsos={lapsos} lapso={lapso} setLapso={setLapso}/>
                             </div>
-                            <div className="col-span-6 sm:col-span-3">
-                                <label htmlFor="country" className="block text-sm font-medium text-gray-700">Arancel</label>
-                                <select
-                                    id="arancel"
-                                    name="arancel"
-                                    className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                    onChange={async (event) => changeArancelFecha(Number(event.target.value))}
-                                >
-                                    <option value={0}>Seleciona Arancel</option>
-                                    {Object.keys(aranceles).map((key, it) => (
-                                        <option key={key} value={`${aranceles[it].Id_Arancel}`} >{aranceles[it].Descripcion} - {Moment(aranceles[it].FechaVencimiento, "YYYY-MM-DD").format("YYYY-MM-DD")}</option>
-                                    ))}
-                                </select>
+                            <div className="col-span-8 sm:col-span-3">
+                                <ArancelesSelect aranceles={aranceles} changeArancelFecha={changeArancelFecha} />
                             </div>
                             <div className="col-span-8 sm:col-span-3">
                                 <button

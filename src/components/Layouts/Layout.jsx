@@ -87,7 +87,7 @@ const Layout = () => {
                                                         >
                                                             <div className="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 overflow-hidden">
                                                                 <div className="relative grid gap-4 bg-white px-4 py-2 sm:gap-8 sm:p-6">
-                                                                    <span className="-mt-4 -mb-3 -ml-3 font-semibold">Perfil: {checkUser().NombreRol}</span>
+                                                                    <span className="-mt-4 -mb-3 -ml-3 font-semibold">Rol: {checkUser().NombreRol}</span>
                                                                     {checkUser().Rol === '1' || checkUser().Rol === '2' ?
                                                                     <NavLink
                                                                         to={`/reportes/deudas`}
@@ -136,7 +136,7 @@ const Layout = () => {
                                                                         onClick={async () => logout(0, null)}
                                                                     >
                                                                         <LogoutIcon className="flex-shrink-0 h-6 w-6" aria-hidden="true" />
-                                                                        <p className="pl-2 text-base font-semibold">Cerrar sesion</p>
+                                                                        <p className="pl-2 text-base font-semibold">Cerrar sesión</p>
                                                                     </NavLink>
 
                                                                 </div>

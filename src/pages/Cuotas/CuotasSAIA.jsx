@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Moment from 'moment';
+import LapsosSelect from '../../components/selects/LapsosSelect';
+import ArancelesSelect from '../../components/selects/ArancelesSelect';
 
 const CuotasSAIA = ({
     planesSAIA,
@@ -92,35 +94,10 @@ const CuotasSAIA = ({
                             </div>
 
                             <div className="col-span-8 sm:col-span-3">
-                                <label htmlFor="country" className="block text-sm font-medium text-gray-700">
-                                    Lapso
-                                </label>
-                                <select
-                                    id="lapso"
-                                    name="lapso"
-                                    className="mt-0 block w-full py-2 px-1 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base"
-                                    value={lapso}
-                                    onChange={async (event) => setLapso(event.target.value)}
-                                >
-                                    <option>Selecciona lapso</option>
-                                    {Object.keys(lapsos).map((key, item) => (
-                                        <option key={key}>{lapsos[item].Lapso}</option>
-                                    ))}
-                                </select>
+                                <LapsosSelect lapsos={lapsos} lapso={lapso} setLapso={setLapso}/>
                             </div>
                             <div className="col-span-6 sm:col-span-3">
-                                <label htmlFor="country" className="block text-sm font-medium text-gray-700">Arancel</label>
-                                <select
-                                    id="arancel"
-                                    name="arancel"
-                                    className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                    onChange={async (event) => changeArancelFechaSAIA(Number(event.target.value))}
-                                >
-                                    <option value={0}>Seleciona Arancel</option>
-                                    {Object.keys(arancelesSAIA).map((key, it) => (
-                                        <option key={key} value={`${arancelesSAIA[it].Id_Arancel}`} >{arancelesSAIA[it].Descripcion} - {Moment(arancelesSAIA[it].FechaVencimiento, "YYYY-MM-DD").format("YYYY-MM-DD")}</option>
-                                    ))}
-                                </select>
+                                <ArancelesSelect aranceles={arancelesSAIA} changeArancelFecha={changeArancelFechaSAIA} />
                             </div>
                             <div className="col-span-8 sm:col-span-3">
                                 <button
