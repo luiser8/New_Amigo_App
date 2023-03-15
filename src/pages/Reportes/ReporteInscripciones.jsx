@@ -53,7 +53,7 @@ const ReporteInscripciones = ({
                                     <div className="md:col-span-1">
                                         <div className="px-4 sm:px-0">
                                             <h3 className="text-lg font-medium leading-6 text-gray-900">Reporte de inscripciones</h3>
-                                            <p className="mt-1 text-sm text-gray-600">Generación de reporte de inscripciones de estudiantes por lapso, tipo de inscripciòn y carreras</p>
+                                            <p className="mt-1 text-sm text-gray-600">Generación de reporte de inscripciones de estudiantes por lapso, tipo de inscripción y carreras</p>
                                         </div>
                                     </div>
                                     <div className="mt-5 md:mt-0 md:col-span-2">
@@ -108,9 +108,7 @@ const ReporteInscripciones = ({
                                             <div className="px-4 py-0">
                                                 <RefreshIcon className="float-right -ml-1 -mr-6 h-8 w-8 text-gray-500" onClick={async () => setIdPlan(0)} style={{ cursor: 'pointer' }}  aria-hidden="true" />
                                                 <h3 className="-mx-2 -my-3 flow-root">
-                                                    <span className="font-medium text-gray-900">
-                                                        Por planes de pago
-                                                    </span>
+                                                    <span className="font-medium text-gray-900">Por planes de pago</span>
                                                 </h3>
                                                 <div className="pt-6" id="filter-section-mobile-1">
                                                     <div className="space-y-1">
@@ -121,7 +119,7 @@ const ReporteInscripciones = ({
                                                                     value={menus[menu].IdPlan}
                                                                     checked={idPlan == menus[menu].IdPlan}
                                                                     onChange={async (ev) => setIdPlan(ev.target.value)}
-                                                                    className="h-4 w-4 border-gray-300 rounded text-indigo-600 focus:ring-indigo-500" 
+                                                                    className="h-4 w-4 border-gray-300 rounded text-indigo-600 focus:ring-indigo-500"
                                                                 />
                                                                 <label className="ml-3 min-w-0 flex-1 text-gray-500">{menus[menu].PlanPago} - <strong> Inscritos: {menus[menu].Inscritos}</strong></label>
                                                             </div>
