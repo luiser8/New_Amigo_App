@@ -10,6 +10,7 @@ const ReporteInscripciones = ({
     getMenusPorCarreras,
     getReporte,
     getReporteCarreras,
+    getReporteAllCarreras,
     setIdPlan,
     idPlan,
     setIdCarrera,
@@ -31,7 +32,7 @@ const ReporteInscripciones = ({
         // eslint-disable-next-line no-unused-expressions
         await idPlan !== 0 ? getReporte(ev) : null;
         // eslint-disable-next-line no-unused-expressions
-        await idCarrera !== 0 ? getReporteCarreras(ev) : null;
+        await idCarrera !== 0 ? getReporteCarreras(ev) : getReporteAllCarreras(ev);
     }
       useEffect(() => {
         let totalPorPlanes = menus.reduce((accumulator, object) => {
@@ -156,9 +157,9 @@ const ReporteInscripciones = ({
                                                                     value={menusPorCarreras[menu].IdCarrera}
                                                                     checked={idCarrera == menusPorCarreras[menu].IdCarrera}
                                                                     onChange={async (ev) => setIdCarrera(ev.target.value)}
-                                                                    className="h-4 w-4 border-gray-300 rounded text-indigo-600 focus:ring-indigo-500" 
+                                                                    className="h-4 w-4 border-gray-300 rounded text-indigo-600 focus:ring-indigo-500"
                                                                 />
-                                                                <label className="ml-3 min-w-0 flex-1 text-gray-500">{menusPorCarreras[menu].Carrera} - <strong> Inscritos: {menusPorCarreras[menu].Inscritos}</strong></label>
+                                                                <label className="ml-3 min-w-0 flex-1 text-gray-500">{menusPorCarreras[menu].Carrera} - <strong> Inscritos: {menusPorCarreras[menu].IdCarrera === 0 ? totalInsPlan : menusPorCarreras[menu].Inscritos}</strong></label>
                                                             </div>
                                                         ))}
                                                         <div className="text-right">
@@ -190,6 +191,7 @@ ReporteInscripciones.propTypes = {
     getReporte: PropTypes.func,
     getMenusPorCarreras: PropTypes.func,
     getReporteCarreras: PropTypes.func,
+    getReporteAllCarreras: PropTypes.func,
     setIdPlan: PropTypes.func,
     idPlan: PropTypes.number,
     setIdCarrera: PropTypes.func,

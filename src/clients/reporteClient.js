@@ -18,3 +18,6 @@ export const getReportePlanesDePagoClient = async (idPeriodo, idPlan, desde, has
 export const getReportePorCarrerasClient = async (idPeriodo, idCarrera, desde, hasta) => {
     return await blob(`reporte/porcarreras?idperiodo=${idPeriodo}&idcarrera=${idCarrera}&desde=${desde}&hasta=${hasta}`);
 }
+export const getReporteAllCarrerasClient = async (idPeriodo, desde, hasta) => {
+    return await blob(`reporte/allcarreras?idperiodo=${idPeriodo}&desde=${desde}&hasta=${hasta}`);
+}

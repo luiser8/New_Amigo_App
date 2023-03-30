@@ -15,7 +15,7 @@ export const getReporteMenuService = async (idPeriodo, desde, hasta) => {
 }
 
 export const getReporteMenuCarrerasService = async (idPeriodo, desde, hasta) => {
-    let reporteMenuCarreras = [];
+    let reporteMenuCarreras = [{IdCarrera: 0, Carrera: 'TODAS', Inscritos: 0}];
     (Promise.all([
         await getReporteMenuCarrerasClient(idPeriodo, desde, hasta).then((values) => {
             if (values !== null) {

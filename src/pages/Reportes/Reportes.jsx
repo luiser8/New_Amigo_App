@@ -10,7 +10,7 @@ import {
 } from '../../services/reporteService';
 import ReporteDeudas from './ReporteDeudas';
 import ReporteInscripciones from './ReporteInscripciones';
-import { getReporteDeudasClient, getReportePagadasClient, getReportePlanesDePagoClient, getReportePorCarrerasClient } from '../../clients/reporteClient';
+import { getReporteDeudasClient, getReportePagadasClient, getReportePlanesDePagoClient, getReportePorCarrerasClient, getReporteAllCarrerasClient } from '../../clients/reporteClient';
 
 const Reportes = (props) => {
     const [lapsos, setLapsos] = useState([]);
@@ -76,6 +76,7 @@ const Reportes = (props) => {
             hasta ? Moment(hasta).format('DD-MM-YYYY') : Moment(new Date()).format('DD-MM-YYYY'))
         setMenusPorCarrera(reporteMenus);
         setBtnEstablecer(false);
+            console.log(reporteMenus)
     }
 
     const getReportePlanDePago = async (ev) => {
@@ -103,8 +104,24 @@ const Reportes = (props) => {
                 desde ? Moment(desde).format('DD-MM-YYYY') : Moment(new Date() - 15 * 24 * 3600 * 1000).format('DD-MM-YYYY'),
                 hasta ? Moment(hasta).format('DD-MM-YYYY') : Moment(new Date()).format('DD-MM-YYYY'))
             .then((items) => {
-                items !== undefined ? items.blob().then(blob => downloadFile(blob, 'por carreras', 3)) : Toast({ show: true, title: 'Advertencia!', msj: `Por alguna razon el Reporte de deudas no ha sido creado!`, color: 'yellow' }); 
+                items !== undefined ? items.blob().then(blob => downloadFile(blob, 'por carreras', 3)) : Toast({ show: true, title: 'Advertencia!', msj: `Por alguna razón el Reporte de deudas no ha sido creado!`, color: 'yellow' });
                 items !== undefined ? Toast({ show: true, title: 'Información!', msj: `Reporte de inscritos por carrera ha sido creado!`, color: 'yellow' }) : Toast({ show: false });
+                setBtnEstablecer(false); setLoading(false);
+            }),
+        ]).catch(error => {
+            new Error(error);
+        }));
+    }
+
+    const getReporteAllCarreras = async (ev) => {
+        ev.preventDefault(); setBtnEstablecer(true); setLoading(true);
+        (Promise.all([
+            getReporteAllCarrerasClient(getPeriodoId(),
+                desde ? Moment(desde).format('DD-MM-YYYY') : Moment(new Date() - 15 * 24 * 3600 * 1000).format('DD-MM-YYYY'),
+                hasta ? Moment(hasta).format('DD-MM-YYYY') : Moment(new Date()).format('DD-MM-YYYY'))
+            .then((items) => {
+                items !== undefined ? items.blob().then(blob => downloadFile(blob, 'por carreras', 3)) : Toast({ show: true, title: 'Advertencia!', msj: `Por alguna razón el Reporte de deudas no ha sido creado!`, color: 'yellow' });
+                items !== undefined ? Toast({ show: true, title: 'Información!', msj: `Reporte de inscritos todas las carreras ha sido creado!`, color: 'yellow' }) : Toast({ show: false });
                 setBtnEstablecer(false); setLoading(false);
             }),
         ]).catch(error => {
@@ -160,6 +177,7 @@ const Reportes = (props) => {
                     getMenusPorCarreras={getReporteMenusPorCarrera}
                     getReporte={getReportePlanDePago}
                     getReporteCarreras={getReporteCarreras}
+                    getReporteAllCarreras={getReporteAllCarreras}
                     setIdPlan={setIdPlan}
                     idPlan={idPlan}
                     setIdCarrera={setIdCarrera}
