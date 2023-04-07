@@ -1,4 +1,4 @@
-import { getCuotasByLapsoClient, getCuotasClient, postCuotaAllClient, postCuotasClient, putCuotasAllClient, putCuotasClient } from "../clients/cuotasClient";
+import { getCuotasByLapsoClient, getCuotasClient, postCuotaAllClient, postCuotaAllSAIAClient, postCuotasClient, putCuotasAllClient, putCuotasClient } from "../clients/cuotasClient";
 
 export const getCuotasService = async (tipo, estado) => {
     let cuotas = [];
@@ -45,7 +45,7 @@ export const postCuotaAllService = async (data) => {
 export const postCuotaAllSAIAService = async (data) => {
     let cuotasSAIAAll = [];
     (Promise.all([
-        await postCuotaAllClient(data).then((values) => {
+        await postCuotaAllSAIAClient(data).then((values) => {
             if (values !== null) {
                 cuotasSAIAAll = [...cuotasSAIAAll, ...values !== undefined ? values : []];
             }

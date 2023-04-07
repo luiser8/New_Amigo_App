@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
+import moment from "moment";
 import { Toast } from "../../helpers/Toast";
 import { Context } from "../../context/Context";
 import Loading from '../../components/Layouts/Loading';
@@ -84,6 +85,7 @@ const Insertar = () => {
         ev.preventDefault();
         setLoading(true);
         let data = {
+            Id_Periodo: id_periodo === undefined || id_periodo === 0 ? lapsos.filter(x => x.Lapso === lapso)[0].Id_Periodo : id_periodo,
             Lapso: lapso,
             Monto: cuotaSAIA,
             Id_Arancel: id_arancelSAIA,
@@ -112,7 +114,7 @@ const Insertar = () => {
         let fecha = aranceles.find((item) => item.Id_Arancel === value);
         value !== 0 ? setId_arancel(Number.parseInt(value)) : setId_arancel(0);
         if (value !== 0 && fecha !== undefined) {
-            setFechaVencimiento(fecha.FechaVencimiento);
+            setFechaVencimiento(moment(fecha.FechaVencimiento).format('DD-MM-YYYY'));
         } else {
             setFechaVencimiento("");
         }
@@ -124,7 +126,7 @@ const Insertar = () => {
             ? setId_arancelSAIA(Number.parseInt(value))
             : setId_arancelSAIA(0);
         if (value !== 0 && fecha !== undefined) {
-            setFechaVencimientoSAIA(fecha.FechaVencimiento);
+            setFechaVencimientoSAIA(moment(fecha.FechaVencimiento).format('DD-MM-YYYY'));
         } else {
             setFechaVencimientoSAIA("");
         }
