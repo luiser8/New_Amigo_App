@@ -6,7 +6,7 @@
   "private": true,
   "homepage": ".",
   "dependencies": {
-    "@headlessui/react": "^1.7.13",
+    "@headlessui/react": "^1.7.14",
     "@heroicons/react": "v1",
     "@tailwindcss/forms": "^0.5.3",
     "@tailwindcss/typography": "^0.5.9",
@@ -23,7 +23,7 @@
     "build": "npm run watch:css && set \"GENERATE_SOURCEMAP=false\" && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "watch:css": "postcss tailwind.css build -o src/index.css"
+    "watch:css": "postcss tailwind.css -o src/index.css"
   },
   "eslintConfig": {
     "extends": [
@@ -45,7 +45,7 @@
   },
   "devDependencies": {
     "autoprefixer": "^10.4.14",
-    "postcss": "^8.4.21",
+    "postcss": "^8.4.22",
     "postcss-cli": "^10.1.0",
     "tailwindcss": "^2.2.19"
   }
