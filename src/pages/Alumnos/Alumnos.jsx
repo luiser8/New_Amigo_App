@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 const Alumnos = ({alumno, deudas, foto, sexo, fullNombre, carrera, estAca}) => {
     return (
         <div className="flex-1 min-w-0">
-            <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">Cuentas alumnos</h2>
+            <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">Alumnos / deudas / facturas</h2>
             {(Object.keys(alumno).length !== 0) ?
                 <div className="mt-1 flex flex-col sm:flex-row sm:flex-wrap sm:mt-0 sm:space-x-2">
                     <div className="flex items-center text-gray-600 mb-2">

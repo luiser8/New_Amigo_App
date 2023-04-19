@@ -277,8 +277,12 @@ const Deudas = () => {
             getCuotas(0, 1);
         }
         return () => {
-            setLapsos([]);
             callCuotas = false;
+            setLapsos([]);
+            setDeudas([]);
+            setAranceles([]);
+            setAlumno([]);
+            setFacturas([]);
         }
     }, []);
 

@@ -4,6 +4,7 @@ import {
     MenuIcon,
     LogoutIcon,
     ChartPieIcon,
+    CurrencyDollarIcon,
     CogIcon,
     RefreshIcon,
     ViewGridAddIcon,
@@ -93,8 +94,8 @@ const Layout = () => {
                                                                         to={`/reportes/deudas`}
                                                                         className="-m-4 p-2 flex items-start rounded-lg hover:bg-gray-50"
                                                                     >
-                                                                        <ChartPieIcon className="flex-shrink-0 h-6 w-6" aria-hidden="true" />
-                                                                        <p className="pl-2 text-base font-semibold">Deudas</p>
+                                                                        <CurrencyDollarIcon className="flex-shrink-0 h-6 w-6" aria-hidden="true" />
+                                                                        <p className="pl-2 text-base font-semibold">Reporte deudas</p>
                                                                     </NavLink>: <></>}
                                                                     {checkUser().Rol === '1' || checkUser().Rol === '2' ?
                                                                     <NavLink
@@ -102,7 +103,7 @@ const Layout = () => {
                                                                         className="-m-4 p-2 flex items-start rounded-lg hover:bg-gray-50"
                                                                     >
                                                                         <ChartPieIcon className="flex-shrink-0 h-6 w-6" aria-hidden="true" />
-                                                                        <p className="pl-2 text-base font-semibold">Inscripciones</p>
+                                                                        <p className="pl-2 text-base font-semibold">Reporte inscripciones</p>
                                                                     </NavLink>: <></>}
                                                                     {checkUser().Rol === '1' || checkUser().Rol === '2' || checkUser().Rol === '3' ?
                                                                         <NavLink
@@ -110,7 +111,7 @@ const Layout = () => {
                                                                             className="-m-4 p-2 flex items-start rounded-lg hover:bg-gray-50"
                                                                         >
                                                                             <RefreshIcon className="flex-shrink-0 h-6 w-6" aria-hidden="true" />
-                                                                            <p className="pl-2 text-base font-semibold">Actualizar cuotas</p>
+                                                                            <p className="pl-2 text-base font-semibold">Actualización cuotas</p>
                                                                         </NavLink> : <></>}
 
                                                                     {checkUser().Rol === '1' || checkUser().Rol === '2' || checkUser().Rol === '3' ?
@@ -119,7 +120,7 @@ const Layout = () => {
                                                                             className="-m-4 p-2 flex items-start rounded-lg hover:bg-gray-50"
                                                                         >
                                                                             <ViewGridAddIcon className="flex-shrink-0 h-6 w-6" aria-hidden="true" />
-                                                                            <p className="pl-2 text-base font-semibold">Insertar cuotas</p>
+                                                                            <p className="pl-2 text-base font-semibold">Inserción cuotas</p>
                                                                         </NavLink> : <></>}
                                                                     {checkUser().Rol === '1' || checkUser().Rol === '2' ?
                                                                         <NavLink
@@ -127,7 +128,7 @@ const Layout = () => {
                                                                             className="-m-4 p-2 flex items-start rounded-lg hover:bg-gray-50"
                                                                         >
                                                                             <CogIcon className="flex-shrink-0 h-6 w-6" aria-hidden="true" />
-                                                                            <p className="pl-2 text-base font-semibold">Configuración</p>
+                                                                            <p className="pl-2 text-base font-semibold">Configuraciónes</p>
                                                                         </NavLink> : <></>}
 
                                                                     <NavLink
