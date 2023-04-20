@@ -50,9 +50,9 @@ const Facturas = ({ factura_list, openC }) => {
                                                 >
                                                     Fecha de pago
                                                 </th>
-                                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                {/* <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                     Opciones
-                                                </th>
+                                                </th> */}
                                             </tr>
                                         </thead>
                                         <tbody className="bg-white divide-y divide-gray-200">
@@ -77,7 +77,7 @@ const Facturas = ({ factura_list, openC }) => {
                                                         <td className={`px-6 py-4 whitespace-nowrap`}>
                                                             <div className="text-sm font-semibold text-gray-900">{Moment(factura_list[item].Factura[f].Hora).format('DD-MM-YYYY hh:mm:ss A')}</div>
                                                         </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                                        {/* <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                                             <div className="mt-2 flex items-center text-sm text-gray-500">
                                                             {checkUser().Rol === '1' || checkUser().Rol === '2' ?
                                                                 <TrashIcon className="-ml-1 mr-2 h-8 w-8 text-gray-500" style={{ cursor: 'pointer' }} onClick={async () => activeConfirmacion({'open':true, 'pagada': 1, 'id_factura': factura_list[item].Factura[f].Id_Factura, 'id_inscripcion': factura_list[item].Factura[f].Id_Inscripcion,'id_arancel': factura_list[item].Factura[f].Id_Arancel,'arancel': factura_list[item].Factura[f].Descripcion})} aria-hidden="true" />
@@ -85,7 +85,7 @@ const Facturas = ({ factura_list, openC }) => {
                                                                 <StopIcon className="-ml-1 mr-2 h-8 w-8 text-gray-500" aria-hidden="true"/>
                                                             </>}
                                                             </div>
-                                                        </td>
+                                                        </td> */}
                                                     </tr>
                                                 ))
                                             ))}
