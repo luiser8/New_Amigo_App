@@ -1,9 +1,18 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import Deudas from '../Deudas/Deudas';
+import { Context } from '../../context/Context';
+import Contabilidad from '../Contabilidad/Contabilidad';
 
 const Home = () => {
+    const { checkUser } = useContext(Context);
     return (
-        <Deudas />
+        <>
+            {checkUser().Rol !== '6' ? (
+                <Deudas />
+            ) : (
+                <Contabilidad user={checkUser().UsuarioId}/>
+            ) }
+        </>
     )
 }
 

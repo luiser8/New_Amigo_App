@@ -1,21 +1,30 @@
-import React, { useState, createContext } from 'react';
+/* eslint-disable react/prop-types */
+import { useState, createContext } from 'react';
 import Storage from '../helpers/Storage';
 
 export const Context = createContext();
 
-const userInitial = {'UsuarioId' : null,'Nombres' : null,'Apellidos' : null, 'Rol' : null, 'NombreRol' : null};
-const configInitial = {'Lapso' : null, 'CuotaId' : null, 'DolarN': null, 'DolarI': null, 'Cuota' : null, 'CuotaSAIAId' : null, 'CuotaSAIA' : null};
+const userInitial = { 'UsuarioId': null, 'Nombres': null, 'Apellidos': null, 'Rol': null, 'NombreRol': null };
+const _cuotaIConfigInitial = { 'Tipo': null, 'Lapso': null, 'CuotaId': null, 'Dolar': null, 'Cuota': null };
+const _cuotaNConfigInitial = { 'Tipo': null, 'Lapso': null, 'CuotaId': null, 'Dolar': null, 'Cuota': null };
 
 export const ContextProvider = ({ children }) => {
     const { getLocalStorage, setLocalStorage } = Storage();
     const [dataUser, setDataUser] = useState(userInitial);
-    const [dataConfig, setDataConfig] = useState(configInitial);
+    const [dataConfigI, setDataConfigI] = useState(_cuotaIConfigInitial);
+    const [dataConfigN, setDataConfigN] = useState(_cuotaNConfigInitial);
 
     const checkUser = () => {
         return getLocalStorage('user');
     }
-    const checkConfig = () => {
-        return getLocalStorage('config');
+    const checkLapso = () => {
+        return getLocalStorage('lapso');
+    }
+    const checkConfigI = () => {
+        return getLocalStorage('configI');
+    }
+    const checkConfigN = () => {
+        return getLocalStorage('configN');
     }
     const login = (set, user) => {
         setLocalStorage(set, 'user', user); setDataUser(user);
@@ -23,14 +32,18 @@ export const ContextProvider = ({ children }) => {
     const logout = (set) => {
         setLocalStorage(set, 'user', null); setDataUser(null);
     }
-    const setConfig = (set, config) => {
-        setLocalStorage(set, 'config', config); setDataConfig(config);
+    const setConfigCuotaI = (set, config) => {
+        setLocalStorage(set, 'configI', config); setDataConfigI(config);
+    }
+    const setConfigCuotaN = (set, config) => {
+        setLocalStorage(set, 'configN', config); setDataConfigN(config);
     }
     return (
         <Context.Provider value={{
             dataUser, setDataUser,
-            dataConfig, setDataConfig, checkConfig, setConfig,
-            checkUser, login, logout
+            dataConfigI, setDataConfigI, checkConfigI, setConfigCuotaI,
+            dataConfigN, setDataConfigN, checkConfigN, setConfigCuotaN,
+            checkUser, checkLapso, login, logout
         }}>
             {children}
         </Context.Provider>
