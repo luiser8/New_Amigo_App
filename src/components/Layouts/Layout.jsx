@@ -4,6 +4,7 @@ import {
   MenuIcon,
   LogoutIcon,
   ChartPieIcon,
+  AcademicCapIcon,
   CurrencyDollarIcon,
   CogIcon,
   CalculatorIcon,
@@ -134,12 +135,29 @@ const Layout = () => {
                                       to={`/reportes/inscripciones`}
                                       className="-m-4 p-2 flex items-start rounded-lg hover:bg-gray-50"
                                     >
-                                      <ChartPieIcon
+                                      <AcademicCapIcon
                                         className="flex-shrink-0 h-6 w-6"
                                         aria-hidden="true"
                                       />
                                       <p className="pl-2 text-base font-semibold">
                                         Reporte inscripciones
+                                      </p>
+                                    </NavLink>
+                                  ) : (
+                                    <></>
+                                  )}
+                                  {checkUser().Rol === "1" ||
+                                  checkUser().Rol === "2" ? (
+                                    <NavLink
+                                      to={`/reportes/facturacion`}
+                                      className="-m-4 p-2 flex items-start rounded-lg hover:bg-gray-50"
+                                    >
+                                      <ChartPieIcon
+                                        className="flex-shrink-0 h-6 w-6"
+                                        aria-hidden="true"
+                                      />
+                                      <p className="pl-2 text-base font-semibold">
+                                        Reporte facturación
                                       </p>
                                     </NavLink>
                                   ) : (

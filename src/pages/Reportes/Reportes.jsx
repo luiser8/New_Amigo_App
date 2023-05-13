@@ -17,10 +17,14 @@ import {
   getReportePlanesDePagoClient,
   getReportePorCarrerasClient,
   getReporteAllCarrerasClient,
+  getReporteFacturacionClient,
 } from "../../clients/reporteClient";
+import ReporteFacturacion from "./ReporteFacturacion";
+import { getBancosService } from "../../services/bancosService";
 
 const Reportes = (props) => {
   const [lapsos, setLapsos] = useState([]);
+  const [bancos, setBancos] = useState([]);
   const [menus, setMenus] = useState([]);
   const [menusPorCarrera, setMenusPorCarrera] = useState([]);
   const { checkLapso } = useContext(Context);
@@ -30,6 +34,8 @@ const Reportes = (props) => {
   const [desde, setDesde] = useState("");
   const [hasta, setHasta] = useState("");
   const [pagada, setPagada] = useState(0);
+  const [idBanco, setIdBanco] = useState(0);
+  const [tipo, setTipo] = useState(0);
   const [btnEstablecer, setBtnEstablecer] = useState(
     checkLapso() ? false : true,
   );
@@ -37,6 +43,9 @@ const Reportes = (props) => {
 
   const getLapsos = async () => {
     setLapsos(await getLapsosService());
+  };
+  const getBancos = async () => {
+    setBancos(await getBancosService());
   };
   const getPeriodoId = () => {
     return lapsos.filter((x) => x.Lapso === lapso)[0].Id_Periodo;
@@ -250,6 +259,46 @@ const Reportes = (props) => {
     });
   };
 
+  const getReporteFacturacion = async (ev) => {
+    ev.preventDefault();
+    setBtnEstablecer(true);
+    setLoading(true);
+    console.log(idBanco);
+    Promise.all([
+      getReporteFacturacionClient(
+        desde
+          ? Moment(desde).format("DD-MM-YYYY")
+          : Moment(new Date() - 30 * 24 * 3600 * 1000).format("DD-MM-YYYY"),
+        hasta
+          ? Moment(hasta).format("DD-MM-YYYY")
+          : Moment(new Date()).format("DD-MM-YYYY"),
+        idBanco !== "Selecciona banco" ? idBanco : 0,
+        tipo,
+      ).then((items) => {
+        items !== undefined
+          ? items.blob().then((blob) => downloadFile(blob, "facturación", 3))
+          : Toast({
+              show: true,
+              title: "Advertencia!",
+              msj: `Por alguna razón el Reporte de facturación no ha sido creado!`,
+              color: "yellow",
+            });
+        items !== undefined
+          ? Toast({
+              show: true,
+              title: "Información!",
+              msj: `Reporte de facturación ha sido creado!`,
+              color: "yellow",
+            })
+          : Toast({ show: false });
+        setBtnEstablecer(false);
+        setLoading(false);
+      }),
+    ]).catch((error) => {
+      new Error(error);
+    });
+  };
+
   const downloadFile = async (blob, type, source) => {
     //let msj = source === 2 ? 'inscritos por planes de pago' : 'inscritos por carreras';
     const url = window.URL.createObjectURL(blob);
@@ -278,7 +327,9 @@ const Reportes = (props) => {
       <div className="lg:flex lg:items-center lg:justify-between">
         <div className="flex-1 min-w-0">
           <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
-            Reporte de {props.type === 1 ? "deudas" : "inscripciones"}
+            {props.type === 1 ? "Reporte de deudas" : ""}
+            {props.type === 2 ? "Reporte de inscripciones" : ""}
+            {props.type === 3 ? "Reporte de facturación" : ""}
           </h2>
         </div>
       </div>
@@ -293,6 +344,9 @@ const Reportes = (props) => {
           btnEstablecer={btnEstablecer}
         />
       ) : (
+        <></>
+      )}
+      {props.type === 2 ? (
         <ReporteInscripciones
           menus={menus}
           menusPorCarreras={menusPorCarrera}
@@ -312,6 +366,23 @@ const Reportes = (props) => {
           lapso={lapso}
           btnEstablecer={btnEstablecer}
         />
+      ) : (
+        <></>
+      )}
+      {props.type === 3 ? (
+        <ReporteFacturacion
+          getBancos={getBancos}
+          bancos={bancos}
+          getReporteFacturacion={getReporteFacturacion}
+          setFechaDesde={setDesde}
+          setFechaHasta={setHasta}
+          setIdBanco={setIdBanco}
+          setTipo={setTipo}
+          tipo={tipo}
+          btnEstablecer={btnEstablecer}
+        />
+      ) : (
+        <></>
       )}
     </div>
   );

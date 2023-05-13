@@ -21,3 +21,6 @@ export const getReportePorCarrerasClient = async (idPeriodo, idCarrera, desde, h
 export const getReporteAllCarrerasClient = async (idPeriodo, desde, hasta) => {
     return await blob(`reporte/allcarreras?idperiodo=${idPeriodo}&desde=${desde}&hasta=${hasta}`);
 }
+export const getReporteFacturacionClient = async (fechaDesde, fechaHasta, idBanco, tipo) => {
+    return await blob(`reporte/facturacion?FechaDesde=${fechaDesde}&FechaHasta=${fechaHasta}&IdBanco=${idBanco}&Tipo=${tipo}`);
+}

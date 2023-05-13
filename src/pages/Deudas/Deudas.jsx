@@ -72,30 +72,33 @@ const Deudas = () => {
   const [arancel, setArancel] = useState("");
 
   const getAlumnos = async (id) => {
+    setAlumno([]);
     const alumno = await getAlumnosService(id);
-    setAlumno(alumno);
     if (alumno !== undefined) {
-      alumno.map((item) => {
-        if (item !== []) {
-          setFullNombre(item.Fullnombre);
-          setSexo(item.Sexo);
-          setEstAca(item.EstAca);
-          setFoto(item.Foto);
-          setCarrera(item.codcarrera);
-        } else {
-          setFullNombre("");
-          setSexo("");
-          setEstAca("");
-          setFoto("");
-          setCarrera("");
-        }
-      });
-    } else {
-      setFullNombre("");
-      setSexo("");
-      setEstAca("");
-      setFoto("");
-      setCarrera("");
+      setAlumno(alumno);
+      if (alumno !== undefined) {
+        alumno.map((item) => {
+          if (item !== []) {
+            setFullNombre(item.Fullnombre);
+            setSexo(item.Sexo);
+            setEstAca(item.EstAca);
+            setFoto(item.Foto);
+            setCarrera(item.codcarrera);
+          } else {
+            setFullNombre("");
+            setSexo("");
+            setEstAca("");
+            setFoto("");
+            setCarrera("");
+          }
+        });
+      } else {
+        setFullNombre("");
+        setSexo("");
+        setEstAca("");
+        setFoto("");
+        setCarrera("");
+      }
     }
   };
 
