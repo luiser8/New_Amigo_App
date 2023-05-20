@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import {
   FolderAddIcon,
@@ -7,8 +7,46 @@ import {
   TrashIcon,
   UserAddIcon,
 } from "@heroicons/react/outline";
+import { getPeriodosContablesService } from "../../../../services/periodosContablesService";
+import moment from "moment";
 
-const PeriodosContables = ({ data, setFechaDesde, setFechaHasta }) => {
+const PeriodosContables = () => {
+  const [periodosContables, setPeriodosContables] = useState([]);
+  const [fechaDesde, setFechaDesde] = useState("");
+  const [fechaHasta, setFechaHasta] = useState("");
+
+  const getPeriodosContables = async (todos) => {
+    const data = await getPeriodosContablesService(
+      todos,
+      fechaDesde
+        ? moment(fechaDesde).format("DD/MM/YYYY")
+        : moment(new Date() - 15 * 24 * 3600 * 1000).format("DD/MM/YYYY"),
+      fechaHasta
+        ? moment(fechaHasta).format("DD/MM/YYYY")
+        : moment().endOf("year").format("DD/MM/YYYY"),
+    );
+    setPeriodosContables(data);
+    console.log(data);
+  };
+
+  useEffect(() => {
+    let callFunction = true;
+    if (callFunction) {
+      getPeriodosContables(0);
+    }
+
+    return () => {
+      callFunction = false;
+      setPeriodosContables([]);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (fechaDesde !== "" || fechaHasta !== "") {
+      getPeriodosContables(1);
+    }
+  }, [fechaDesde, fechaHasta]);
+
   return (
     <div className="max-w-7xl mx-auto pt-1 pb-8 sm:px-6 lg:px-8">
       <div className="mt-10 sm:mt-0">
@@ -66,7 +104,7 @@ const PeriodosContables = ({ data, setFechaDesde, setFechaHasta }) => {
           </div>
         </div>
       </div>
-      {Object.keys(data).length !== 0 ? (
+      {Object.keys(periodosContables).length !== 0 ? (
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col">
             <div className="my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -114,7 +152,7 @@ const PeriodosContables = ({ data, setFechaDesde, setFechaHasta }) => {
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                      {data.map((item, key) => (
+                      {periodosContables.map((item, key) => (
                         <tr key={key}>
                           <td className={`px-6 py-4 whitespace-nowrap `}>
                             <div className="text-sm font-semibold text-gray-900">
@@ -224,12 +262,6 @@ const PeriodosContables = ({ data, setFechaDesde, setFechaHasta }) => {
       )}
     </div>
   );
-};
-
-PeriodosContables.propTypes = {
-  data: PropTypes.array,
-  setFechaDesde: PropTypes.func,
-  setFechaHasta: PropTypes.func,
 };
 
 export default PeriodosContables;
