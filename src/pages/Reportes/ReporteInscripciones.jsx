@@ -62,32 +62,32 @@ const ReporteInscripciones = ({
                                             <div className="shadow overflow-hidden sm:rounded-md">
                                                 <div className="px-4 py-5 bg-white sm:p-6">
                                                     <div className="grid grid-cols-8 gap-6">
-                                                    <div className="col-span-10 sm:col-span-3">
+                                                    <div className="col-span-6 sm:col-span-2">
                                                         <LapsosSelect lapsos={lapsos} lapso={lapso} setLapso={setLapso} />
                                                     </div>
-                                                        <div className="col-span-10 sm:col-span-2">
+                                                        <div className="col-span-6 sm:col-span-2 pt-4">
                                                             <label htmlFor="desde" className="block text-sm font-medium text-gray-700">
                                                                 Desde
                                                             </label>
                                                             <input type="date" name="desde" id="desde" onChange={(ev) => setDesde(ev.target.value)} />
                                                         </div>
-                                                        <div className="col-span-10 sm:col-span-2">
+                                                        <div className="col-span-6 sm:col-span-2 pt-4">
                                                             <label htmlFor="hasta" className="block text-sm font-medium text-gray-700">
                                                                 Hasta
                                                             </label>
                                                             <input type="date" name="hasta" id="hasta" onChange={(ev) => setHasta(ev.target.value)}/>
                                                         </div>
-                                                        <div className="col-span-2">
+                                                        <div className="col-span-2 sm:col-span-2 pt-4">
                                                             <button
                                                                 type="button"
                                                                 onClick={async (ev) => querys(ev)}
                                                                 disabled={btnEstablecer}
-                                                                className={`inline-flex justify-center py-2 px-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${btnEstablecer ? 'bg-indigo-200 hover:bg-indigo-200' : 'bg-indigo-600 hover:bg-indigo-700'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
+                                                                className={`inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${btnEstablecer ? 'bg-indigo-200 hover:bg-indigo-200' : 'bg-indigo-600 hover:bg-indigo-700'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
                                                             >
-                                                                Buscar inscripciones
+                                                                Buscar
                                                             </button>
                                                         </div>
-                                                        <div className="col-span-2">
+                                                        <div className="col-span-2 sm:col-span-2">
                                                             <button
                                                                 type="button"
                                                                 onClick={(ev) => handleReporte(ev)}

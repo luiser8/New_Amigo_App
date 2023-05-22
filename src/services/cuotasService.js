@@ -84,14 +84,19 @@ export const putCuotasService = async (id, monto) => {
     return cuotasPut;
 }
 
-export const putCuotaAllService = async (cuota, lapso, tipo) => {
+export const putCuotaAllService = async (cuota, lapso, tipo, todasCuota, objCuotas) => {
     let cuotasPutAll = 0;
+    const cuota1 = objCuotas?.cuota0 ? objCuotas.cuota0 : 0;
+    const cuota2 = objCuotas?.cuota1 ? objCuotas.cuota1 : 0;
+    const cuota3 = objCuotas?.cuota2 ? objCuotas.cuota2 : 0;
+    const cuota4 = objCuotas?.cuota3 ? objCuotas.cuota3 : 0;
+    const cuota5 = objCuotas?.cuota4 ? objCuotas.cuota4 : 0;
     (Promise.all([
-        await putCuotasAllClient(cuota, lapso, tipo).then((values) => {
-            if (values !== null) {
-                cuotasPutAll = values;
-            }
-        }),
+        await putCuotasAllClient(cuota, lapso, tipo, todasCuota, cuota1, cuota2, cuota3, cuota4, cuota5).then((values) => {
+                if (values !== null) {
+                    cuotasPutAll = values;
+                }
+            }),
     ]).catch(error => {
         new Error(error);
     }));

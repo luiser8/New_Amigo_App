@@ -22,27 +22,27 @@ const CuotasTasas = (
                             <div className="align-middle inline-block min-w-full sm:px-6 lg:px-8">
                                 <div className="mt-8 sm:mt-0">
                                     <div className="md:grid md:grid-cols-2 md:gap-6">
-                                        <div className="mt-5 md:mt-0 md:col-span-2">
+                                        <div className="mt-4 md:mt-0 md:col-span-2">
                                             <form>
                                                 <div className="shadow overflow-hidden sm:rounded-md">
-                                                    <div className="px-4 py-2 bg-white sm:p-6">
+                                                    <div className="px-4 py-1 bg-white sm:p-6">
                                                         <div className="grid grid-cols-8 gap-6">
                                                             <div className="col-span-2 sm:col-span-1">
                                                                 <LapsosSelect lapsos={lapsos} lapso={lapsoTasa} setLapso={setLapsoTasa}/>
                                                             </div>
-                                                            <div className="col-span-2 sm:col-span-1">
+                                                            <div className="col-span-2 sm:col-span-1 pt-4">
                                                                 <label htmlFor="desde" className="block text-sm font-medium text-gray-700">
                                                                     Desde
                                                                 </label>
                                                                 <input type="date" name="desde" id="desde" onChange={(event) => setFechaDesde(event.target.value)} />
                                                             </div>
-                                                            <div className="col-span-2 sm:col-span-1">
+                                                            <div className="col-span-2 sm:col-span-1 pt-4">
                                                                 <label htmlFor="hasta" className="block text-sm font-medium text-gray-700">
                                                                     Hasta
                                                                 </label>
                                                                 <input type="date" name="hasta" id="hasta" onChange={(event) => setFechaHasta(event.target.value)} />
                                                             </div>
-                                                            <div className="col-span-2 sm:col-span-2 mx-4">
+                                                            <div className="col-span-2 sm:col-span-2 mx-4 pt-4">
                                                                 <button
                                                                     type="button"
                                                                     onClick={async (ev) => getCuotasByLapsos(ev)}

@@ -24,7 +24,7 @@ const CuotasSAIA = ({
                 <div className="shadow overflow-hidden sm:rounded-md">
                     <div className="px-4 py-4 bg-white sm:p-6">
                         <div className="grid grid-cols-10 gap-6">
-                            <div className="col-span-10 sm:col-span-8">
+                            <div className="col-span-10 sm:col-span-full">
                                 {(Object.keys(planesSAIA).length !== 0) ?
                                     <div className="px-4 py-0">
                                         <h2 className="-mx-2 mb-2 flow-root">
@@ -77,7 +77,7 @@ const CuotasSAIA = ({
                                     </div>
                                 }
                             </div>
-                            <div className="col-span-8 sm:col-span-3">
+                            <div className="col-span-6 sm:col-span-2">
                                 <label htmlFor="cuotaSAIA" className="block text-sm font-medium text-gray-700">
                                     Cuota SAIA Internacional
                                 </label>
@@ -93,13 +93,13 @@ const CuotasSAIA = ({
                                 />
                             </div>
 
-                            <div className="col-span-8 sm:col-span-3">
+                            <div className="col-span-6 sm:col-span-2">
                                 <LapsosSelect lapsos={lapsos} lapso={lapso} setLapso={setLapso}/>
                             </div>
-                            <div className="col-span-6 sm:col-span-3">
+                            <div className="col-span-8 sm:col-span-4">
                                 <ArancelesSelect aranceles={arancelesSAIA} changeArancelFecha={changeArancelFechaSAIA} />
                             </div>
-                            <div className="col-span-8 sm:col-span-3">
+                            <div className="col-span-6 sm:col-span-2 pt-6">
                                 <button
                                     type="submit"
                                     disabled={planesCheck.length !== 0 && id_arancelSAIA !== 0 ? false : true}

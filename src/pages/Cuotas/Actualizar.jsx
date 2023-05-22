@@ -11,6 +11,7 @@ import {
 } from "../../services/cuotasService";
 import Form from "./Form";
 import CuotasTasas from "./CuotasTasas";
+import { getArancelesSAIAService, getArancelesService } from "../../services/arancelesService";
 
 const Actualizar = () => {
   const [lapsos, setLapsos] = useState([]);
@@ -32,7 +33,11 @@ const Actualizar = () => {
   const [fechaHasta, setFechaHasta] = useState("");
   const [loading, setLoading] = useState(false);
   const [tipoCuota, setTipoCuota] = useState(0);
+  const [todasCuota, setTodasCuota] = useState(0);
+  const [arancelesArr, setArancelesArr] = useState([]);
   const [, setCuotaLength] = useState(undefined);
+  const [aranceles, setAranceles] = useState([]);
+  const tiposArr = [{ id: 0, tipo: 'Todas las cuotas' }, { id: 1, tipo: 'Por cuotas' }];
 
   const getLapsos = async () => {
     setLapsos(await getLapsosService());
@@ -40,6 +45,20 @@ const Actualizar = () => {
 
   const activarEditCuota = async (value) => {
     value ? setEditCuota(true) : setEditCuota(false);
+  };
+
+  const agregarCuotasUpdate = async (checked, value) => {
+    checked
+      ? setArancelesArr((arancelesArr) => [...arancelesArr, value])
+      : setArancelesArr([...arancelesArr.filter((item) => item !== value)]);
+  };
+
+  const getAranceles = async () => {
+    if (Number(tipoCuota) === 2) {
+      setAranceles(await getArancelesService(lapso, 2));
+    } if (Number(tipoCuota) === 1) {
+      setAranceles(await getArancelesSAIAService(lapso, 3));
+    }
   };
 
   const establecerCuota = async (value) => {
@@ -97,6 +116,10 @@ const Actualizar = () => {
   };
 
   const putCuotasAll = async () => {
+    let objCuotas = {};
+    arancelesArr?.forEach((x, key) => {
+      objCuotas = {...objCuotas, [`cuota${key}`]: x}
+    });
     let cuotaLocal =
       cuota === 0
         ? tipoCuota === "1"
@@ -109,6 +132,8 @@ const Actualizar = () => {
         cuotaLocal,
         lapso,
         tipoCuota,
+        todasCuota,
+        objCuotas
       );
       putCuotaAll !== undefined
         ? Toast({
@@ -123,6 +148,8 @@ const Actualizar = () => {
   };
 
   const changeTasaAndCuota = (value) => {
+    setTodasCuota(0);
+    setArancelesArr([]);
     if (value !== "" || value !== 0) {
       setTipoCuota(value);
       setTasa(value !== "" ? 0 : 0);
@@ -156,6 +183,15 @@ const Actualizar = () => {
       setCuotaLength(undefined);
     };
   }, []);
+
+  useEffect(() => {
+    if (Number(todasCuota) === 1) {
+      getAranceles();
+    };
+    return () => {
+      setArancelesArr([]);
+    };
+  }, [todasCuota]);
 
   return (
     <div className="max-w-7xl mx-auto py-2 sm:px-6 lg:px-8">
@@ -234,6 +270,11 @@ const Actualizar = () => {
                           setTasa={setTasa}
                           dolar={dolar}
                           setDolar={setDolar}
+                          tiposArr={tiposArr}
+                          todasCuota={todasCuota}
+                          setTodasCuota={setTodasCuota}
+                          aranceles={aranceles}
+                          agregarCuotasUpdate={agregarCuotasUpdate}
                         />
                       ) : (
                         <></>

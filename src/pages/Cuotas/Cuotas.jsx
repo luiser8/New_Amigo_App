@@ -24,7 +24,7 @@ const Cuotas = ({
                 <div className="shadow overflow-hidden sm:rounded-md">
                     <div className="px-4 py-2 bg-white sm:p-6">
                         <div className="grid grid-cols-10 gap-6">
-                            <div className="col-span-10 sm:col-span-8">
+                            <div className="col-span-10 sm:col-span-full">
                                 {(Object.keys(planes).length !== 0) ?
                                     <div className="px-4 py-0">
                                         <h2 className="-mx-2 mb-2 flow-root">
@@ -51,7 +51,6 @@ const Cuotas = ({
                                                         <label className="ml-3 min-w-0 flex-1 text-gray-500">{planes[plan].Descripcion}</label>
                                                     </div>
                                                 ))}
-
                                             </div>
                                         </div>
                                     </div>
@@ -77,7 +76,7 @@ const Cuotas = ({
                                     </div>
                                 }
                             </div>
-                            <div className="col-span-8 sm:col-span-3">
+                            <div className="col-span-6 sm:col-span-2">
                                 <label htmlFor="cuota" className="block text-sm font-medium text-gray-700">
                                     Cuota
                                 </label>
@@ -92,13 +91,13 @@ const Cuotas = ({
                                     className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-gray-100 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                 />
                             </div>
-                            <div className="col-span-8 sm:col-span-3">
+                            <div className="col-span-6 sm:col-span-2">
                                <LapsosSelect lapsos={lapsos} lapso={lapso} setLapso={setLapso}/>
                             </div>
-                            <div className="col-span-8 sm:col-span-3">
+                            <div className="col-span-8 sm:col-span-4">
                                 <ArancelesSelect aranceles={aranceles} changeArancelFecha={changeArancelFecha} />
                             </div>
-                            <div className="col-span-8 sm:col-span-3">
+                            <div className="col-span-6 sm:col-span-2 pt-6">
                                 <button
                                     type="submit"
                                     disabled={planesCheck.length !== 0 && id_arancel !== 0 ? false : true}

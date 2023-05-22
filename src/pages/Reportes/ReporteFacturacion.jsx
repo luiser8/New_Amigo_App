@@ -41,7 +41,7 @@ const ReporteFacturacion = ({
                       <div className="shadow overflow-hidden sm:rounded-md">
                         <div className="px-4 py-5 bg-white sm:p-6">
                           <div className="grid grid-cols-8 gap-6">
-                            <div className="col-span-10 sm:col-span-2">
+                            <div className="col-span-6 sm:col-span-2">
                               <label
                                 htmlFor="desde"
                                 className="block text-sm font-medium text-gray-700"
@@ -57,7 +57,7 @@ const ReporteFacturacion = ({
                                 }
                               />
                             </div>
-                            <div className="col-span-10 sm:col-span-2">
+                            <div className="col-span-6 sm:col-span-2">
                               <label
                                 htmlFor="hasta"
                                 className="block text-sm font-medium text-gray-700"
@@ -73,7 +73,7 @@ const ReporteFacturacion = ({
                                 }
                               />
                             </div>
-                            <div className="col-span-10 sm:col-span-3">
+                            <div className="col-span-10 sm:col-span-4">
                               <BancosSelect
                                 bancos={bancos}
                                 idBanco={idBanco}
@@ -108,7 +108,7 @@ const ReporteFacturacion = ({
                                 <option value={6}>Cheque</option>
                               </select>
                             </div>
-                            <div className="col-span-8">
+                            <div className="col-span-2 pt-5">
                               <button
                                 type="submit"
                                 disabled={btnEstablecer}
