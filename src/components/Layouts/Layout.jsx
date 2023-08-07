@@ -33,7 +33,7 @@ const Layout = () => {
                 <div className="flex justify-between items-center border-b-2 border-gray-100 py-2 md:justify-start md:space-x-10">
                   <div className="flex justify-start lg:w-0 lg:flex-1">
                     <NavLink
-                      to={`${checkUser().Rol === "6" ? "/contabilidad" : "/"}`}
+                      to={`${checkUser().Rol === "6" ? "/asientos" : "/"}`}
                       className="flex title-font font-medium items-center text-gray-900 mb-4 md:mb-0"
                     >
                       <img
@@ -200,9 +200,10 @@ const Layout = () => {
                                   ) : (
                                     <></>
                                   )}
-                                  {checkUser().Rol === "6" ? (
+                                  {checkUser().Rol === "1" ||
+                                  checkUser().Rol === "2" ? (
                                     <NavLink
-                                      to={`/contabilidad`}
+                                      to={`/deudas/reset`}
                                       className="-m-4 p-2 flex items-start rounded-lg hover:bg-gray-50"
                                     >
                                       <CalculatorIcon
@@ -210,7 +211,7 @@ const Layout = () => {
                                         aria-hidden="true"
                                       />
                                       <p className="pl-2 text-base font-semibold">
-                                        Contabilidad
+                                        Resetear deudas
                                       </p>
                                     </NavLink>
                                   ) : (

@@ -12,32 +12,26 @@
     "eject": "react-scripts eject",
     "watch:css": "postcss tailwind.css -o src/index.css"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
   "dependencies": {
-    "@headlessui/react": "^1.7.14",
+    "@headlessui/react": "^1.7.16",
     "@heroicons/react": "v1",
-    "@tailwindcss/forms": "^0.5.3",
+    "@tailwindcss/forms": "^0.5.4",
     "@tailwindcss/typography": "^0.5.9",
     "moment": "^2.29.4",
     "prop-types": "^15.8.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.11.1",
+    "react-router-dom": "^6.14.2",
     "react-scripts": "5.0.1",
     "tailwind-toast": "^1.1.0"
   },
   "devDependencies": {
-    "eslint-plugin-react": "^7.32.2",
+    "eslint-plugin-react": "^7.33.1",
     "autoprefixer": "^10.4.14",
-    "postcss": "^8.4.23",
+    "postcss": "^8.4.27",
     "postcss-cli": "^10.1.0",
     "tailwindcss": "^2.2.19",
-    "eslint": "^8.40.0"
+    "eslint": "^8.46.0"
   },
   "browserslist": {
     "production": [

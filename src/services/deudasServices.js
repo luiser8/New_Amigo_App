@@ -1,4 +1,4 @@
-import { checkDeudaClient, delDeudaClient, postDeudaClient, putDeudaClient } from "../clients/deudasClient";
+import { checkDeudaClient, delDeudaClient, postDeudaClient, postDeudaResetClient, putDeudaClient } from "../clients/deudasClient";
 
 export const checkDeudaService = async (lapso, identificador) => {
     let deudas = [];
@@ -18,6 +18,20 @@ export const postDeudaService = async (data) => {
     let postDeudas = [];
     (Promise.all([
         await postDeudaClient(data).then((values) => {
+            if (values !== null) {
+                postDeudas = [...postDeudas, ...values !== undefined ? values : []];
+            }
+        }),
+    ]).catch(error => {
+        new Error(error);
+    }));
+    return postDeudas;
+}
+
+export const postDeudaResetService = async (data) => {
+    let postDeudas = [];
+    (Promise.all([
+        await postDeudaResetClient(data).then((values) => {
             if (values !== null) {
                 postDeudas = [...postDeudas, ...values !== undefined ? values : []];
             }
