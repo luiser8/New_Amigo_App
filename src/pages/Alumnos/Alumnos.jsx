@@ -1,5 +1,6 @@
-import { Fragment } from "react";
+import { useContext, useState, Fragment } from "react";
 import PropTypes from "prop-types";
+import { Context } from "../../context/Context";
 
 const Alumnos = ({
   alumno,
@@ -10,6 +11,9 @@ const Alumnos = ({
   carrera,
   estAca,
 }) => {
+  const { checkUser } = useContext(Context);
+  const [rolPuerta,] = useState(Number(checkUser().Rol));
+
   return (
     <div className="flex-1 min-w-0">
       <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
@@ -20,7 +24,7 @@ const Alumnos = ({
           <div className="flex items-center text-gray-600 mb-2">
             {foto !== "AAAAAA==" ? (
               <img
-                className="w-20 h-20 mb-4 mt-1 object-cover object-center rounded-full inline-block border-2 border-gray-200 bg-gray-100"
+                className={`${rolPuerta === 4 ? 'w-48 h-48' : 'w-20 h-20'} mb-4 mt-1 object-cover object-center rounded-full inline-block border-2 border-gray-200 bg-gray-100`}
                 src={`data:image/png;base64,${foto}`}
                 alt="Foto"
               />
