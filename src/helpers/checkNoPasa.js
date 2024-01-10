@@ -1,0 +1,30 @@
+export const getNoPasaCheck = async (data, setEsBecado, setNoPasa, setPagoTodo, setEsDesertor, setExiste, setSinDocumentos) => {
+    if(data.EsBecado){
+      setEsBecado(true);
+    }else{ setEsBecado(false); }
+    if(data.NoPasa){
+      setNoPasa(true);
+    }else{
+      setNoPasa(false);
+    }
+    if(data.PagoTodo){
+      setPagoTodo(true);
+    }else{
+      setPagoTodo(false);
+    }
+    if(data.EsDesertor){
+      setEsDesertor(true);
+    }else{
+      setEsDesertor(false);
+    }
+    if(data.Existe){
+      setExiste(true);
+    }else{
+      setExiste(false);
+    }
+    if(data.SinDocumentos){
+      setSinDocumentos(true);
+    }else{
+      setSinDocumentos(false);
+    }
+  }

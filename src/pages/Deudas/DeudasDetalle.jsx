@@ -9,6 +9,7 @@ const DeudasDetalle = ({
   cuotaVencida,
   activeConfirmacion,
   activeModificacion,
+  rolQuitarOpciones,
 }) => {
   return (
     <Fragment>
@@ -57,25 +58,28 @@ const DeudasDetalle = ({
                         >
                           Fecha Vencimiento
                         </th>
-                        <th
-                          scope="col"
-                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                        >
-                          Opciones
-                        </th>
+                        {!rolQuitarOpciones ? (
+                          <th
+                            scope="col"
+                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                          >
+                            Opciones
+                          </th>
+                        ) :
+                          (<></>)
+                        }
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
                       {Object.keys(deudas).map((_, item) => (
                         <tr key={item} className="hover:bg-gray-50">
                           <td
-                            className={`px-6 py-4 whitespace-nowrap ${
-                              deudas[item].Pagada === 0
+                            className={`px-6 py-4 whitespace-nowrap ${deudas[item].Pagada === 0
                                 ? cuotaVencida
                                   ? "bg-red-100"
                                   : "bg-yellow-100"
                                 : "bg-green-100"
-                            }`}
+                              }`}
                           >
                             <div className="text-sm font-semibold text-gray-900">
                               {deudas[item].Cuota}
@@ -84,11 +88,10 @@ const DeudasDetalle = ({
 
                           <td className="px-6 py-4 whitespace-nowrap">
                             <span
-                              className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                                deudas[item].Pagada === 0
+                              className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${deudas[item].Pagada === 0
                                   ? "bg-red-100 text-red-800"
                                   : "bg-green-100 text-green-800"
-                              }`}
+                                }`}
                             >
                               {deudas[item].Pagada === 0 ? "No" : "Si"}
                             </span>
@@ -110,68 +113,70 @@ const DeudasDetalle = ({
                               )}
                             </div>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <div className="mt-2 flex items-center text-sm text-gray-500">
-                              {deudas[item].Pagada === 0 ? (
-                                <>
-                                  {checkuser !== "4" ? (
-                                    <>
-                                      <TrashIcon
-                                        className="-ml-1 mr-2 h-8 w-8 text-gray-500"
-                                        style={{ cursor: "pointer" }}
-                                        onClick={async () =>
-                                          activeConfirmacion({
-                                            open: true,
-                                            pagada: deudas[item].Pagada,
-                                            id_inscripcion:
-                                              deudas[item].Id_Inscripcion,
-                                            id_arancel: deudas[item].Id_Arancel,
-                                            arancel: deudas[item].Cuota,
-                                          })
-                                        }
-                                        aria-hidden="true"
-                                      />
-                                      <PencilIcon
-                                        className="-ml-1 mr-2 h-8 w-8 text-gray-500"
-                                        style={{ cursor: "pointer" }}
-                                        onClick={async () =>
-                                          activeModificacion(
-                                            true,
-                                            deudas[item].Id_Cuenta,
-                                            deudas[item].Cuota,
-                                          )
-                                        }
-                                        aria-hidden="true"
-                                      />
-                                    </>
-                                  ) : (
-                                    <></>
-                                  )}
-                                </>
-                              ) : (
-                                <></>
-                              )}
-                              {deudas[item].Pagada === 1 ? (
-                                <TrashIcon
-                                  className="-ml-1 mr-2 h-8 w-8 text-gray-500"
-                                  style={{ cursor: "pointer" }}
-                                  onClick={async () =>
-                                    activeConfirmacion({
-                                      open: true,
-                                      pagada: deudas[item].Pagada,
-                                      id_inscripcion:
-                                        deudas[item].Id_Inscripcion,
-                                      id_arancel: deudas[item].Id_Arancel,
-                                      arancel: deudas[item].Cuota,
-                                    })
-                                  }
-                                  aria-hidden="true"
-                                />
-                              ) : (
-                                <></>
-                              )}
-                            </div>
-                          </td>
+                          {!rolQuitarOpciones ? (
+                            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                              <div className="mt-2 flex items-center text-sm text-gray-500">
+                                {deudas[item].Pagada === 0 ? (
+                                  <>
+                                    {checkuser !== "4" ? (
+                                      <>
+                                        <TrashIcon
+                                          className="-ml-1 mr-2 h-8 w-8 text-gray-500"
+                                          style={{ cursor: "pointer" }}
+                                          onClick={async () =>
+                                            activeConfirmacion({
+                                              open: true,
+                                              pagada: deudas[item].Pagada,
+                                              id_inscripcion:
+                                                deudas[item].Id_Inscripcion,
+                                              id_arancel: deudas[item].Id_Arancel,
+                                              arancel: deudas[item].Cuota,
+                                            })
+                                          }
+                                          aria-hidden="true"
+                                        />
+                                        <PencilIcon
+                                          className="-ml-1 mr-2 h-8 w-8 text-gray-500"
+                                          style={{ cursor: "pointer" }}
+                                          onClick={async () =>
+                                            activeModificacion(
+                                              true,
+                                              deudas[item].Id_Cuenta,
+                                              deudas[item].Cuota,
+                                            )
+                                          }
+                                          aria-hidden="true"
+                                        />
+                                      </>
+                                    ) : (
+                                      <></>
+                                    )}
+                                  </>
+                                ) : (
+                                  <></>
+                                )}
+                                {deudas[item].Pagada === 1 ? (
+                                  <TrashIcon
+                                    className="-ml-1 mr-2 h-8 w-8 text-gray-500"
+                                    style={{ cursor: "pointer" }}
+                                    onClick={async () =>
+                                      activeConfirmacion({
+                                        open: true,
+                                        pagada: deudas[item].Pagada,
+                                        id_inscripcion:
+                                          deudas[item].Id_Inscripcion,
+                                        id_arancel: deudas[item].Id_Arancel,
+                                        arancel: deudas[item].Cuota,
+                                      })
+                                    }
+                                    aria-hidden="true"
+                                  />
+                                ) : (
+                                  <></>
+                                )}
+                              </div>
+                            </td>
+                          ) : (<></>)}
                         </tr>
                       ))}
                     </tbody>
@@ -194,6 +199,7 @@ DeudasDetalle.propTypes = {
   activeModificacion: PropTypes.func,
   deudas: PropTypes.array,
   cuotaVencida: PropTypes.bool,
+  rolQuitarOpciones: PropTypes.bool,
 };
 
 export default DeudasDetalle;

@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import Moment from "moment";
 import PropTypes from "prop-types";
-// import { TrashIcon, StopIcon } from "@heroicons/react/solid";
-// import { Context } from "../../context/Context";
 
 const Facturas = ({ data, openC }) => {
   const [facturas, setFacturas] = useState([]);
@@ -59,34 +57,29 @@ const Facturas = ({ data, openC }) => {
                         >
                           Fecha de pago
                         </th>
-                        {/* <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Opciones
-                            </th> */}
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
                       {facturas.map((_, item) => (
                         <tr key={item} className="hover:bg-gray-50">
+                            <td
+                              className={`px-6 py-4 whitespace-nowrap ${facturas[item].Anulada === 1
+                                  ? "bg-red-200"
+                                  : "bg-green-200"
+                                }`}
+                            >
+                              <span className="text-xs font-bold text-gray-900">
+                                {facturas[item].Anulada === 1 ? "Anulada" : ""}
+                              </span>
+                              <div className="text-sm font-bold text-gray-900">
+                                {facturas[item].Id_Factura}
+                              </div>
+                            </td>
                           <td
-                            className={`px-6 py-4 whitespace-nowrap ${
-                              facturas[item].Anulada === 1
-                                ? "bg-red-200"
-                                : "bg-green-200"
-                            }`}
-                          >
-                            <span className="text-xs font-bold text-gray-900">
-                              {facturas[item].Anulada === 1 ? "Anulada" : ""}
-                            </span>
-                            <div className="text-sm font-bold text-gray-900">
-                              {facturas[item].Id_Factura}
-                            </div>
-                          </td>
-                          <td
-                            className={`px-6 py-4 whitespace-nowrap ${
-                              facturas[item].Abono === 1
+                            className={`px-6 py-4 whitespace-nowrap ${facturas[item].Abono === 1
                                 ? "bg-yellow-50"
                                 : "bg-green-50"
-                            }`}
+                              }`}
                           >
                             <div className="text-sm font-semibold text-gray-900">
                               {facturas[item].Abono === 1
@@ -113,15 +106,6 @@ const Facturas = ({ data, openC }) => {
                               )}
                             </div>
                           </td>
-                          {/* <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                                            <div className="mt-2 flex items-center text-sm text-gray-500">
-                                                            {checkUser().Rol === '1' || checkUser().Rol === '2' ?
-                                                                <TrashIcon className="-ml-1 mr-2 h-8 w-8 text-gray-500" style={{ cursor: 'pointer' }} onClick={async () => activeConfirmacion({'open':true, 'pagada': 1, 'id_factura': factura_list[item].Factura[f].Id_Factura, 'id_inscripcion': factura_list[item].Factura[f].Id_Inscripcion,'id_arancel': factura_list[item].Factura[f].Id_Arancel,'arancel': factura_list[item].Factura[f].Descripcion})} aria-hidden="true" />
-                                                            :<>
-                                                                <StopIcon className="-ml-1 mr-2 h-8 w-8 text-gray-500" aria-hidden="true"/>
-                                                            </>}
-                                                            </div>
-                                                        </td> */}
                         </tr>
                       ))}
                     </tbody>

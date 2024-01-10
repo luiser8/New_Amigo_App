@@ -1,6 +1,7 @@
 import { useContext, useState, Fragment } from "react";
 import PropTypes from "prop-types";
 import { Context } from "../../context/Context";
+import BannerPuerta from "./BannerPuerta";
 
 const Alumnos = ({
   alumno,
@@ -10,6 +11,14 @@ const Alumnos = ({
   fullNombre,
   carrera,
   estAca,
+  noPasa,
+  esBecado,
+  esDesertor,
+  existe,
+  pagoTodo,
+  sinDocumentos,
+  deuda,
+  rolQuitarOpciones,
 }) => {
   const { checkUser } = useContext(Context);
   const [rolPuerta,] = useState(Number(checkUser().Rol));
@@ -17,8 +26,17 @@ const Alumnos = ({
   return (
     <div className="flex-1 min-w-0">
       <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
-        Alumnos / deudas
+        {rolQuitarOpciones ? 'Verificación de puerta' : 'Alumnos / deudas'}
       </h2>
+      <BannerPuerta
+        noPasa={noPasa}
+        esBecado={esBecado}
+        esDesertor={esDesertor}
+        existe={existe}
+        pagoTodo={pagoTodo}
+        sinDocumentos={sinDocumentos}
+        deuda={deuda}
+        rolPuerta={rolPuerta} />
       {Object.keys(alumno).length !== 0 ? (
         <div className="mt-1 flex flex-col sm:flex-row sm:flex-wrap sm:mt-0 sm:space-x-2">
           <div className="flex items-center text-gray-600 mb-2">
@@ -31,9 +49,8 @@ const Alumnos = ({
             ) : (
               <img
                 className="w-20 h-20 mb-4 mt-1 object-cover object-center rounded-full inline-block border-2 border-gray-200 bg-gray-100"
-                src={`${process.env.PUBLIC_URL}/${
-                  sexo === 1 ? `boy.png` : `girl.png`
-                }`}
+                src={`${process.env.PUBLIC_URL}/${sexo === 1 ? `boy.png` : `girl.png`
+                  }`}
                 alt="Foto"
               />
             )}
@@ -103,9 +120,17 @@ const Alumnos = ({
           ) : (
             <Fragment>
               {Object.keys(alumno).length === 0 &&
-              Object.keys(deudas).length !== 0 ? (
+                Object.keys(deudas).length !== 0 ? (
                 <p className="text-md font-medium leading-6 text-gray-900">
-                  Alumno no inscrito acádemicamente
+                  Alumno no inscrito académicamente
+                </p>
+              ) : (
+                <></>
+              )}
+              {Object.keys(alumno).length === 0 && Object.keys(deudas).length === 0 &&
+                pagoTodo ? (
+                <p className="text-md font-medium leading-6 text-gray-900">
+                  Alumno no inscrito académicamente
                 </p>
               ) : (
                 <></>
@@ -122,10 +147,18 @@ Alumnos.propTypes = {
   foto: PropTypes.string,
   sexo: PropTypes.number,
   fullNombre: PropTypes.string,
-  carrera: PropTypes.string,
+  carrera: PropTypes.number,
   estAca: PropTypes.string,
   alumno: PropTypes.array,
   deudas: PropTypes.array,
+  noPasa: PropTypes.bool,
+  esBecado: PropTypes.bool,
+  esDesertor: PropTypes.bool,
+  existe: PropTypes.bool,
+  pagoTodo: PropTypes.bool,
+  sinDocumentos: PropTypes.bool,
+  deuda: PropTypes.number,
+  rolQuitarOpciones: PropTypes.bool,
 };
 
 export default Alumnos;

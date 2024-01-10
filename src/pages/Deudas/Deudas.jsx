@@ -30,6 +30,7 @@ import DatosEstudiantes from "../Alumnos/DatosEstudiantes";
 import PanelEdicion from "./PanelEdicion";
 import DeudasDetalle from "./DeudasDetalle";
 import { currentCuotas } from "../../helpers/CurrentCuotas";
+import { getNoPasaCheck } from "../../helpers/checkNoPasa";
 
 const Deudas = () => {
   const {
@@ -56,6 +57,7 @@ const Deudas = () => {
   const [fullNombre, setFullNombre] = useState("");
   const [sexo, setSexo] = useState(0);
   const [estAca, setEstAca] = useState("");
+  const [planDePago, setPlanDePago] = useState("");
   const [foto, setFoto] = useState("");
   const [carrera, setCarrera] = useState("");
   const [openConfirm, setOpenConfirm] = useState(false);
@@ -70,6 +72,12 @@ const Deudas = () => {
   const [cuota, setCuota] = useState("");
   const [id_arancel, setId_arancel] = useState("");
   const [arancel, setArancel] = useState("");
+  const [noPasa, setNoPasa] = useState(false);
+  const [esBecado, setEsBecado] = useState(false);
+  const [pagoTodo, setPagoTodo] = useState(false);
+  const [esDesertor, setEsDesertor] = useState(false);
+  const [existe, setExiste] = useState(false);
+  const [sinDocumentos, setSinDocumentos] = useState(false);
 
   const getAlumnos = async (id) => {
     setAlumno([]);
@@ -78,7 +86,7 @@ const Deudas = () => {
       setAlumno(alumno);
       if (alumno !== undefined) {
         alumno.map((item) => {
-          if (item !== []) {
+          if (Object.keys(item).length !== 0) {
             setFullNombre(item.Fullnombre);
             setSexo(item.Sexo);
             setEstAca(item.EstAca);
@@ -123,7 +131,6 @@ const Deudas = () => {
         setId_inscripcion(item.Id_Inscripcion);
         setId_terceros(item.Id_Terceros);
         setTipoingreso(item.TipoIngreso);
-        //tipoDeCuota(item.PlanDePago.substring(0, 7), 1);
         setTelefonos(item.Telefonos);
         setEmails(item.Emails);
       });
@@ -137,23 +144,27 @@ const Deudas = () => {
       ? Toast({
           show: true,
           title: "Error!",
-          msj: "Ocurrio un problema con la comunicacion.",
+          msj: "Ocurrió un problema con la comunicación.",
           color: "red",
         })
       : Toast({ show: false });
-    if (deudasAlumnoGet !== undefined) {
-      setDeudas(deudasAlumnoGet);
-      deudasAlumnoGet.map((item) => {
+    if (checkUser().Rol === "4"){
+      await getNoPasaCheck(deudasAlumnoGet, setEsBecado, setNoPasa, setPagoTodo, setEsDesertor, setExiste, setSinDocumentos);
+    }
+    if (deudasAlumnoGet !== undefined || deudasAlumnoGet.Deudas !== undefined) {
+      setDeudas(deudasAlumnoGet.Deudas);
+      setPlanDePago(deudasAlumnoGet.PlanDePago);
+      deudasAlumnoGet.Deudas.map((item) => {
         setId_inscripcion(item.Id_Inscripcion);
         if (item.Pagada === 0) {
           setCuotaVencida(Moment(item.FechaVencimiento).isBefore(Date.now()));
         }
       });
-      if (deudasAlumnoGet.length === 0) {
+      if (Object.keys(deudasAlumnoGet).length === 0 || deudasAlumnoGet.Deudas.length === 0 && !esBecado) {
         Toast({
           show: true,
           title: "Advertencia!",
-          msj: "No se consigueron registros de duedas.",
+          msj: "No se consiguieron registros de deudas.",
           color: "red",
         });
       } else {
@@ -364,24 +375,6 @@ const Deudas = () => {
     getFacturas(identificador, checkLapso());
   };
 
-  const tipoDeCuota = async (tipo, estado) => {
-    const newTipo = tipo === "REGULAR" ? 1 : 2;
-    await currentCuotas(newTipo, estado, setConfigCuotaI, setConfigCuotaN).then(
-      (items) => {
-        console.log(items);
-        // if (checkConfigN().Cuota !== items[0].Monto) {
-        //   setCuota(items[0].Monto);
-        // } else {
-        //   setCuota(
-        //     items[0].Monto !== undefined
-        //       ? items[0].Monto
-        //       : checkConfigN().Cuota,
-        //   );
-        // }
-      },
-    );
-  };
-
   useEffect(() => {
     let callCuotas = true;
     getLapsos();
@@ -395,6 +388,7 @@ const Deudas = () => {
       setAranceles([]);
       setAlumno([]);
       setFacturas([]);
+      setIdentificador("");
     };
   }, []);
 
@@ -468,7 +462,15 @@ const Deudas = () => {
             sexo={sexo}
             fullNombre={fullNombre}
             carrera={carrera}
-            estAca={estAca}
+            estAca={planDePago === "No encontrado" ? estAca : planDePago}
+            noPasa={noPasa}
+            esBecado={esBecado}
+            esDesertor={esDesertor}
+            existe={existe}
+            pagoTodo={pagoTodo}
+            sinDocumentos={sinDocumentos}
+            deuda={Object.keys(deudas).length}
+            rolQuitarOpciones={checkUser().Rol === "4"}
           />
           <DatosEstudiantes
             lapsos={lapsos}
@@ -496,6 +498,7 @@ const Deudas = () => {
           cuotaVencida={cuotaVencida}
           activeConfirmacion={activeConfirmacion}
           activeModificacion={activeModificacion}
+          rolQuitarOpciones={checkUser().Rol === "4"}
         />
         {checkUser().Rol !== "4" && facturas.length !== 0 ? (
           <Facturas data={facturas} openC={activeConfirmacion} />
