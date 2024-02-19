@@ -21,14 +21,14 @@
     "prop-types": "^15.8.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.21.1",
+    "react-router-dom": "^6.22.1",
     "react-scripts": "5.0.1",
     "tailwind-toast": "^1.1.0"
   },
   "devDependencies": {
     "eslint-plugin-react": "^7.33.2",
-    "autoprefixer": "^10.4.16",
-    "postcss": "^8.4.33",
+    "autoprefixer": "^10.4.17",
+    "postcss": "^8.4.35",
     "postcss-cli": "^11.0.0",
     "tailwindcss": "^2.2.19",
     "eslint": "^8.56.0"

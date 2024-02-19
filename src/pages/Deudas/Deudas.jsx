@@ -78,6 +78,7 @@ const Deudas = () => {
   const [esDesertor, setEsDesertor] = useState(false);
   const [existe, setExiste] = useState(false);
   const [sinDocumentos, setSinDocumentos] = useState(false);
+  const [esEgresado, setEsEgresado] = useState(false);
 
   const getAlumnos = async (id) => {
     setAlumno([]);
@@ -149,7 +150,7 @@ const Deudas = () => {
         })
       : Toast({ show: false });
     if (checkUser().Rol === "4"){
-      await getNoPasaCheck(deudasAlumnoGet, setEsBecado, setNoPasa, setPagoTodo, setEsDesertor, setExiste, setSinDocumentos);
+      await getNoPasaCheck(deudasAlumnoGet, setEsBecado, setNoPasa, setPagoTodo, setEsDesertor, setExiste, setSinDocumentos, setEsEgresado);
     }
     if (deudasAlumnoGet !== undefined || deudasAlumnoGet.Deudas !== undefined) {
       setDeudas(deudasAlumnoGet.Deudas);
@@ -469,6 +470,7 @@ const Deudas = () => {
             existe={existe}
             pagoTodo={pagoTodo}
             sinDocumentos={sinDocumentos}
+            esEgresado={esEgresado}
             deuda={Object.keys(deudas).length}
             rolQuitarOpciones={checkUser().Rol === "4"}
           />

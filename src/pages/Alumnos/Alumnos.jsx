@@ -17,6 +17,7 @@ const Alumnos = ({
   existe,
   pagoTodo,
   sinDocumentos,
+  esEgresado,
   deuda,
   rolQuitarOpciones,
 }) => {
@@ -35,6 +36,7 @@ const Alumnos = ({
         existe={existe}
         pagoTodo={pagoTodo}
         sinDocumentos={sinDocumentos}
+        esEgresado={esEgresado}
         deuda={deuda}
         rolPuerta={rolPuerta} />
       {Object.keys(alumno).length !== 0 ? (
@@ -157,6 +159,7 @@ Alumnos.propTypes = {
   existe: PropTypes.bool,
   pagoTodo: PropTypes.bool,
   sinDocumentos: PropTypes.bool,
+  esEgresado: PropTypes.bool,
   deuda: PropTypes.number,
   rolQuitarOpciones: PropTypes.bool,
 };

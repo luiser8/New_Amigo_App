@@ -8,9 +8,19 @@ const BannerPuerta = ({
     existe,
     pagoTodo,
     sinDocumentos,
+    esEgresado,
     deuda,
     rolPuerta
 }) => {
+    console.log(    noPasa,
+        esBecado,
+        esDesertor,
+        existe,
+        pagoTodo,
+        sinDocumentos,
+        esEgresado,
+        deuda,
+        rolPuerta)
     return (
         <>
         {esBecado && !noPasa ? (
@@ -41,7 +51,7 @@ const BannerPuerta = ({
             ) : (
                 <></>
             )}
-            {!existe && noPasa ? (
+            {!existe && noPasa && !esEgresado? (
                 <p className={`flex items-center text-${noPasa ? 'red' : 'green'}-600 font-bold mb-2 text-5xl`}>
                     NO EXISTE, NO PUEDE PASAR
                 </p>
@@ -49,8 +59,15 @@ const BannerPuerta = ({
                 <></>
             )}
             {existe && sinDocumentos ? (
-                <p className={`flex items-center text-${noPasa ? 'red' : 'yellow'}-${sinDocumentos ? '400' : '600'} font-bold mb-2 text-2xl`}>
+                <p className={`flex items-center text-${noPasa ? 'red' : 'yellow'}-${sinDocumentos ? '400' : '600'} font-bold mb-2 text-3xl`}>
                     CON DOCUMENTOS POR CONSIGNAR
+                </p>
+            ) : (
+                <></>
+            )}
+            {esEgresado ? (
+                <p className={`flex items-center text-green-${esEgresado ? '600' : '400'} font-bold mb-2 text-5xl`}>
+                    EGRESADO, PUEDE PASAR
                 </p>
             ) : (
                 <></>
@@ -66,6 +83,8 @@ BannerPuerta.propTypes = {
     existe: PropTypes.bool,
     pagoTodo: PropTypes.bool,
     sinDocumentos: PropTypes.bool,
+    esEgresado: PropTypes.bool,
+    deuda: PropTypes.number,
     rolPuerta: PropTypes.number
   };
 
