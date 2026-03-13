@@ -79,6 +79,7 @@ const Deudas = () => {
   const [existe, setExiste] = useState(false);
   const [sinDocumentos, setSinDocumentos] = useState(false);
   const [esEgresado, setEsEgresado] = useState(false);
+  const [esAmonestado, setEsAmonestado] = useState(false);
 
   const getAlumnos = async (id) => {
     setAlumno([]);
@@ -116,7 +117,8 @@ const Deudas = () => {
   };
 
   const getLapsos = async () => {
-    const lapsosArray = await getLapsosService();
+    var puertaRol = checkUser().Rol === "4" ? 1 : 0;
+    const lapsosArray = await getLapsosService(puertaRol);
     setLapsos(lapsosArray);
     if (lapso === null || lapso === "") {
       establecerLapso(lapsosArray[0].Lapso);
@@ -125,7 +127,12 @@ const Deudas = () => {
 
   const getFacturas = async (identificador, lapso) => {
     setFacturas([]);
-    const facturasData = await getFacturasServices(identificador, lapso);
+    const rolPuerta = checkUser().Rol === "4";
+    const facturasData = await getFacturasServices(
+      identificador,
+      lapso,
+      rolPuerta,
+    );
     if (facturasData !== undefined) {
       setFacturas(facturasData);
       facturasData.forEach((item) => {
@@ -140,7 +147,12 @@ const Deudas = () => {
 
   const getDeudasAlumno = async (lapso, identificador) => {
     setDeudas([]);
-    const deudasAlumnoGet = await checkDeudaService(lapso, identificador);
+    const rolPuerta = checkUser().Rol === "4";
+    const deudasAlumnoGet = await checkDeudaService(
+      rolPuerta,
+      lapso,
+      identificador,
+    );
     deudasAlumnoGet === undefined
       ? Toast({
           show: true,
@@ -149,8 +161,18 @@ const Deudas = () => {
           color: "red",
         })
       : Toast({ show: false });
-    if (checkUser().Rol === "4"){
-      await getNoPasaCheck(deudasAlumnoGet, setEsBecado, setNoPasa, setPagoTodo, setEsDesertor, setExiste, setSinDocumentos, setEsEgresado);
+    if (checkUser().Rol === "4") {
+      await getNoPasaCheck(
+        deudasAlumnoGet,
+        setEsBecado,
+        setNoPasa,
+        setPagoTodo,
+        setEsDesertor,
+        setExiste,
+        setSinDocumentos,
+        setEsEgresado,
+        setEsAmonestado,
+      );
     }
     if (deudasAlumnoGet !== undefined || deudasAlumnoGet.Deudas !== undefined) {
       setDeudas(deudasAlumnoGet.Deudas);
@@ -161,7 +183,10 @@ const Deudas = () => {
           setCuotaVencida(Moment(item.FechaVencimiento).isBefore(Date.now()));
         }
       });
-      if (Object.keys(deudasAlumnoGet).length === 0 || deudasAlumnoGet.Deudas.length === 0 && !esBecado) {
+      if (
+        Object.keys(deudasAlumnoGet).length === 0 ||
+        (deudasAlumnoGet.Deudas.length === 0 && !esBecado)
+      ) {
         Toast({
           show: true,
           title: "Advertencia!",
@@ -471,6 +496,7 @@ const Deudas = () => {
             pagoTodo={pagoTodo}
             sinDocumentos={sinDocumentos}
             esEgresado={esEgresado}
+            esAmonestado={esAmonestado}
             deuda={Object.keys(deudas).length}
             rolQuitarOpciones={checkUser().Rol === "4"}
           />

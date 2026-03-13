@@ -1,7 +1,7 @@
 import { post, put, del } from '../helpers/Fetch';
 
-export const checkDeudaClient = async (lapso, identificador) => {
-    return await post('deudas/check', { "Lapso": lapso, "Identificador": identificador });
+export const checkDeudaClient = async (puerta, lapso, identificador) => {
+    return await post('deudas/check', { "Puerta": puerta, "Lapso": lapso, "Identificador": identificador });
 }
 export const postDeudaClient = async (data) => {
     return await post('deudas/insert', data);

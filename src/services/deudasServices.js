@@ -1,9 +1,9 @@
 import { checkDeudaClient, delDeudaClient, postDeudaClient, postDeudaResetClient, putDeudaClient } from "../clients/deudasClient";
 
-export const checkDeudaService = async (lapso, identificador) => {
+export const checkDeudaService = async (puerta, lapso, identificador) => {
     let data = {};
     (Promise.all([
-        await checkDeudaClient(lapso, identificador).then((values) => {
+        await checkDeudaClient(puerta, lapso, identificador).then((values) => {
             if (values !== null) {
                 data = {...data, ...values !== undefined ? values : {}};
             }

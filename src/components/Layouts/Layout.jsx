@@ -52,8 +52,8 @@ const Layout = () => {
                   </div>
                   <Popover.Group as="nav" className="hidden md:flex space-x-10">
                     <span className="font-semibold">
-                      Lapso: {checkLapso() ? checkLapso() : "Lapso ?"}
-                      <span className="pl-3">
+                      {/* Lapso: {checkLapso() ? checkLapso() : "Lapso ?"}*/}
+                      {/* <span className="pl-3">
                         Cuota Nacional:{" "}
                         {checkConfigN().DolarN
                           ? `$${checkConfigN().DolarN}`
@@ -61,8 +61,8 @@ const Layout = () => {
                         {checkConfigN().Cuota
                           ? `Bs.${checkConfigN().Cuota}`
                           : "Cuota ?"}
-                      </span>
-                      <span className="pl-3">
+                      </span>*/}
+                      {/* <span className="pl-3">
                         Cuota Internacional:{" "}
                         {checkConfigI().DolarI
                           ? `$${checkConfigI().DolarI}`
@@ -70,7 +70,7 @@ const Layout = () => {
                         {checkConfigI().CuotaSAIA
                           ? `Bs.${checkConfigI().CuotaSAIA}`
                           : "Cuota Internacional ?"}
-                      </span>
+                      </span>*/}
                     </span>
                     <Popover className="relative">
                       {({ open }) => (
@@ -115,7 +115,7 @@ const Layout = () => {
                                   {checkUser().Rol === "1" ||
                                   checkUser().Rol === "2" ? (
                                     <NavLink
-                                      to={`/reportes/deudas`}
+                                      to={`/reportes`}
                                       className="-m-4 p-2 flex items-start rounded-lg hover:bg-gray-50"
                                     >
                                       <CurrencyDollarIcon
@@ -132,7 +132,7 @@ const Layout = () => {
                                   {checkUser().Rol === "1" ||
                                   checkUser().Rol === "2" ? (
                                     <NavLink
-                                      to={`/reportes/inscripciones`}
+                                      to={`/facturacion`}
                                       className="-m-4 p-2 flex items-start rounded-lg hover:bg-gray-50"
                                     >
                                       <AcademicCapIcon
@@ -140,13 +140,13 @@ const Layout = () => {
                                         aria-hidden="true"
                                       />
                                       <p className="pl-2 text-base font-semibold">
-                                        Reporte inscripciones
+                                        Facturación
                                       </p>
                                     </NavLink>
                                   ) : (
                                     <></>
                                   )}
-                                  {checkUser().Rol === "1" ||
+                                  {/* {checkUser().Rol === "1" ||
                                   checkUser().Rol === "2" ? (
                                     <NavLink
                                       to={`/reportes/facturacion`}
@@ -162,8 +162,8 @@ const Layout = () => {
                                     </NavLink>
                                   ) : (
                                     <></>
-                                  )}
-                                  {checkUser().Rol === "1" ||
+                                  )}*/}
+                                  {/* {checkUser().Rol === "1" ||
                                   checkUser().Rol === "2" ||
                                   checkUser().Rol === "3" ? (
                                     <NavLink
@@ -180,9 +180,9 @@ const Layout = () => {
                                     </NavLink>
                                   ) : (
                                     <></>
-                                  )}
+                                  )}*/}
 
-                                  {checkUser().Rol === "1" ||
+                                  {/* {checkUser().Rol === "1" ||
                                   checkUser().Rol === "2" ||
                                   checkUser().Rol === "3" ? (
                                     <NavLink
@@ -199,8 +199,8 @@ const Layout = () => {
                                     </NavLink>
                                   ) : (
                                     <></>
-                                  )}
-                                  {checkUser().Rol === "1" ||
+                                  )}*/}
+                                  {/* {checkUser().Rol === "1" ||
                                   checkUser().Rol === "2" ? (
                                     <NavLink
                                       to={`/deudas/reset`}
@@ -216,7 +216,7 @@ const Layout = () => {
                                     </NavLink>
                                   ) : (
                                     <></>
-                                  )}
+                                  )}*/}
                                   {checkUser().Rol === "1" ||
                                   checkUser().Rol === "2" ? (
                                     <NavLink

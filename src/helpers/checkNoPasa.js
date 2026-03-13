@@ -1,4 +1,4 @@
-export const getNoPasaCheck = async (data, setEsBecado, setNoPasa, setPagoTodo, setEsDesertor, setExiste, setSinDocumentos, setEsEgresado) => {
+export const getNoPasaCheck = async (data, setEsBecado, setNoPasa, setPagoTodo, setEsDesertor, setExiste, setSinDocumentos, setEsEgresado, setEsAmonestado) => {
     if(data.EsBecado){
       setEsBecado(true);
     }else{ setEsBecado(false); }
@@ -31,5 +31,10 @@ export const getNoPasaCheck = async (data, setEsBecado, setNoPasa, setPagoTodo, 
       setEsEgresado(true);
     }else{
       setEsEgresado(false);
+    }
+    if(data.EsAmonestado){
+      setEsAmonestado(true);
+    }else{
+      setEsAmonestado(false);
     }
   }

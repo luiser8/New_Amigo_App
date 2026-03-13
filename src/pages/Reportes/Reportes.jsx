@@ -18,11 +18,15 @@ import {
   getReportePorCarrerasClient,
   getReporteAllCarrerasClient,
   getReporteFacturacionClient,
+  getReporteDeudasPorConceptosClient,
 } from "../../clients/reporteClient";
 import ReporteFacturacion from "./ReporteFacturacion";
 import { getBancosService } from "../../services/bancosService";
+import { getArancelesPorLapsoService } from "../../services/arancelesService";
 
 const Reportes = (props) => {
+  const [conceptos, setConceptos] = useState([]);
+  const [concepto, setConcepto] = useState();
   const [lapsos, setLapsos] = useState([]);
   const [bancos, setBancos] = useState([]);
   const [menus, setMenus] = useState([]);
@@ -50,12 +54,48 @@ const Reportes = (props) => {
   const getPeriodoId = () => {
     return lapsos.filter((x) => x.Lapso === lapso)[0].Id_Periodo;
   };
+  const getConceptos = async () => {
+    setConceptos(await getArancelesPorLapsoService(lapso));
+  };
 
-  const getReporte = async (ev) => {
+  useEffect(() => {
+    getConceptos();
+  }, [lapso]);
+
+  const getReporte = async (ev, tipoReporte) => {
     ev.preventDefault();
     setBtnEstablecer(true);
     setLoading(true);
-    if (pagada === 0) {
+    console.log(tipoReporte);
+    if (tipoReporte === "conceptos") {
+      Promise.all([
+        getReporteDeudasPorConceptosClient(lapso, concepto, pagada).then(
+          (items) => {
+            items !== undefined
+              ? items.blob().then((blob) => downloadFile(blob, "deudas", 1))
+              : Toast({
+                  show: true,
+                  title: "Advertencia!",
+                  msj: `Por alguna razon el Reporte de deudas no ha sido creado!`,
+                  color: "yellow",
+                });
+            items !== undefined
+              ? Toast({
+                  show: true,
+                  title: "Información!",
+                  msj: `Reporte de deudas ha sido creado!`,
+                  color: "yellow",
+                })
+              : Toast({ show: false });
+            setBtnEstablecer(false);
+            setLoading(false);
+          },
+        ),
+      ]).catch((error) => {
+        new Error(error);
+      });
+    }
+    if (tipoReporte === "deudas")
       Promise.all([
         getReporteDeudasClient(lapso, pagada).then((items) => {
           items !== undefined
@@ -80,32 +120,6 @@ const Reportes = (props) => {
       ]).catch((error) => {
         new Error(error);
       });
-    } else if (pagada === 1) {
-      Promise.all([
-        getReportePagadasClient(lapso).then((items) => {
-          items !== undefined
-            ? items.blob().then((blob) => downloadFile(blob, "pagadas", 1))
-            : Toast({
-                show: true,
-                title: "Advertencia!",
-                msj: `Por alguna razon el Reporte de deudas no ha sido creado!`,
-                color: "yellow",
-              });
-          items !== undefined
-            ? Toast({
-                show: true,
-                title: "Información!",
-                msj: `Reporte deudas pagadas ha sido creado!`,
-                color: "yellow",
-              })
-            : Toast({ show: false });
-          setBtnEstablecer(false);
-          setLoading(false);
-        }),
-      ]).catch((error) => {
-        new Error(error);
-      });
-    }
   };
 
   const getReporteMenus = async (ev) => {
@@ -314,10 +328,13 @@ const Reportes = (props) => {
 
   useEffect(() => {
     getLapsos();
+    getConceptos();
     return () => {
       setLapsos([]);
       setMenus([]);
       setMenusPorCarrera([]);
+      setConceptos([]);
+      setPagada(0);
     };
   }, []);
 
@@ -342,6 +359,9 @@ const Reportes = (props) => {
           setPagada={setPagada}
           pagada={pagada}
           btnEstablecer={btnEstablecer}
+          conceptos={conceptos}
+          concepto={concepto}
+          setConcepto={setConcepto}
         />
       ) : (
         <></>
