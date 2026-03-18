@@ -3,6 +3,8 @@ import {
   getFacturasClientById,
   postDepositosFacturas,
   postSaldoAFavorFacturas,
+  putDepositoFacturas,
+  putSaldoAFavorFacturas,
 } from "../clients/facturasClient";
 
 export const getFacturasServices = async (identificador, lapso, puerta) => {
@@ -44,10 +46,36 @@ export const postFacturasSaldoAFavorServices = async (factura) => {
   });
   return request;
 };
+export const putFacturasSaldoAFavorServices = async (factura) => {
+  let request = 0;
+  Promise.all([
+    await putSaldoAFavorFacturas(factura).then((values) => {
+      if (values !== null) {
+        request = values;
+      }
+    }),
+  ]).catch((error) => {
+    new Error(error);
+  });
+  return request;
+};
 export const postFacturasDepositosServices = async (factura) => {
   let request = 0;
   Promise.all([
     await postDepositosFacturas(factura).then((values) => {
+      if (values !== null) {
+        request = values;
+      }
+    }),
+  ]).catch((error) => {
+    new Error(error);
+  });
+  return request;
+};
+export const putFacturasDepositoServices = async (factura) => {
+  let request = 0;
+  Promise.all([
+    await putDepositoFacturas(factura).then((values) => {
       if (values !== null) {
         request = values;
       }

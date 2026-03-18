@@ -3,9 +3,13 @@ import {
   getFacturasByIdServices,
   postFacturasSaldoAFavorServices,
   postFacturasDepositosServices,
+  putFacturasSaldoAFavorServices,
+  putFacturasDepositoServices, // Asegúrate de que este import esté correcto
 } from "../../services/facturasServices";
 import { getBancosService } from "../../services/bancosService";
 import moment from "moment";
+import SaldoAFavor from "./modals/SaldoAFavor";
+import Depositos from "./modals/Depositos";
 
 const Facturacion = () => {
   const [facturas, setFacturas] = useState([]);
@@ -16,6 +20,9 @@ const Facturacion = () => {
   const [mostrarModalSaldo, setMostrarModalSaldo] = useState(false);
   const [depositos, setDepositos] = useState([]);
   const [saldoAFavor, setSaldoAFavor] = useState(null);
+  const [editandoSaldo, setEditandoSaldo] = useState(false);
+  const [editandoDeposito, setEditandoDeposito] = useState(false);
+  const [depositoSeleccionado, setDepositoSeleccionado] = useState(null);
 
   const buscarFactura = async () => {
     if (!numeroFactura) return;
@@ -54,7 +61,10 @@ const Facturacion = () => {
         console.error("Error al buscar factura:", error);
         setFacturas([]);
       })
-      .finally(() => setBuscando(false));
+      .finally(() => {
+        setBuscando(false);
+        getBancos(numeroFactura);
+      });
   };
 
   // Calcular totales con validación segura
@@ -71,47 +81,110 @@ const Facturacion = () => {
       }, 0)
     : 0;
 
-  const getBancos = async () => {
-    await getBancosService().then((values) => {
+  const getBancos = async (factura) => {
+    await getBancosService(factura).then((values) => {
       if (values !== null) {
         setBancos(values !== undefined ? values : []);
       }
     });
   };
 
-  const insertarSaldoAFavor = async (monto) => {
-    const data = {
-      Id_Factura: numeroFactura,
-      Monto: monto,
-      Cedula: primeraFactura.Identificador,
-    };
-    const request = await postFacturasSaldoAFavorServices(data);
-    if (request !== null) {
-      await buscarFactura();
+  const getTodosLosBancos = async () => {
+    await getBancosService(0).then((values) => {
+      if (values !== null) {
+        setBancos(values !== undefined ? values : []);
+      }
+    });
+  };
+
+  const insertarSaldoAFavor = async (saldoData) => {
+    const { monto, idMonto } = saldoData;
+
+    if (idMonto) {
+      // Es una actualización
+      const data = {
+        Id_Monto: idMonto,
+        Id_Factura: numeroFactura,
+        Monto: monto,
+        Cedula: primeraFactura.Identificador,
+      };
+      const request = await putFacturasSaldoAFavorServices(data);
+      if (request !== null) {
+        await buscarFactura();
+      }
+    } else {
+      // Es una creación
+      const data = {
+        Id_Factura: numeroFactura,
+        Monto: monto,
+        Cedula: primeraFactura.Identificador,
+      };
+      const request = await postFacturasSaldoAFavorServices(data);
+      if (request !== null) {
+        await buscarFactura();
+      }
     }
   };
 
-  const insertarDeposito = async (data) => {
+  const insertarDeposito = async (depositoData) => {
+    const { Id_Deposito, ...restData } = depositoData;
+
     const request = {
       Id_Factura: numeroFactura,
-      Id_Banco: data.Id_Banco,
-      Referencia: data.Referencia,
-      Monto: data.Monto,
-      Fecha: moment.utc(data.Fecha).format("YYYY-MM-DD"),
-      Tipo: data.Tipo,
+      Id_Banco: restData.Id_Banco,
+      Referencia: restData.Referencia,
+      Monto: restData.Monto,
+      Fecha: moment.utc(restData.Fecha).format("YYYY-MM-DD"),
+      Tipo: restData.Tipo,
     };
-    const response = await postFacturasDepositosServices(request);
-    if (response !== null) {
-      await buscarFactura();
+
+    if (Id_Deposito) {
+      // Es una actualización
+      const response = await putFacturasDepositoServices({
+        ...request,
+        Id_Deposito: Id_Deposito,
+      });
+      if (response !== null) {
+        await buscarFactura();
+      }
+    } else {
+      // Es una creación
+      const response = await postFacturasDepositosServices(request);
+      if (response !== null) {
+        await buscarFactura();
+      }
     }
   };
 
-  useEffect(() => {
-    getBancos();
-    return () => {
-      setBancos([]);
-    };
-  }, [facturas]);
+  const handleSaveSaldo = (nuevoSaldo) => {
+    setSaldoAFavor((prevSaldo) => ({
+      ...prevSaldo,
+      Saldo: nuevoSaldo.monto,
+    }));
+    setMostrarModalSaldo(false);
+    setEditandoSaldo(false);
+  };
+
+  const handleSaveDeposito = async (nuevoDeposito) => {
+    setMostrarModalDeposito(false);
+    setEditandoDeposito(false);
+    setDepositoSeleccionado(null);
+    await getBancos(numeroFactura);
+  };
+
+  const handleModificarDeposito = async (deposito) => {
+    setDepositoSeleccionado(deposito);
+    setEditandoDeposito(true);
+    setMostrarModalDeposito(true);
+    await getBancos(numeroFactura);
+  };
+
+  // useEffect(() => {
+  //   getBancos();
+  //   return () => {
+  //     setBancos([]);
+  //   };
+  // }, [facturas]);
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 md:p-6 lg:p-8">
@@ -230,12 +303,25 @@ const Facturacion = () => {
           <div className="bg-white rounded-lg shadow-md p-6 mb-6">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold text-gray-800">Saldo a Favor</h2>
-              {!saldoAFavor && (
+              {!saldoAFavor ? (
                 <button
-                  onClick={() => setMostrarModalSaldo(true)}
+                  onClick={() => {
+                    setEditandoSaldo(false);
+                    setMostrarModalSaldo(true);
+                  }}
                   className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
                 >
                   + Agregar Saldo
+                </button>
+              ) : (
+                <button
+                  onClick={() => {
+                    setEditandoSaldo(true);
+                    setMostrarModalSaldo(true);
+                  }}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  ✎ Modificar Saldo
                 </button>
               )}
             </div>
@@ -319,7 +405,11 @@ const Facturacion = () => {
                 Depósitos Bancarios
               </h2>
               <button
-                onClick={() => setMostrarModalDeposito(true)}
+                onClick={() => {
+                  setEditandoDeposito(false);
+                  setDepositoSeleccionado(null);
+                  setMostrarModalDeposito(true);
+                }}
                 className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
               >
                 + Agregar Depósito
@@ -331,7 +421,8 @@ const Facturacion = () => {
                 {depositos.map((deposito) => (
                   <div
                     key={deposito.Id_Deposito}
-                    className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+                    className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
+                    onClick={() => handleModificarDeposito(deposito)}
                   >
                     <div className="flex justify-between items-start">
                       <div>
@@ -347,9 +438,6 @@ const Facturacion = () => {
                             : "bg-green-100 text-green-800"
                         }`}
                       >
-                        <span className="px-2 py-1 text-sm font-semibold rounded-full">
-                          Forma de pago:
-                        </span>{" "}
                         {deposito.TipoDescripcion}
                       </span>
                     </div>
@@ -376,6 +464,10 @@ const Facturacion = () => {
                       <p className="text-sm text-gray-600">
                         {deposito.Referencia}
                       </p>
+                    </div>
+
+                    <div className="mt-0 text-md text-blue-800 text-right">
+                      Click para modificar
                     </div>
                   </div>
                 ))}
@@ -413,266 +505,35 @@ const Facturacion = () => {
         )
       )}
 
-      {/* Modal para agregar depósito */}
+      {/* Modal para agregar/modificar depósito */}
       {mostrarModalDeposito && (
-        <ModalDeposito
+        <Depositos
           bancos={bancos}
-          onClose={() => setMostrarModalDeposito(false)}
-          onSave={(nuevoDeposito) => {
-            setDepositos([...depositos, nuevoDeposito]);
+          onClose={async () => {
             setMostrarModalDeposito(false);
+            setEditandoDeposito(false);
+            setDepositoSeleccionado(null);
+            await getBancos(numeroFactura);
           }}
+          onSave={handleSaveDeposito}
           send={insertarDeposito}
+          depositoExistente={editandoDeposito ? depositoSeleccionado : null}
+          onGetAllBancos={getTodosLosBancos}
         />
       )}
 
-      {/* Modal para agregar saldo a favor */}
+      {/* Modal para agregar/modificar saldo a favor */}
       {mostrarModalSaldo && (
-        <ModalSaldo
-          onClose={() => setMostrarModalSaldo(false)}
-          onSave={(nuevoSaldo) => {
-            setSaldoAFavor(nuevoSaldo);
+        <SaldoAFavor
+          onClose={() => {
             setMostrarModalSaldo(false);
+            setEditandoSaldo(false);
           }}
+          onSave={handleSaveSaldo}
           send={insertarSaldoAFavor}
+          saldoExistente={editandoSaldo ? saldoAFavor : null}
         />
       )}
-    </div>
-  );
-};
-
-// Modal para agregar depósito
-const ModalDeposito = ({ bancos, onClose, onSave, send }) => {
-  const [formData, setFormData] = useState({
-    Id_Banco: "",
-    monto: "",
-    fecha: new Date().toISOString().split("T")[0],
-    tipo: "",
-    numeroReferencia: "",
-  });
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const nuevoDeposito = {
-      Id_Banco: parseInt(formData.Id_Banco),
-      Fecha: new Date(formData.fecha).toISOString(),
-      Tipo: Number(formData.tipo),
-      Monto: formData.monto,
-      Referencia: formData.numeroReferencia,
-    };
-    onSave(nuevoDeposito);
-    send(nuevoDeposito);
-  };
-
-  return (
-    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-      <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-lg bg-white">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-bold text-gray-800">Agregar Depósito</h3>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600"
-          >
-            <svg
-              className="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
-        </div>
-
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Banco
-            </label>
-            <select
-              value={formData.Id_Banco}
-              onChange={(e) =>
-                setFormData({ ...formData, Id_Banco: Number(e.target.value) })
-              }
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              required
-            >
-              <option value="">Seleccione un banco</option>
-              {bancos.map((banco) => (
-                <option key={banco.Id_Banco} value={banco.Id_Banco}>
-                  {banco.Descripcion}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Monto (Bs.)
-            </label>
-            <input
-              type="number"
-              step="0.01"
-              value={formData.monto}
-              onChange={(e) =>
-                setFormData({ ...formData, monto: e.target.value })
-              }
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Fecha
-            </label>
-            <input
-              type="date"
-              value={formData.fecha}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  fecha: e.target.value,
-                })
-              }
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Tipo de operación
-            </label>
-            <select
-              value={formData.tipo}
-              onChange={(e) =>
-                setFormData({ ...formData, tipo: Number(e.target.value) })
-              }
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              required
-            >
-              <option value="">Seleccione un tipo</option>
-              <option value="1">Deposito</option>
-              <option value="2">Débito</option>
-              <option value="3">Tarjeta de Credito</option>
-            </select>
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Número de Referencia
-            </label>
-            <input
-              type="text"
-              value={formData.numeroReferencia}
-              onChange={(e) =>
-                setFormData({ ...formData, numeroReferencia: e.target.value })
-              }
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          <div className="flex justify-end space-x-3">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400"
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-            >
-              Guardar
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
-};
-
-// Modal para agregar saldo a favor
-const ModalSaldo = ({ onClose, onSave, send }) => {
-  const [monto, setMonto] = useState("");
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSave(monto);
-    send(monto);
-    console.log("desde el modal", monto);
-  };
-
-  return (
-    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-      <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-lg bg-white">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-bold text-gray-800">
-            Agregar Saldo a Favor
-          </h3>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600"
-          >
-            <svg
-              className="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
-        </div>
-
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Monto del Saldo (Bs.)
-            </label>
-            <input
-              type="number"
-              step="0.01"
-              value={monto}
-              onChange={(e) => setMonto(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              placeholder="0.00"
-              required
-            />
-            <p className="text-sm text-gray-500 mt-1">
-              Solo se permite un saldo a favor por factura
-            </p>
-          </div>
-
-          <div className="flex justify-end space-x-3">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400"
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-            >
-              Guardar
-            </button>
-          </div>
-        </form>
-      </div>
     </div>
   );
 };
