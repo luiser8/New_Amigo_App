@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
 import PropTypes from "prop-types";
 import LapsosSelect from "../../components/selects/LapsosSelect";
 import ArancelesSelect from "../../components/selects/ArancelesSelect";
+import { Toast } from "../../helpers/Toast";
 
 const ReporteDeudas = ({
   getReporte,
@@ -14,6 +15,7 @@ const ReporteDeudas = ({
   concepto,
   conceptos,
   btnEstablecer,
+  validateBtn,
 }) => {
   // Estado local para controlar qué reporte se está generando
   const [reporteEnProceso, setReporteEnProceso] = useState(null);
@@ -21,7 +23,6 @@ const ReporteDeudas = ({
   const [cargandoConceptos, setCargandoConceptos] = useState(false);
 
   const handleGenerarReporte = async (ev, tipoReporte) => {
-    console.log(concepto, lapso, tipoReporte, pagada);
     ev.preventDefault();
     setReporteEnProceso(tipoReporte);
     await getReporte(ev, tipoReporte);
@@ -136,9 +137,7 @@ const ReporteDeudas = ({
                       </div>
                     </div>
                     <div className="px-4 py-5 sm:p-6">
-                      <form
-                        onSubmit={(ev) => handleGenerarReporte(ev, "deudas")}
-                      >
+                      <form>
                         <div className="space-y-6">
                           {/* Información del lapso seleccionado (solo lectura) */}
                           <div className="bg-gray-50 p-3 rounded-md">
@@ -154,7 +153,25 @@ const ReporteDeudas = ({
 
                           <div className="pt-2">
                             <button
-                              type="submit"
+                              type="button"
+                              onClick={async (ev) => {
+                                try {
+                                  const isValid = await validateBtn("deudas");
+                                  if (isValid) {
+                                    handleGenerarReporte(ev, "deudas");
+                                  } else {
+                                    // Opcional: mostrar mensaje de error
+                                    Toast({
+                                      show: true,
+                                      title: "Campos incompletos",
+                                      msj: "Por favor complete todos los campos requeridos",
+                                      color: "yellow",
+                                    });
+                                  }
+                                } catch (error) {
+                                  console.error("Error en validación:", error);
+                                }
+                              }}
                               disabled={btnEstablecer || !lapso}
                               className={`w-full inline-flex justify-center items-center py-3 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${
                                 btnEstablecer || !lapso
@@ -245,9 +262,7 @@ const ReporteDeudas = ({
                       </div>
                     </div>
                     <div className="px-4 py-5 sm:p-6">
-                      <form
-                        onSubmit={(ev) => handleGenerarReporte(ev, "conceptos")}
-                      >
+                      <form>
                         <div className="space-y-4">
                           {/* Información del lapso seleccionado (solo lectura) */}
                           <div className="bg-gray-50 p-3 rounded-md">
@@ -337,7 +352,26 @@ const ReporteDeudas = ({
 
                           <div className="pt-2">
                             <button
-                              type="submit"
+                              type="button"
+                              onClick={async (ev) => {
+                                try {
+                                  const isValid =
+                                    await validateBtn("conceptos");
+                                  if (isValid) {
+                                    handleGenerarReporte(ev, "conceptos");
+                                  } else {
+                                    // Opcional: mostrar mensaje de error
+                                    Toast({
+                                      show: true,
+                                      title: "Campos incompletos",
+                                      msj: "Por favor complete todos los campos requeridos",
+                                      color: "yellow",
+                                    });
+                                  }
+                                } catch (error) {
+                                  console.error("Error en validación:", error);
+                                }
+                              }}
                               disabled={
                                 btnEstablecer || !lapso || cargandoConceptos
                               }
@@ -449,6 +483,7 @@ ReporteDeudas.propTypes = {
   concepto: PropTypes.string,
   conceptos: PropTypes.array,
   btnEstablecer: PropTypes.bool,
+  validateBtn: PropTypes.func,
 };
 
 export default ReporteDeudas;

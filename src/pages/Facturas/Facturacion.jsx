@@ -32,7 +32,6 @@ const Facturacion = () => {
       .then((values) => {
         // Asegurar que values sea un array
         const facturasArray = values;
-        console.log("Facturas recibidas:", facturasArray); // Para debugging
         setFacturas(facturasArray);
 
         if (facturasArray.length > 0) {
@@ -190,7 +189,9 @@ const Facturacion = () => {
     <div className="min-h-screen bg-gray-100 p-4 md:p-6 lg:p-8">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-800 mb-4">Facturación</h1>
+        <h1 className="text-3xl font-bold text-gray-800 mb-4">
+          Ajustes de facturación
+        </h1>
 
         {/* Buscador */}
         <div className="bg-white rounded-lg shadow-md p-4">

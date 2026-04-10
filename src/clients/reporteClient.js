@@ -54,9 +54,25 @@ export const getReporteFacturacionClient = async (
   fechaDesde,
   fechaHasta,
   idBanco,
-  tipo,
 ) => {
   return await blob(
     `reporte/facturacion?FechaDesde=${fechaDesde}&FechaHasta=${fechaHasta}&IdBanco=${idBanco}&Tipo=${tipo}`,
+  );
+};
+export const getReporteFacturacionPorDepositosClient = async (
+  fechaDesde,
+  fechaHasta,
+  idBanco,
+) => {
+  return await blob(
+    `reporte/depositos?FechaDesde=${fechaDesde}&FechaHasta=${fechaHasta}&IdBanco=${idBanco}`,
+  );
+};
+export const getReporteFacturacionCierreCajaClient = async (
+  fechaDesde,
+  fechaHasta,
+) => {
+  return await blob(
+    `reporte/cierrescaja?FechaDesde=${fechaDesde}&FechaHasta=${fechaHasta}`,
   );
 };

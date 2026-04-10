@@ -115,7 +115,7 @@ const Layout = () => {
                                   {checkUser().Rol === "1" ||
                                   checkUser().Rol === "2" ? (
                                     <NavLink
-                                      to={`/reportes`}
+                                      to={`/reportes/deudas`}
                                       className="-m-4 p-2 flex items-start rounded-lg hover:bg-gray-50"
                                     >
                                       <CurrencyDollarIcon
@@ -132,15 +132,32 @@ const Layout = () => {
                                   {checkUser().Rol === "1" ||
                                   checkUser().Rol === "2" ? (
                                     <NavLink
-                                      to={`/facturacion`}
+                                      to={`/reportes/facturacion`}
                                       className="-m-4 p-2 flex items-start rounded-lg hover:bg-gray-50"
                                     >
-                                      <AcademicCapIcon
+                                      <ChartPieIcon
                                         className="flex-shrink-0 h-6 w-6"
                                         aria-hidden="true"
                                       />
                                       <p className="pl-2 text-base font-semibold">
-                                        Facturación
+                                        Reporte facturación
+                                      </p>
+                                    </NavLink>
+                                  ) : (
+                                    <></>
+                                  )}
+                                  {checkUser().Rol === "1" ||
+                                  checkUser().Rol === "2" ? (
+                                    <NavLink
+                                      to={`/facturacion`}
+                                      className="-m-4 p-2 flex items-start rounded-lg hover:bg-gray-50"
+                                    >
+                                      <CurrencyDollarIcon
+                                        className="flex-shrink-0 h-6 w-6"
+                                        aria-hidden="true"
+                                      />
+                                      <p className="pl-2 text-base font-semibold">
+                                        Ajustes facturación
                                       </p>
                                     </NavLink>
                                   ) : (

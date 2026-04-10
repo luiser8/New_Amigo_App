@@ -1,0 +1,9 @@
+REACT_APP_ENV="development"
+REACT_APP_API_URL="http://localhost/ApiPSM/api/"
+REACT_APP_AUTH_TYPE="Basic"
+REACT_APP_AUTH_PASSWORD=
+
+# REACT_APP_ENV="production"
+# REACT_APP_API_URL="http://10.0.0.2/API/api/"
+# REACT_APP_AUTH_TYPE="Basic"
+# REACT_APP_AUTH_PASSWORD=

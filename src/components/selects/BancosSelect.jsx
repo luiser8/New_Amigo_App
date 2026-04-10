@@ -28,12 +28,12 @@ const BancosSelect = ({
             : "mt-0 block w-full py-2 px-1 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base"
         }`}
         value={idBanco}
-        onChange={async (event) => setIdBanco(event.target.value)}
+        onChange={async (event) => setIdBanco(Number(event.target.value))}
       >
-        <option>Selecciona banco</option>
+        <option value={0}>Selecciona banco</option>
         {Object.keys(bancos).map((_, item) => (
           <option key={bancos[item].Id_Banco} value={bancos[item].Id_Banco}>
-            {bancos[item].NumeroCuenta} - {bancos[item].Descripcion}
+            {bancos[item].Descripcion}
           </option>
         ))}
       </select>

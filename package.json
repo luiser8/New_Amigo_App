@@ -13,22 +13,22 @@
     "watch:css": "postcss tailwind.css -o src/index.css"
   },
   "dependencies": {
-    "@headlessui/react": "^2.2.9",
+    "@headlessui/react": "^2.2.10",
     "@heroicons/react": "v1",
     "@tailwindcss/forms": "^0.5.11",
     "@tailwindcss/typography": "^0.5.19",
     "moment": "^2.30.1",
     "prop-types": "^15.8.1",
-    "react": "^19.2.4",
-    "react-dom": "^19.2.4",
-    "react-router-dom": "^7.13.1",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
+    "react-router-dom": "^7.14.0",
     "react-scripts": "5.0.1",
     "tailwind-toast": "^1.1.0"
   },
   "devDependencies": {
     "eslint-plugin-react": "^7.37.5",
     "autoprefixer": "^10.4.27",
-    "postcss": "^8.5.8",
+    "postcss": "^8.5.9",
     "postcss-cli": "^11.0.1",
     "tailwindcss": "^2.2.19"
   },

@@ -43,7 +43,7 @@ export default function Routes() {
         ),
     },
     {
-      path: "/reportes",
+      path: "/reportes/deudas",
       element:
         checkUser().UsuarioId !== null && checkUser().Rol !== "6" ? (
           <Reportes user={checkUser().UsuarioId} type={1} />
@@ -54,9 +54,15 @@ export default function Routes() {
     // {
     //     path: '/reportes/inscripciones', element: checkUser().UsuarioId !== null && checkUser().Rol !== '6' ? <Reportes user={checkUser().UsuarioId} type={2} /> : <Login />,
     // },
-    // {
-    //     path: '/reportes/facturacion', element: checkUser().UsuarioId !== null && checkUser().Rol !== '6' ? <Reportes user={checkUser().UsuarioId} type={3} /> : <Login />,
-    // },
+    {
+      path: "/reportes/facturacion",
+      element:
+        checkUser().UsuarioId !== null && checkUser().Rol !== "6" ? (
+          <Reportes user={checkUser().UsuarioId} type={3} />
+        ) : (
+          <Login />
+        ),
+    },
     {
       path: "/insertar",
       element:

@@ -13,16 +13,18 @@ import ReporteDeudas from "./ReporteDeudas";
 import ReporteInscripciones from "./ReporteInscripciones";
 import {
   getReporteDeudasClient,
-  getReportePagadasClient,
   getReportePlanesDePagoClient,
   getReportePorCarrerasClient,
   getReporteAllCarrerasClient,
   getReporteFacturacionClient,
   getReporteDeudasPorConceptosClient,
+  getReporteFacturacionPorDepositosClient,
+  getReporteFacturacionCierreCajaClient,
 } from "../../clients/reporteClient";
 import ReporteFacturacion from "./ReporteFacturacion";
 import { getBancosService } from "../../services/bancosService";
 import { getArancelesPorLapsoService } from "../../services/arancelesService";
+import { validInputs } from "../../helpers/validInputs";
 
 const Reportes = (props) => {
   const [conceptos, setConceptos] = useState([]);
@@ -49,13 +51,42 @@ const Reportes = (props) => {
     setLapsos(await getLapsosService());
   };
   const getBancos = async () => {
-    setBancos(await getBancosService());
+    setBancos(await getBancosService(0));
   };
   const getPeriodoId = () => {
     return lapsos.filter((x) => x.Lapso === lapso)[0].Id_Periodo;
   };
   const getConceptos = async () => {
     setConceptos(await getArancelesPorLapsoService(lapso));
+  };
+
+  const validateBtn = async (fuente) => {
+    // Definir los campos a validar
+    var campos = [];
+    if (fuente === "depositos") {
+      campos = [
+        { valor: desde, nombre: "desde", tipo: "string" },
+        { valor: hasta, nombre: "hasta", tipo: "string" },
+        { valor: idBanco, nombre: "idBanco", tipo: "number" },
+      ];
+    } else if (fuente === "cierrecaja") {
+      campos = [
+        { valor: desde, nombre: "desde", tipo: "string" },
+        { valor: hasta, nombre: "hasta", tipo: "string" },
+      ];
+    } else if (fuente === "deudas") {
+      campos = [{ valor: lapso, nombre: "lapso", tipo: "string" }];
+    } else if (fuente === "conceptos") {
+      campos = [
+        { valor: lapso, nombre: "lapso", tipo: "string" },
+        { valor: concepto, nombre: "concepto", tipo: "string" },
+        // { valor: pagada, nombre: "pagada", tipo: "number" },
+      ];
+    }
+
+    // Validar campos - RETORNAR explícitamente la promesa
+    const valid = await validInputs(campos);
+    return valid; // <- Asegurar que retorna boolean
   };
 
   useEffect(() => {
@@ -66,7 +97,6 @@ const Reportes = (props) => {
     ev.preventDefault();
     setBtnEstablecer(true);
     setLoading(true);
-    console.log(tipoReporte);
     if (tipoReporte === "conceptos") {
       Promise.all([
         getReporteDeudasPorConceptosClient(lapso, concepto, pagada).then(
@@ -91,6 +121,68 @@ const Reportes = (props) => {
             setLoading(false);
           },
         ),
+      ]).catch((error) => {
+        new Error(error);
+      });
+    }
+    if (tipoReporte === "depositos") {
+      Promise.all([
+        getReporteFacturacionPorDepositosClient(desde, hasta, idBanco).then(
+          (items) => {
+            items !== undefined
+              ? items
+                  .blob()
+                  .then((blob) =>
+                    downloadFile(blob, "facturacion / depositos", 1),
+                  )
+              : Toast({
+                  show: true,
+                  title: "Advertencia!",
+                  msj: `Por alguna razon el Reporte de Facturacion por depositos no ha sido creado!`,
+                  color: "yellow",
+                });
+            items !== undefined
+              ? Toast({
+                  show: true,
+                  title: "Información!",
+                  msj: `Reporte Reporte de Facturacion por depositos ha sido creado!`,
+                  color: "yellow",
+                })
+              : Toast({ show: false });
+            setBtnEstablecer(false);
+            setLoading(false);
+          },
+        ),
+      ]).catch((error) => {
+        new Error(error);
+      });
+    }
+    if (tipoReporte === "cierrecaja") {
+      Promise.all([
+        getReporteFacturacionCierreCajaClient(desde, hasta).then((items) => {
+          items !== undefined
+            ? items
+                .blob()
+                .then((blob) =>
+                  downloadFile(blob, "facturacion / cierre caja", 1),
+                )
+            : Toast({
+                show: true,
+                title: "Advertencia!",
+                msj: `Por alguna razon el Reporte de Facturacion cierre no ha sido creado!`,
+                color: "yellow",
+              });
+          items !== undefined
+            ? Toast({
+                show: true,
+                title: "Información!",
+                msj: `Reporte Reporte de Facturacion por cierre ha sido creado!`,
+                color: "yellow",
+              })
+            : Toast({ show: false });
+          setBtnEstablecer(false);
+          setLoading(false);
+        }),
       ]).catch((error) => {
         new Error(error);
       });
@@ -362,11 +454,12 @@ const Reportes = (props) => {
           conceptos={conceptos}
           concepto={concepto}
           setConcepto={setConcepto}
+          validateBtn={validateBtn}
         />
       ) : (
         <></>
       )}
-      {props.type === 2 ? (
+      {/* {props.type === 2 ? (
         <ReporteInscripciones
           menus={menus}
           menusPorCarreras={menusPorCarrera}
@@ -388,18 +481,19 @@ const Reportes = (props) => {
         />
       ) : (
         <></>
-      )}
+      )}*/}
       {props.type === 3 ? (
         <ReporteFacturacion
-          getBancos={getBancos}
           bancos={bancos}
-          getReporteFacturacion={getReporteFacturacion}
+          getBancos={getBancos}
+          getReporteFacturacion={getReporte}
+          desde={desde}
+          hasta={hasta}
           setFechaDesde={setDesde}
           setFechaHasta={setHasta}
           setIdBanco={setIdBanco}
-          setTipo={setTipo}
-          tipo={tipo}
           btnEstablecer={btnEstablecer}
+          validateBtn={validateBtn}
         />
       ) : (
         <></>
